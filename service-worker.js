@@ -1,12 +1,12 @@
 const cacheName = "SchoolSchedulePWA";
+
 const appShellFiles = [
     "./",
-    "./index.html",
     "./script.js",
+    "./style.css",
     "./favicon.ico",
     "./icons/icon (512).png",
 ];
-
 self.addEventListener("install", event => {
     event.waitUntil(
         caches.open(cacheName).then(cache => {
