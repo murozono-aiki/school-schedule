@@ -11,7 +11,13 @@ button, input, textarea {
     font-size: inherit;
     font-family: inherit;
     color: inherit;
+}
+button {
     cursor: pointer;
+}
+dialog {
+    border-radius: 7px;
+    min-width: 40vw;
 }
 
 #date {

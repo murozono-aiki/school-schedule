@@ -49,8 +49,6 @@
  * @property {number} grade
  * @property {string} className
  * @property {{select:string[], notSelect:string[]}} selectClass
- * @property {string} line
- * @property {null | {}} [lineInfo]
  */
 /**
  * @typedef {Object} classData
@@ -327,7 +325,7 @@ function getSubjects(date, userId) {
  * 1日の時間割に係るcontentsを取得する
  * @param {string} date 日付（yyyy-MM-dd）
  * @param {string} userId ユーザーid
- * @return {{whole:object[], general:object[], class:object[], user:object[]}[]}
+ * @return {{whole:(dateContentData|timesContentData)[], general:(dateContentData|timesContentData)[], class:(dateContentData|timesContentData)[], user:(dateContentData|timesContentData)[]}[]}
  */
 function getOneDayContents(date, userId) {
   function getTimes(date, subject, subjectFunction) {
@@ -609,6 +607,7 @@ function getSchedule(date, userId) {
   // i：時限、j：contentObjectsのインデックス、k：result.schedule[i]のインデックス
   for (let i = 0; i < contents.length; i++) {
     if (!contents[i]) contents[i] = {};
+    /** @type {(dateContentData | timesContentData)[]} */
     const contentObjects = [].concat(contents[i].whole, contents[i].general, contents[i]["class"], contents[i].user);
     for (let j = 0; j < contentObjects.length; j++) {
       for (let k = 0; k < result.schedule[i].length; k++) {
