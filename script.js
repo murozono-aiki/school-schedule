@@ -4,8 +4,8 @@
  */
 const DAY_NAME = ["日", "月", "火", "水", "木", "金", "土"];
 
-const USER_ID = "U173f0ed6c8b9c6ab4483090bb1383f50";
-const API_URL = "https://script.google.com/macros/s/AKfycbx3O3xd2_cIFth8UBldkZIsi5qveYAUsD_QjCSeRuEiafW34Cv7LZLsWWDYzoC0iu9IPg/exec";
+let USER_ID = "";
+let API_URL = "";
 
 /**
  * 現在表示している日
@@ -13,21 +13,73 @@ const API_URL = "https://script.google.com/macros/s/AKfycbx3O3xd2_cIFth8UBldkZIs
  */
 let currentDate;
 
+try {
+    USER_ID = localStorage.getItem("school-schedule_userId");
+    API_URL = localStorage.getItem("school-schedule_URL");
+    data = JSON.parse(localStorage.getItem("school-schedule_data"));
+} catch (error) {
+    console.error(error);
+}
+/**
+ * ユーザーid及びURLを求めるダイアログを表示
+ * @param {string} [message="ユーザーidとURLを入力してください。"] ダイアログに表示するメッセージ
+ */
+function showFirstDialog(message = "ユーザーidとURLを入力してください。") {
+    document.getElementById("firstDialogMessage").textContent = message;
+    document.getElementById("userId-input").value = USER_ID;
+    document.getElementById("API-input").value = API_URL;
+    document.getElementById("firstForm").addEventListener("submit", event => {
+        USER_ID = document.getElementById("userId-input").value;
+        API_URL = document.getElementById("API-input").value;
+        if (!USER_ID || !API_URL) {
+            event.preventDefault();
+            showFirstDialog("!値を入力してください。");
+        } else {
+            try {
+                localStorage.setItem("school-schedule_userId", USER_ID);
+                localStorage.setItem("school-schedule_URL", API_URL);
+            } catch (error) {
+                console.error(error);
+            }
+            getDataAndUpdate();
+        }
+    }, {once: true});
+    document.getElementById("firstDialog").showModal();
+}
+if (!USER_ID || !API_URL) {
+    showFirstDialog();
+} else {
+    getDataAndUpdate();
+}
 /**
  * データを取得
  * @param {(data:schoolScheduleData)} callback データを取得した後に実行する関数
  */
 function getData(callback) {
     const request = new XMLHttpRequest();
-    request.addEventListener('load', event => {callback(JSON.parse(event.target.responseText))});
-    request.open("GET", API_URL);
+    request.addEventListener('load', event => {
+        localStorage.setItem("school-schedule_data", event.target.responseText);
+        callback(JSON.parse(event.target.responseText));
+    });
+    request.open("GET", API_URL + "?id=" + USER_ID);
     request.send();
 }
-getData(responseData => {
-    console.log(responseData);
-    data = responseData;
-    updateCurrentDate(dateToString(new Date()));
-});
+/**
+ * データを取得し画面を更新
+ */
+function getDataAndUpdate() {
+    getData(responseData => {
+        if (!responseData.error) {
+            data = responseData;
+            updateCurrentDate(dateToString(new Date()));
+        } else {
+            if (responseData.message == "INVALID_USER_ID") {
+                showFirstDialog("ユーザーidが誤っています。");
+            }
+        }
+    });
+}
+if (data) updateCurrentDate(dateToString(new Date()));
 
 /**
  * date-tableを作成する関数
@@ -92,6 +144,17 @@ function updateCurrentDate(dateString) {
     document.getElementById("schedule").replaceWith(scheduleElement);
     scheduleElement.id = "schedule";
 
+    /** @param {string[]} list */
+    const createList = list => {
+        const listElement = document.createElement("ul");
+        scheduleElement.appendChild(listElement);
+        for (let i = 0; i < list.length; i++) {
+            const element = document.createElement("li");
+            listElement.appendChild(element);
+            element.appendChild(document.createTextNode(list[i]));
+        }
+    }
+
     let currentSchedule = getSchedule(dateString, USER_ID);
     if (currentSchedule.schedule.length > 1) {
         for (let period = 1; period < currentSchedule.schedule.length; period++) {
@@ -106,22 +169,12 @@ function updateCurrentDate(dateString) {
                 if (!subject || !subject.subject) continue;
                 const subjectHeadr = document.createElement("h4");
                 scheduleElement.appendChild(subjectHeadr);
-                subjectHeadr.appendChild(document.createTextNode(`${subject.subject}`))
+                subjectHeadr.appendChild(document.createTextNode(`${subject.subject}`));
                 if (subject.time) {
                     const timeElement = document.createElement("div");
                     scheduleElement.appendChild(timeElement);
                     timeElement.className = "time";
                     timeElement.appendChild(document.createTextNode(`${subject.time}`));
-                }
-                /** @param {string[]} list */
-                const createList = list => {
-                    const listElement = document.createElement("ul");
-                    scheduleElement.appendChild(listElement);
-                    for (let i = 0; i < list.length; i++) {
-                        const element = document.createElement("li");
-                        listElement.appendChild(element);
-                        element.appendChild(document.createTextNode(list[i]));
-                    }
                 }
                 if (subject.homework && subject.homework.length >= 1) {
                     const homeworkHeader = document.createElement("h5");
@@ -159,6 +212,60 @@ function updateCurrentDate(dateString) {
         const noClassElement = document.createElement("p");
         scheduleElement.appendChild(noClassElement);
         noClassElement.appendChild(document.createTextNode(`授業はありません`));
+    }
+    if (currentSchedule.schedule[0] && currentSchedule.schedule[0].length >= 1) {
+        const currentPeriod = currentSchedule.schedule[0];
+        if (currentPeriod.length >= 2 || (currentPeriod[0] && (currentPeriod[0].homework.length >= 1 || currentPeriod[0].submit.length >= 1 || currentPeriod[0].bring.length >= 1 || currentPeriod[0].event.length >= 1 || currentPeriod[0].note.length >= 1))) {
+            const periodHeader = document.createElement("h3");
+            scheduleElement.appendChild(periodHeader);
+            periodHeader.appendChild(document.createTextNode(`その他`));
+
+            for (let index = 0; index < currentPeriod.length; index++) {
+                const subject = currentPeriod[index];
+                if (!subject || !subject.subject) continue;
+                if (subject.subject != "その他") {
+                    const subjectHeadr = document.createElement("h4");
+                    scheduleElement.appendChild(subjectHeadr);
+                    subjectHeadr.appendChild(document.createTextNode(`${subject.subject}`));
+                }
+                if (subject.time) {
+                    const timeElement = document.createElement("div");
+                    scheduleElement.appendChild(timeElement);
+                    timeElement.className = "time";
+                    timeElement.appendChild(document.createTextNode(`${subject.time}`));
+                }
+                if (subject.homework && subject.homework.length >= 1) {
+                    const homeworkHeader = document.createElement("h5");
+                    scheduleElement.appendChild(homeworkHeader);
+                    homeworkHeader.appendChild(document.createTextNode("宿題"));
+                    createList(subject.homework);
+                }
+                if (subject.submit && subject.submit.length >= 1) {
+                    const submitHeader = document.createElement("h5");
+                    scheduleElement.appendChild(submitHeader);
+                    submitHeader.appendChild(document.createTextNode("提出物"));
+                    createList(subject.submit);
+                }
+                if (subject.bring && subject.bring.length >= 1) {
+                    const bringHeader = document.createElement("h5");
+                    scheduleElement.appendChild(bringHeader);
+                    bringHeader.appendChild(document.createTextNode("持ち物"));
+                    createList(subject.bring);
+                }
+                if (subject.event && subject.event.length >= 1) {
+                    const eventHeader = document.createElement("h5");
+                    scheduleElement.appendChild(eventHeader);
+                    eventHeader.appendChild(document.createTextNode("イベント"));
+                    createList(subject.event);
+                }
+                if (subject.note && subject.note.length >= 1) {
+                    const noteHeader = document.createElement("h5");
+                    scheduleElement.appendChild(noteHeader);
+                    noteHeader.appendChild(document.createTextNode("備考"));
+                    createList(subject.note);
+                }
+            }
+        }
     }
 }
 

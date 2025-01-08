@@ -49,7 +49,8 @@ async function networkResponse(request) {
  * @param {Request} request
  */
 async function cache(request) {
-    if (request.method == "GET") {
+    const requestUrl = new URL(request.url);
+    if (request.method == "GET" && requestUrl.origin == location.origin) {
         const cacheResponsePromise = cacheResponse(request);
         const networkResponsePromise = networkResponse(request);
         return (await cacheResponsePromise) || (await networkResponsePromise);
