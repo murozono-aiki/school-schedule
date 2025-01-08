@@ -32,8 +32,9 @@ function showFirstDialog(message = "ユーザーidとURLを入力してくださ
         USER_ID = document.getElementById("userId-input").value;
         API_URL = document.getElementById("API-input").value;
         if (!USER_ID || !API_URL) {
-            event.preventDefault();
-            showFirstDialog("!値を入力してください。");
+            document.getElementById("firstDialog").addEventListener("close", event => {
+                showFirstDialog("!値を入力してください。");
+            }, {once: true});
         } else {
             try {
                 localStorage.setItem("school-schedule_userId", USER_ID);
@@ -46,6 +47,9 @@ function showFirstDialog(message = "ユーザーidとURLを入力してくださ
     }, {once: true});
     document.getElementById("firstDialog").showModal();
 }
+document.getElementById("firstDialog").addEventListener("close", event => {
+    if (!USER_ID || !API_URL) showFirstDialog("!値を入力してください。");
+});
 if (!USER_ID || !API_URL) {
     showFirstDialog();
 } else {
@@ -98,6 +102,7 @@ function createDateTable(date) {
     const dateTable = document.createElement("table");
     document.getElementById("date-table").replaceWith(dateTable);
     dateTable.id = "date-table";
+    if (!is_dateTableShowed) dateTable.style.display = "none";
 
     const dateTableHeaderRow = document.createElement("tr");
     dateTable.appendChild(dateTableHeaderRow);
@@ -137,7 +142,7 @@ function createDateTable(date) {
 function updateCurrentDate(dateString) {
     currentDate = dateString;
     const dateObject = new Date(dateString);
-    document.getElementById("date").textContent = (dateObject.getMonth() + 1) + "月" + dateObject.getDate() + "日" + "（" + DAY_NAME[dateObject.getDay()] + "）"
+    document.getElementById("date").textContent = (dateObject.getMonth() + 1) + "月" + dateObject.getDate() + "日" + " (" + DAY_NAME[dateObject.getDay()] + ")"
     createDateTable(dateObject);
 
     const scheduleElement = document.createElement("div");
@@ -270,12 +275,15 @@ function updateCurrentDate(dateString) {
 }
 
 let is_dateTableShowed = true;
+document.getElementById("date").style.backgroundColor = "#b4f3ff";
 document.getElementById("date").addEventListener("click", event => {
     is_dateTableShowed = !is_dateTableShowed;
     if (is_dateTableShowed) {
         document.getElementById("date-table").style.display = "";
+        document.getElementById("date").style.backgroundColor = "#b4f3ff";
     } else {
         document.getElementById("date-table").style.display = "none";
+        document.getElementById("date").style.backgroundColor = "";
     }
 });
 
