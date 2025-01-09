@@ -7,6 +7,9 @@ const DAY_NAME = ["日", "月", "火", "水", "木", "金", "土"];
 let USER_ID = "";
 let API_URL = "";
 
+/** 日付を選択するカレンダーを表示するか */
+let is_dateTableShowed = true;
+
 /**
  * 現在表示している日
  * @type {string}
@@ -220,7 +223,7 @@ function updateCurrentDate(dateString) {
     }
     if (currentSchedule.schedule[0] && currentSchedule.schedule[0].length >= 1) {
         const currentPeriod = currentSchedule.schedule[0];
-        if (currentPeriod.length >= 2 || (currentPeriod[0] && (currentPeriod[0].homework.length >= 1 || currentPeriod[0].submit.length >= 1 || currentPeriod[0].bring.length >= 1 || currentPeriod[0].event.length >= 1 || currentPeriod[0].note.length >= 1))) {
+        if (currentPeriod.length >= 2 || (currentPeriod[0] && ((currentPeriod[0].homework && currentPeriod[0].homework.length >= 1) || (currentPeriod[0].submit && currentPeriod[0].submit.length >= 1) || (currentPeriod[0].bring && currentPeriod[0].bring.length >= 1) || (currentPeriod[0].event && currentPeriod[0].event.length >= 1) || (currentPeriod[0].note && currentPeriod[0].note.length >= 1)))) {
             const periodHeader = document.createElement("h3");
             scheduleElement.appendChild(periodHeader);
             periodHeader.appendChild(document.createTextNode(`その他`));
@@ -274,7 +277,7 @@ function updateCurrentDate(dateString) {
     }
 }
 
-let is_dateTableShowed = true;
+
 document.getElementById("date").style.backgroundColor = "#b4f3ff";
 document.getElementById("date").addEventListener("click", event => {
     is_dateTableShowed = !is_dateTableShowed;
