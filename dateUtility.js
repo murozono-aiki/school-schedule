@@ -5,12 +5,12 @@
  * @returns 0000-00-00T00:00:00の形で表された日付
  */
 function formatDateTime(date, isDate = false) {
-    const _year = date.getUTCFullYear();
-    const _month = date.getUTCMonth() + 1;
-    const _date = date.getUTCDate();
-    const _hours = date.getUTCHours();
-    const _minites = date.getUTCMinutes();
-    const _seconds = date.getUTCSeconds();
+    const _year = date.getFullYear();
+    const _month = date.getMonth() + 1;
+    const _date = date.getDate();
+    const _hours = date.getHours();
+    const _minites = date.getMinutes();
+    const _seconds = date.getSeconds();
     let yearString = _year.toString();
     let monthString = _month.toString();
     let dateString = _date.toString();
@@ -46,9 +46,9 @@ function formatDateTime(date, isDate = false) {
  * @returns 0000-00-00の形で表された日付
  */
 function formatDate(date) {
-    const _year = date.getUTCFullYear();
-    const _month = date.getUTCMonth() + 1;
-    const _date = date.getUTCDate();
+    const _year = date.getFullYear();
+    const _month = date.getMonth() + 1;
+    const _date = date.getDate();
     let yearString = _year.toString();
     let monthString = _month.toString();
     let dateString = _date.toString();
@@ -59,4 +59,13 @@ function formatDate(date) {
         dateString = "0".repeat(2 - dateString.length) + dateString;
     }
     return yearString + "-" + monthString + "-" + dateString;
+}
+
+
+/**
+ * 日付をDateオブジェクトに変換する関数
+ * @param {string} dateString 0000-00-00の形で表された日付
+ */
+function dateStringToDate(dateString) {
+    return new Date(dateString + "T00:00:00+09:00");
 }
