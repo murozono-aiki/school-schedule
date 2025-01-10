@@ -14,20 +14,43 @@ button, input, textarea {
 }
 button {
     cursor: pointer;
+    background: none;
+    border: 2px solid #2f5a80;
+    border-radius: 3px;
+    padding: 3px 7px;
+}
+button:hover {
+    background-color: #e0f0ff;
+}
+details > summary {
+    cursor: pointer;
 }
 dialog {
     border-radius: 7px;
     min-width: 40vw;
 }
 
-#date {
-    background-color: #f9f9f9;
-    transition: background-color 0.2s;
-    border: none;
-    border-radius: 5px;
-    padding: 7px 10px;
+h2 {
+    font-size: 2rem;
+    font-weight: normal;
 }
 
+#toolbar {
+    margin-bottom: 0.7rem;
+    display: flex;
+    justify-content: space-around;
+    max-width: 25rem;
+}
+#today, #tomorrow {
+    border-color: #54802f;
+}
+#today:hover, #tomorrow:hover {
+    background-color: #dcffbf;
+}
+
+#date-table {
+    margin-top: 7px;
+}
 #date-table th:first-child {
     color: #ff0000; /* 日曜日 */
 }

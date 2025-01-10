@@ -12,8 +12,17 @@
     <header>
         <h1>時間割</h1>
     </header>
-    <h2><button id="date">0月0日 (日)</button></h2>
-    <table id="date-table"></table>
+    <h2 id="date">0月0日 (日)</h2>
+    <div id="toolbar">
+        <button id="last-day">前の日</button>
+        <button id="today">今日</button>
+        <button id="tomorrow">明日</button>
+        <button id="next-day">次の日</button>
+    </div>
+    <details>
+        <summary>カレンダー</summary>
+        <table id="date-table"></table>
+    </details>
     <div id="schedule"></div>
     <dialog id="firstDialog">
         <p id="firstDialogMessage">

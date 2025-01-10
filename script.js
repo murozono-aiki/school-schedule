@@ -7,14 +7,11 @@ const DAY_NAME = ["日", "月", "火", "水", "木", "金", "土"];
 let USER_ID = "";
 let API_URL = "";
 
-/** 日付を選択するカレンダーを表示するか */
-let is_dateTableShowed = true;
-
 /**
- * 現在表示している日
+ * 現在表示している日（0000-00-00の形）
  * @type {string}
  */
-let currentDate;
+let currentDate = dateToString(new Date());
 
 try {
     USER_ID = localStorage.getItem("school-schedule_userId");
@@ -78,7 +75,7 @@ function getDataAndUpdate() {
     getData(responseData => {
         if (!responseData.error) {
             data = responseData;
-            updateCurrentDate(dateToString(new Date()));
+            updateCurrentDate();
         } else {
             if (responseData.message == "INVALID_USER_ID") {
                 showFirstDialog("ユーザーidが誤っています。");
@@ -86,7 +83,7 @@ function getDataAndUpdate() {
         }
     });
 }
-if (data) updateCurrentDate(dateToString(new Date()));
+if (data) updateCurrentDate();
 
 /**
  * date-tableを作成する関数
@@ -105,7 +102,6 @@ function createDateTable(date) {
     const dateTable = document.createElement("table");
     document.getElementById("date-table").replaceWith(dateTable);
     dateTable.id = "date-table";
-    if (!is_dateTableShowed) dateTable.style.display = "none";
 
     const dateTableHeaderRow = document.createElement("tr");
     dateTable.appendChild(dateTableHeaderRow);
@@ -142,9 +138,9 @@ function createDateTable(date) {
  * 日付を更新する関数
  * @param {string} dateString 日付を表す文字列（yyyy-MM-dd）
  */
-function updateCurrentDate(dateString) {
+function updateCurrentDate(dateString = currentDate) {
     currentDate = dateString;
-    const dateObject = new Date(dateString);
+    const dateObject = dateStringToDate(dateString);
     document.getElementById("date").textContent = (dateObject.getMonth() + 1) + "月" + dateObject.getDate() + "日" + " (" + DAY_NAME[dateObject.getDay()] + ")"
     createDateTable(dateObject);
 
@@ -278,16 +274,24 @@ function updateCurrentDate(dateString) {
 }
 
 
-document.getElementById("date").style.backgroundColor = "#b4f3ff";
-document.getElementById("date").addEventListener("click", event => {
-    is_dateTableShowed = !is_dateTableShowed;
-    if (is_dateTableShowed) {
-        document.getElementById("date-table").style.display = "";
-        document.getElementById("date").style.backgroundColor = "#b4f3ff";
-    } else {
-        document.getElementById("date-table").style.display = "none";
-        document.getElementById("date").style.backgroundColor = "";
-    }
+document.getElementById("last-day").addEventListener("click", event => {
+    const dateObject = dateStringToDate(currentDate);
+    dateObject.setDate(dateObject.getDate() - 1);
+    updateCurrentDate(dateToString(dateObject));
+});
+document.getElementById("next-day").addEventListener("click", event => {
+    const dateObject = dateStringToDate(currentDate);
+    dateObject.setDate(dateObject.getDate() + 1);
+    updateCurrentDate(dateToString(dateObject));
+});
+document.getElementById("today").addEventListener("click", event => {
+    const dateObject = new Date();
+    updateCurrentDate(dateToString(dateObject));
+});
+document.getElementById("tomorrow").addEventListener("click", event => {
+    const dateObject = new Date();
+    dateObject.setDate(dateObject.getDate() + 1);
+    updateCurrentDate(dateToString(dateObject));
 });
 
 
