@@ -24,10 +24,19 @@ button:hover {
 }
 details > summary {
     cursor: pointer;
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+table {
+    border-collapse: collapse;
 }
 dialog {
     border-radius: 7px;
     min-width: 40vw;
+}
+
+.gray {
+    color: #999999;
 }
 
 h2 {
@@ -48,8 +57,21 @@ h2 {
     background-color: #dcffbf;
 }
 
-#date-table {
-    margin-top: 7px;
+#date-table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+#date-table-month {
+    font-size: 1.3rem;
+}
+#date-table-header, #date-table {
+    width: 100%;
+    max-width: 18rem;
+}
+#date-table th, #date-table td {
+    border: 1px solid #999999;
 }
 #date-table th:first-child {
     color: #ff0000; /* 日曜日 */
@@ -62,6 +84,10 @@ h2 {
     height: 100%;
     border: none;
     background: none;
+}
+#date-table th, #date-table td button {
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 #date-table .selected {
     color: #b60000;
