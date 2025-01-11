@@ -13,6 +13,17 @@ let API_URL = "";
  */
 let currentDate = dateToString(new Date());
 
+/**
+ * カレンダーの年
+ * @type {number}
+ */
+let dateTableYear = 0;
+/**
+ * カレンダーの月（0が1月）
+ * @type {number}
+ */
+let dateTableMonth = 0;
+
 try {
     USER_ID = localStorage.getItem("school-schedule_userId");
     API_URL = localStorage.getItem("school-schedule_URL");
@@ -75,7 +86,7 @@ function getDataAndUpdate() {
     getData(responseData => {
         if (!responseData.error) {
             data = responseData;
-            updateCurrentDate();
+            updateSchedule();
         } else {
             if (responseData.message == "INVALID_USER_ID") {
                 showFirstDialog("ユーザーidが誤っています。");
@@ -90,9 +101,11 @@ if (data) updateCurrentDate();
  * @param {Date} date カレンダーに含む日
  */
 function createDateTable(date) {
-    const selectedDateString = dateToString(date);
     const _date = new Date(date);
     const month = _date.getMonth();
+    dateTableYear = _date.getFullYear();
+    dateTableMonth = month;
+    document.getElementById("date-table-month").textContent = month + 1 + "月";
     _date.setDate(1);
     if (_date.getDay() <= 1) {
         _date.setDate(_date.getDate() - 7);  // 月が月曜日又は火曜日で始まる場合、一週間前から表示
@@ -118,12 +131,12 @@ function createDateTable(date) {
 
             const dateTableData = document.createElement("td");
             dateTableRow.appendChild(dateTableData);
-            if (dateString == selectedDateString) dateTableData.className = "selected";
+            if (dateString == currentDate) dateTableData.classList.add("selected");
+            if (_date.getMonth() != month) dateTableData.classList.add("gray");
 
             const dateButton = document.createElement("button");
             dateTableData.appendChild(dateButton);
             dateButton.appendChild(document.createTextNode(_date.getDate().toString()));
-            if (_date.getMonth() != month) dateButton.style.color = "#999999";
 
             dateButton.addEventListener("click", event => {
                 updateCurrentDate(dateString);
@@ -133,17 +146,12 @@ function createDateTable(date) {
         }
     }
 }
+createDateTable(dateStringToDate(currentDate));
 
 /**
- * 日付を更新する関数
- * @param {string} dateString 日付を表す文字列（yyyy-MM-dd）
+ * 予定を更新する関数
  */
-function updateCurrentDate(dateString = currentDate) {
-    currentDate = dateString;
-    const dateObject = dateStringToDate(dateString);
-    document.getElementById("date").textContent = (dateObject.getMonth() + 1) + "月" + dateObject.getDate() + "日" + " (" + DAY_NAME[dateObject.getDay()] + ")"
-    createDateTable(dateObject);
-
+function updateSchedule() {
     const scheduleElement = document.createElement("div");
     document.getElementById("schedule").replaceWith(scheduleElement);
     scheduleElement.id = "schedule";
@@ -159,7 +167,7 @@ function updateCurrentDate(dateString = currentDate) {
         }
     }
 
-    let currentSchedule = getSchedule(dateString, USER_ID);
+    let currentSchedule = getSchedule(currentDate, USER_ID);
     if (currentSchedule.schedule.length > 1) {
         for (let period = 1; period < currentSchedule.schedule.length; period++) {
             const currentPeriod = currentSchedule.schedule[period];
@@ -273,6 +281,19 @@ function updateCurrentDate(dateString = currentDate) {
     }
 }
 
+/**
+ * 日付を更新する関数
+ * @param {string} dateString 日付を表す文字列（yyyy-MM-dd）
+ */
+function updateCurrentDate(dateString = currentDate) {
+    currentDate = dateString;
+    const dateObject = dateStringToDate(dateString);
+    document.getElementById("date").textContent = (dateObject.getMonth() + 1) + "月" + dateObject.getDate() + "日" + " (" + DAY_NAME[dateObject.getDay()] + ")"
+    createDateTable(dateObject);
+
+    updateSchedule();
+}
+
 
 document.getElementById("last-day").addEventListener("click", event => {
     const dateObject = dateStringToDate(currentDate);
@@ -288,10 +309,12 @@ document.getElementById("today").addEventListener("click", event => {
     const dateObject = new Date();
     updateCurrentDate(dateToString(dateObject));
 });
-document.getElementById("tomorrow").addEventListener("click", event => {
-    const dateObject = new Date();
-    dateObject.setDate(dateObject.getDate() + 1);
-    updateCurrentDate(dateToString(dateObject));
+
+document.getElementById("date-table-last-month").addEventListener("click", event => {
+    createDateTable(new Date(dateTableYear, dateTableMonth - 1));
+});
+document.getElementById("date-table-next-month").addEventListener("click", event => {
+    createDateTable(new Date(dateTableYear, dateTableMonth + 1));
 });
 
 
