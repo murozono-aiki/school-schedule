@@ -7,11 +7,24 @@ const DAY_NAME = ["日", "月", "火", "水", "木", "金", "土"];
 let USER_ID = "";
 let API_URL = "";
 
+let _dateForInitialize = new Date();
+
 /**
  * 現在表示している日（0000-00-00の形）
  * @type {string}
  */
-let currentDate = dateToString(new Date());
+let currentDate = dateToString(_dateForInitialize);
+
+/**
+ * 今日の日付（0000-00-00の形）
+ */
+const TODAY_DATE_STRING = dateToString(_dateForInitialize);
+_dateForInitialize.setDate(_dateForInitialize.getDate() + 1);
+/**
+ * 明日の日付（0000-00-00の形）
+ */
+const TOMORROW_DATE_STRING = dateToString(_dateForInitialize);
+_dateForInitialize = null;
 
 /**
  * カレンダーの年
@@ -168,6 +181,12 @@ function updateSchedule() {
     }
 
     let currentSchedule = getSchedule(currentDate, USER_ID);
+    if (currentSchedule.scheduleType) {
+        const scheduleTypeElement = document.createElement("div");
+        scheduleElement.appendChild(scheduleTypeElement);
+        scheduleTypeElement.classList.add("scheduleType");
+        scheduleTypeElement.appendChild(document.createTextNode(currentSchedule.scheduleType));
+    }
     if (currentSchedule.schedule.length > 1) {
         for (let period = 1; period < currentSchedule.schedule.length; period++) {
             const currentPeriod = currentSchedule.schedule[period];
@@ -288,7 +307,17 @@ function updateSchedule() {
 function updateCurrentDate(dateString = currentDate) {
     currentDate = dateString;
     const dateObject = dateStringToDate(dateString);
-    document.getElementById("date").textContent = (dateObject.getMonth() + 1) + "月" + dateObject.getDate() + "日" + " (" + DAY_NAME[dateObject.getDay()] + ")"
+    let displayString = (dateObject.getMonth() + 1) + "月" + dateObject.getDate() + "日" + " (" + DAY_NAME[dateObject.getDay()] + ")";
+    document.getElementById("date").textContent = displayString;
+    if (dateString == TODAY_DATE_STRING) {
+        const spanElement = document.createElement("span");
+        document.getElementById("date").appendChild(spanElement);
+        spanElement.appendChild(document.createTextNode(" ：今日"));
+    } else if (dateString == TOMORROW_DATE_STRING) {
+        const spanElement = document.createElement("span");
+        document.getElementById("date").appendChild(spanElement);
+        spanElement.appendChild(document.createTextNode(" ：明日"));
+    }
     createDateTable(dateObject);
 
     updateSchedule();

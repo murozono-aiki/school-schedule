@@ -22,10 +22,15 @@ button {
 button:hover {
     background-color: #e0f0ff;
 }
+details {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
 details > summary {
     cursor: pointer;
     padding-top: 7px;
     padding-bottom: 7px;
+    margin-bottom: 5px;
 }
 table {
     border-collapse: collapse;
@@ -40,8 +45,12 @@ dialog {
 }
 
 h2 {
-    font-size: 2rem;
+    font-size: 1.9rem;
     font-weight: normal;
+}
+
+#date span {
+    font-size: 1.5rem;
 }
 
 #toolbar {
@@ -50,10 +59,10 @@ h2 {
     justify-content: space-around;
     max-width: 25rem;
 }
-#today, #tomorrow {
+#today {
     border-color: #54802f;
 }
-#today:hover, #tomorrow:hover {
+#today:hover {
     background-color: #dcffbf;
 }
 
@@ -91,4 +100,16 @@ h2 {
 }
 #date-table .selected {
     color: #b60000;
+}
+
+#schedule > div.scheduleType {
+    font-size: 1.2rem;
+}
+#schedule div.time {
+    font-size: 0.9rem;
+    color: #595959;
+}
+#schedule ul {
+    margin-top: 0;
+    margin-bottom: 0;
 }

@@ -1,4 +1,54 @@
 /**
+ * @typedef {object} editChange
+ * @property {"edit"} method
+ * @property {string} key
+ * @property {string} editValue
+ * @property {any} value
+ */
+/**
+ * @typedef {object} addChange
+ * @property {"add"} method
+ * @property {string} key
+ * @property {any} value
+ */
+/**
+ * @typedef {object} deleteChange
+ * @property {"delete"} method
+ * @property {string} key
+ * @property {string} deleteValue
+ */
+/**
+ * @typedef {object} dateContentChangeKey
+ * @property {"date"} contentType
+ * @property {"whole" | "general" | "class" | "user"} scopeType
+ * @property {number | string} [scopeName]
+ * @property {string} date
+ * @property {number} [period]
+ * @property {string} subject
+ */
+/**
+ * @typedef {object} dateContentChangeData
+ * @property {"content"} type
+ * @property {dateContentChangeKey} key
+ * @property {(editChange | addChange | deleteChange)[]} changes
+ */
+/**
+ * @typedef {object} timesContentChangeKey
+ * @property {"times"} contentType
+ * @property {"whole" | "general" | "class" | "user"} scopeType
+ * @property {number | string} [scopeName]
+ * @property {number} times
+ * @property {string} [userId]
+ * @property {string} subject
+ */
+/**
+ * @typedef {object} timesContentChangeData
+ * @property {"content"} type
+ * @property {timesContentChangeKey} key
+ * @property {(editChange | addChange | deleteChange)[]} changes
+ */
+
+/**
  * @typedef {Object} scopeObject
  * @property {"whole" | "general" | "class" | "user"} scopeType
  * @property {number | string} [name]
