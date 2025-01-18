@@ -14,6 +14,10 @@ let _dateForInitialize = new Date();
  * @type {string}
  */
 let currentDate = dateToString(_dateForInitialize);
+/**
+ * 現在の通信数
+ */
+let loadCount = 0;
 
 /**
  * 今日の日付（0000-00-00の形）
@@ -79,6 +83,17 @@ if (!USER_ID || !API_URL) {
 } else {
     getDataAndUpdate();
 }
+
+function startLoad() {
+    loadCount++;
+    document.getElementById("load").textContent = "同期中";
+}
+function finishLoad() {
+    loadCount--;
+    if (loadCount <= 0) {
+        document.getElementById("load").textContent = "";
+    }
+}
 /**
  * データを取得
  * @param {(data:schoolScheduleData)} callback データを取得した後に実行する関数
@@ -89,7 +104,9 @@ function getData(callback) {
         localStorage.setItem("school-schedule_data", event.target.responseText);
         callback(JSON.parse(event.target.responseText));
     });
+    request.addEventListener('loadend', finishLoad);
     request.open("GET", API_URL + "?id=" + USER_ID);
+    startLoad();
     request.send();
 }
 /**
