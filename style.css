@@ -30,8 +30,8 @@ details {
 }
 details > summary {
     cursor: pointer;
-    padding-top: 7px;
-    padding-bottom: 7px;
+    padding-top: 9px;
+    padding-bottom: 9px;
     margin-bottom: 5px;
 }
 table {
