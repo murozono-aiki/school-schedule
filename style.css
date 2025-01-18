@@ -6,6 +6,7 @@ html {
 body {
     margin-left: 20px;
     margin-right: 20px;
+    margin-bottom: 30px;
 }
 button, input, textarea {
     font-size: inherit;
@@ -17,10 +18,11 @@ button {
     background: none;
     border: 2px solid #2f5a80;
     border-radius: 3px;
-    padding: 3px 7px;
+    padding: 7px 12px;
+    --hover-color: #e0f0ff;
 }
 button:hover {
-    background-color: #e0f0ff;
+    background-color: var(--hover-color);
 }
 details {
     margin-top: 20px;
@@ -38,6 +40,9 @@ table {
 dialog {
     border-radius: 7px;
     min-width: 40vw;
+}
+.form-submit {
+    text-align: right;
 }
 
 .gray {
@@ -71,9 +76,7 @@ h2 {
 }
 #today {
     border-color: #54802f;
-}
-#today:hover {
-    background-color: #dcffbf;
+    --hover-color: #dcffbf;
 }
 
 #date-table-header {
@@ -103,6 +106,8 @@ h2 {
     height: 100%;
     border: none;
     background: none;
+    padding-right: 0;
+    padding-left: 0;
 }
 #date-table th, #date-table td button {
     padding-top: 5px;
