@@ -177,6 +177,7 @@ function createDateTable(date) {
             const dateButton = document.createElement("button");
             dateTableData.appendChild(dateButton);
             dateButton.appendChild(document.createTextNode(_date.getDate().toString()));
+            if (dateString == TODAY_DATE_STRING) dateButton.style.textDecoration = "underline";
 
             dateButton.addEventListener("click", event => {
                 updateCurrentDate(dateString);
