@@ -98,16 +98,23 @@ function finishLoad() {
  * データを取得
  * @param {(data:schoolScheduleData)} callback データを取得した後に実行する関数
  */
-function getData(callback) {
-    const request = new XMLHttpRequest();
-    request.addEventListener('load', event => {
-        localStorage.setItem("school-schedule_data", event.target.responseText);
-        callback(JSON.parse(event.target.responseText));
-    });
-    request.addEventListener('loadend', finishLoad);
-    request.open("GET", API_URL + "?id=" + USER_ID);
-    startLoad();
-    request.send();
+async function getData(callback) {
+    const url = new URL(API_URL);
+    url.searchParams.set("id", USER_ID);
+    try {
+        const response = await fetch(url, {method: "GET"});
+        if (response.ok) {
+            const responseText = await response.text();
+            localStorage.setItem("school-schedule_data", responseText);
+            const responseData = JSON.parse(responseText);
+            callback(responseData);
+        } else {
+            showFirstDialog("データの取得に失敗しました。URLが正しいか確認してください。");
+        }
+    } catch(error) {
+        console.error(error);
+        if (!data) showFirstDialog("データの取得に失敗しました。ネットワーク接続を確認し、URLが正しいか確認してください。");
+    }
 }
 /**
  * データを取得し画面を更新
@@ -115,8 +122,11 @@ function getData(callback) {
 function getDataAndUpdate() {
     getData(responseData => {
         if (!responseData.error) {
+            let existData = true;
+            if (!data) existData = false;
             data = responseData;
-            updateSchedule();
+            if (existData) updateSchedule();
+            else updateCurrentDate();
         } else {
             if (responseData.message == "INVALID_USER_ID") {
                 showFirstDialog("ユーザーidが誤っています。");
