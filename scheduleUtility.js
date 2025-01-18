@@ -613,14 +613,18 @@ function getSchedule(date, userId) {
       result.schedule[i][0].subject = "その他";
     }
   }
+  let lastScheduleType = "";
   for (let i = 1; i < subjects.length; i++) {
     if (!subjects[i].subject[0]) continue;
     if (!subjects[i].scheduleType || !subjects[i].scheduleType.scheduleType) {
-      result.scheduleType += "+ ";
+      result.scheduleType += "+";
+      lastScheduleType = "";
       continue;
     }
     let scheduleType = subjects[i].scheduleType.scheduleType;
-    result.scheduleType += scheduleType;
+    if (lastScheduleType != scheduleType) result.scheduleType += " " + scheduleType;
+    else result.scheduleType += ",";
+    lastScheduleType = scheduleType;
     let start; let end;
     for (; i < subjects.length; i++) {
       if (subjects[i].scheduleType.scheduleType != scheduleType) {
@@ -647,9 +651,9 @@ function getSchedule(date, userId) {
       }
     }
     if (!end) {
-      result.scheduleType += start + " ";
+      result.scheduleType += start;
     } else {
-      result.scheduleType += start + "-" + end + " ";
+      result.scheduleType += start + "-" + end;
     }
   }
 
