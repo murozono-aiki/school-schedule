@@ -94,24 +94,32 @@ function finishLoad() {
         document.getElementById("load").textContent = "";
     }
 }
+function failLoad() {
+    loadCount--;
+    document.getElementById("load").textContent = "同期失敗";
+}
 /**
  * データを取得
- * @param {(data:schoolScheduleData)} callback データを取得した後に実行する関数
+ * @param {(data:schoolScheduleData)} [callback] データを取得した後に実行する関数
  */
 async function getData(callback) {
     const url = new URL(API_URL);
     url.searchParams.set("id", USER_ID);
+    startLoad();
     try {
         const response = await fetch(url, {method: "GET"});
         if (response.ok) {
             const responseText = await response.text();
             localStorage.setItem("school-schedule_data", responseText);
             const responseData = JSON.parse(responseText);
-            callback(responseData);
+            if (callback) callback(responseData);
+            finishLoad();
         } else {
-            showFirstDialog("データの取得に失敗しました。URLが正しいか確認してください。");
+            failLoad();
+            if (!data) showFirstDialog("データの取得に失敗しました。URLが正しいか確認してください。");
         }
     } catch(error) {
+        failLoad();
         console.error(error);
         if (!data) showFirstDialog("データの取得に失敗しました。ネットワーク接続を確認し、URLが正しいか確認してください。");
     }
