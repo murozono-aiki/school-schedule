@@ -45,6 +45,8 @@ try {
     USER_ID = localStorage.getItem("school-schedule_userId");
     API_URL = localStorage.getItem("school-schedule_URL");
     data = JSON.parse(localStorage.getItem("school-schedule_data"));
+    let lastCurrentDate = sessionStorage.getItem("currentDate");
+    if (lastCurrentDate) currentDate = lastCurrentDate;
 } catch (error) {
     console.error(error);
 }
@@ -342,6 +344,7 @@ function updateSchedule() {
  */
 function updateCurrentDate(dateString = currentDate) {
     currentDate = dateString;
+    sessionStorage.setItem("currentDate", currentDate);
     const dateObject = dateStringToDate(dateString);
     let displayString = (dateObject.getMonth() + 1) + "月" + dateObject.getDate() + "日" + " (" + DAY_NAME[dateObject.getDay()] + ")";
     document.getElementById("date").textContent = displayString;
