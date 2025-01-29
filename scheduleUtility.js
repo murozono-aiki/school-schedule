@@ -3,13 +3,13 @@
  * @property {"edit"} method
  * @property {string} key
  * @property {string} editValue
- * @property {any} value
+ * @property {string} value
  */
 /**
  * @typedef {object} addChange
  * @property {"add"} method
  * @property {string} key
- * @property {any} value
+ * @property {string} value
  */
 /**
  * @typedef {object} deleteChange
