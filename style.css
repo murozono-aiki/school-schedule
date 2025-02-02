@@ -41,6 +41,7 @@ table {
 dialog {
     border-radius: 7px;
     min-width: 40vw;
+    overscroll-behavior: contain;
 }
 .form-submit {
     text-align: right;

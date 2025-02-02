@@ -2,7 +2,7 @@
  * @typedef {object} editChange
  * @property {"edit"} method
  * @property {string} key
- * @property {string} editValue
+ * @property {string} [editValue] 配列の場合
  * @property {string} value
  */
 /**
@@ -16,6 +16,25 @@
  * @property {"delete"} method
  * @property {string} key
  * @property {string} deleteValue
+ */
+/**
+ * @typedef {object} structuredChange
+ * @property {"structuredChange"} method
+ * @property {string} key
+ * @property {number} [period] 配列の場合
+ * @property {editChange | addChange | deleteChange | structuredChange} change
+ */
+/**
+ * @typedef {object} scheduleChangeKey
+ * @property {"whole" | "general" | "class" | "user"} scopeType
+ * @property {number | string} [scopeName]
+ * @property {string} date
+ */
+/**
+ * @typedef {object} scheduleChangeData
+ * @property {"schedule"} type
+ * @property {scheduleChangeKey} key
+ * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
  * @typedef {object} dateContentChangeKey
@@ -46,6 +65,37 @@
  * @property {"content"} type
  * @property {timesContentChangeKey} key
  * @property {(editChange | addChange | deleteChange)[]} changes
+ */
+/**
+ * @typedef {dateContentChangeData | timesContentChangeData} contentChangeData
+ */
+/**
+ * @typedef {object} userChangeKey
+ * @property {string} userId
+ */
+/**
+ * @typedef {object} userChangeData
+ * @property {"user"} type
+ * @property {userChangeKey} key
+ * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
+ */
+/**
+ * @typedef {object} classesChangeKey
+ * @property {string} name
+ */
+/**
+ * @typedef {object} classesChangeData
+ * @property {"classes"} type
+ * @property {classesChangeKey} key
+ * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
+ */
+/**
+ * @typedef {object} schoolChangeData
+ * @property {"school"} type
+ * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
+ */
+/**
+ * @typedef {(scheduleChangeData | contentChangeData | userChangeData | schoolChangeData)[]} changeData
  */
 
 /**
