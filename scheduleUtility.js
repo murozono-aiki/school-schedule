@@ -95,7 +95,7 @@
  * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
- * @typedef {(scheduleChangeData | contentChangeData | userChangeData | schoolChangeData)[]} changeData
+ * @typedef {(scheduleChangeData | contentChangeData | userChangeData | classesChangeData | schoolChangeData)[]} changeData
  */
 
 /**
@@ -706,6 +706,7 @@ function getSchedule(date, userId) {
       result.scheduleType += start + "-" + end;
     }
   }
+  if (/^\++$/.test(result.scheduleType)) result.scheduleType = "他";
 
   const contents = getOneDayContents(date, userId);
   // i：時限、j：contentObjectsのインデックス、k：result.schedule[i]のインデックス

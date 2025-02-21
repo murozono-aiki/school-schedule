@@ -228,7 +228,7 @@ function updateSchedule() {
     if (currentSchedule.schedule.length > 1) {
         for (let period = 1; period < currentSchedule.schedule.length; period++) {
             const currentPeriod = currentSchedule.schedule[period];
-            if (!currentPeriod) continue;
+            if (!currentPeriod || currentPeriod.length == 0) continue;
             const periodHeader = document.createElement("h3");
             scheduleElement.appendChild(periodHeader);
             periodHeader.appendChild(document.createTextNode(`${period}時限目`));
