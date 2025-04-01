@@ -25,6 +25,13 @@ button {
 button:hover {
     background-color: var(--hover-color);
 }
+button:disabled {
+    color: #595959;
+    cursor: default;
+}
+button:disabled:hover {
+    background: none;
+}
 details {
     margin-top: 20px;
     margin-bottom: 20px;
