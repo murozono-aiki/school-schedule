@@ -157,10 +157,18 @@ function createDateTable(date) {
     dateTableMonth = month;
     document.getElementById("date-table-month").textContent = month + 1 + "月";
     _date.setDate(1);
+    if (_date.getFullYear() == new Date().getFullYear() && _date.getMonth() == new Date().getMonth()) {
+        document.getElementById("date-table-last-month").disabled = true;
+    } else {
+        document.getElementById("date-table-last-month").disabled = false;
+    }
     if (_date.getDay() <= 1) {
         _date.setDate(_date.getDate() - 7);  // 月が月曜日又は火曜日で始まる場合、一週間前から表示
     }
     _date.setDate(_date.getDate() - _date.getDay());  // 日曜日に設定
+
+    let is_beforeToday = false;
+    if (_date.getTime() < new Date().getTime()) is_beforeToday = true;
 
     const dateTable = document.createElement("table");
     document.getElementById("date-table").replaceWith(dateTable);
@@ -187,7 +195,11 @@ function createDateTable(date) {
             const dateButton = document.createElement("button");
             dateTableData.appendChild(dateButton);
             dateButton.appendChild(document.createTextNode(_date.getDate().toString()));
-            if (dateString == TODAY_DATE_STRING) dateButton.style.textDecoration = "underline";
+            if (dateString == TODAY_DATE_STRING) {
+                dateButton.style.textDecoration = "underline";
+                is_beforeToday = false;
+            }
+            if (is_beforeToday) dateButton.disabled = true;
 
             dateButton.addEventListener("click", event => {
                 updateCurrentDate(dateString);
@@ -348,10 +360,12 @@ function updateCurrentDate(dateString = currentDate) {
     const dateObject = dateStringToDate(dateString);
     let displayString = (dateObject.getMonth() + 1) + "月" + dateObject.getDate() + "日" + " (" + DAY_NAME[dateObject.getDay()] + ")";
     document.getElementById("date").textContent = displayString;
+    document.getElementById("last-day").disabled = false;
     if (dateString == TODAY_DATE_STRING) {
         const spanElement = document.createElement("span");
         document.getElementById("date").appendChild(spanElement);
         spanElement.appendChild(document.createTextNode(" ：今日"));
+        document.getElementById("last-day").disabled = true;
     } else if (dateString == TOMORROW_DATE_STRING) {
         const spanElement = document.createElement("span");
         document.getElementById("date").appendChild(spanElement);
