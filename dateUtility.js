@@ -1,7 +1,7 @@
 /**
  * Dateオブジェクトを日付と時刻を表す文字列に変換する関数
- * @param {Date} date 変換する日付
- * @param {boolean} isDate 時刻を00:00:00にするかどうか
+ * @param {Date} date - 変換する日付
+ * @param {boolean} isDate - 時刻を00:00:00にするかどうか
  * @returns 0000-00-00T00:00:00の形で表された日付
  */
 function formatDateTime(date, isDate = false) {
@@ -42,7 +42,7 @@ function formatDateTime(date, isDate = false) {
   
 /**
  * Dateオブジェクトを日付を表す文字列に変換する関数
- * @param {Date} date 変換する日付
+ * @param {Date} date - 変換する日付
  * @returns 0000-00-00の形で表された日付
  */
 function formatDate(date) {
@@ -64,7 +64,7 @@ function formatDate(date) {
 
 /**
  * 日付をDateオブジェクトに変換する関数
- * @param {string} dateString 0000-00-00の形で表された日付
+ * @param {string} dateString - 0000-00-00の形で表された日付
  */
 function dateStringToDate(dateString) {
     return new Date(dateString + "T00:00:00+09:00");
