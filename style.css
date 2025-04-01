@@ -25,6 +25,9 @@ button {
 button:hover {
     background-color: var(--hover-color);
 }
+button:focus-visible {
+    background-color: var(--hover-color);
+}
 button:disabled {
     color: #595959;
     cursor: default;
@@ -55,7 +58,7 @@ dialog {
 }
 
 .gray {
-    color: #999999;
+    color: #595959;
 }
 
 header {
