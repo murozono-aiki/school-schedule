@@ -167,7 +167,7 @@
  */
 /**
  * @typedef {Object} settingsData
- * @property {{[startDate:string]:{startDate:string, beforeScheduleType:string, afterScheduleType:string}}} tableSchedule
+ * @property {{[startDate:string]:{startDate:string, schedules:{[afterScheduleType:string]:{beforeScheduleType:string, afterScheduleType:string}}}}} tableSchedule
  * @property {string[]} scheduleTypeOrder
  * @property {string[]} timeTypeOrder
  */
@@ -186,13 +186,41 @@ let data;
 
 
 /**
+ * クラスの特定の日の時間割を取得する
+ * @param {string} date - 日付（yyyy-MM-dd）
+ * @param {string} className - クラス名
+ */
+function getClassTableFromDate(date, className) {
+  if (!data.classes[className] || !data.classes[className].table) return null;
+  /** @type {classData["table"]} */
+  const result = data.classes[className].table;
+  if (data.settings.tableSchedule) {
+    const dateObject = dateStringToDate(date);
+    const tableScheduleDates = Object.keys(data.settings.tableSchedule);
+    const tableScheduleDateObjects = tableScheduleDates.map(value => dateStringToDate(value));
+    tableScheduleDateObjects.sort((a, b) => a.getTime() - b.getTime());
+    for (let i = 0; i < tableScheduleDateObjects.length; i++) {
+      if (tableScheduleDateObjects[i].getTime() > dateObject.getTime()) break;
+      const tableScheduleObject = data.settings.tableSchedule[dateToString(tableScheduleDateObjects[i])].schedules;
+      for (let afterScheduleType in tableScheduleObject) {
+        let beforeScheduleType = tableScheduleObject[afterScheduleType].beforeScheduleType;
+        result[afterScheduleType] = data.classes[className].table[beforeScheduleType];
+        result[afterScheduleType].scheduleType = afterScheduleType;
+      }
+    }
+  }
+  return result;
+}
+
+/**
  * クラスの1日の教科のリストを取得する
- * @param {string} date 日付（yyyy-MM-dd）
- * @param {string} className クラス名
+ * @param {string} date - 日付（yyyy-MM-dd）
+ * @param {string} className - クラス名
  * @return {{subject:string[],scheduleType:{scheduleType:string,period:number},time:{startTime:string,finishTime:string}}[]}
  */
 function getClassSubjects(date, className) {
   const grade = data.classes[className].grade;
+  const classTable = getClassTableFromDate(date, className);
   let wholeSchedule = {};  // 学校全体での予定
   let generalSchedule = {};  // 学年全体での予定
   let classSchedule = {};  // クラスの予定
@@ -223,9 +251,9 @@ function getClassSubjects(date, className) {
           result[j].subject = [];
           result[j].scheduleType = {};
         }
-      } else if (data.classes[className] && data.classes[className].table) {
-        if (data.classes[className].table[object.scheduleType] && data.classes[className].table[object.scheduleType].schedule) {
-          const schedule = data.classes[className].table[object.scheduleType].schedule;
+      } else if (classTable) {
+        if (classTable[object.scheduleType] && classTable[object.scheduleType].schedule) {
+          const schedule = classTable[object.scheduleType].schedule;
           for (let j = 0; j < schedule.length; j++) {
             if (!result[j]) result[j] = {subject: [], scheduleType: {}, time: {}};
             if (schedule[j]) {
@@ -270,9 +298,9 @@ function getClassSubjects(date, className) {
         if (!result[j]) result[j] = {subject: [], scheduleType: {}, time: {}};
         const scheduleType_ = object.periodScheduleType[j].scheduleType || object.scheduleType;
         const period_ = object.periodScheduleType[j].period || j;
-        if (data.classes[className] && data.classes[className].table) {
-          if (data.classes[className].table[scheduleType_] && data.classes[className].table[scheduleType_].schedule) {
-            const schedule = data.classes[className].table[scheduleType_].schedule;
+        if (classTable) {
+          if (classTable[scheduleType_] && classTable[scheduleType_].schedule) {
+            const schedule = classTable[scheduleType_].schedule;
             if (schedule[period_]) {
               if (schedule[period_].subject) {
                 result[j].subject = schedule[period_].subject;
@@ -308,13 +336,14 @@ function getClassSubjects(date, className) {
 
 /**
  * 1日の教科のリストを取得する
- * @param {string} date 日付（yyyy-MM-dd）
- * @param {string} userId ユーザーid
+ * @param {string} date - 日付（yyyy-MM-dd）
+ * @param {string} userId - ユーザーid
  * @return {{subject:string[],scheduleType:{scheduleType:string,period:number},time:{startTime:string,finishTime:string}}[]}
  */
 function getSubjects(date, userId) {
   const userData = data.user[userId];
   const className = userData.className;
+  const classTable = getClassTableFromDate(date, className);
   let userSchedule = {};  // 個人が設定した予定
   // データから予定を取得
   for (let schedule of data.schedule) {
@@ -351,9 +380,9 @@ function getSubjects(date, userId) {
         result[i].subject = [];
         result[i].scheduleType = {};
       }
-    } else if (data.classes[className] && data.classes[className].table) {
-      if (data.classes[className].table[userSchedule.scheduleType] && data.classes[className].table[userSchedule.scheduleType].schedule) {
-        const schedule = data.classes[className].table[userSchedule.scheduleType].schedule;
+    } else if (classTable) {
+      if (classTable[userSchedule.scheduleType] && classTable[userSchedule.scheduleType].schedule) {
+        const schedule = classTable[userSchedule.scheduleType].schedule;
         for (let i = 0; i < schedule.length; i++) {
           if (!result[i]) result[i] = {subject: [], scheduleType: {}, time: {}};
           if (schedule[i]) {
@@ -398,9 +427,9 @@ function getSubjects(date, userId) {
       if (!result[i]) result[i] = {subject: [], scheduleType: {}, time: {}};
       const scheduleType_ = userSchedule.periodScheduleType[i].scheduleType || userSchedule.scheduleType;
       const period_ = userSchedule.periodScheduleType[i].period || i;
-      if (data.classes[className] && data.classes[className].table) {
-        if (data.classes[className].table[scheduleType_] && data.classes[className].table[scheduleType_].schedule) {
-          const schedule = data.classes[className].table[scheduleType_].schedule;
+      if (classTable) {
+        if (classTable[scheduleType_] && classTable[scheduleType_].schedule) {
+          const schedule = classTable[scheduleType_].schedule;
           if (schedule[period_]) {
             if (schedule[period_].subject) {
               result[i].subject = schedule[period_].subject;
@@ -435,8 +464,8 @@ function getSubjects(date, userId) {
 
 /**
  * 1日の時間割に係るcontentsを取得する
- * @param {string} date 日付（yyyy-MM-dd）
- * @param {string} userId ユーザーid
+ * @param {string} date - 日付（yyyy-MM-dd）
+ * @param {string} userId - ユーザーid
  * @return {{whole:(dateContentData|timesContentData)[], general:(dateContentData|timesContentData)[], class:(dateContentData|timesContentData)[], user:(dateContentData|timesContentData)[]}[]}
  */
 function getOneDayContents(date, userId) {
@@ -642,8 +671,8 @@ function getOneDayContents(date, userId) {
 
 /**
  * 1日の時間割を取得する
- * @param {string} date 日付（yyyy-MM-dd）
- * @param {string} userId ユーザーid
+ * @param {string} date - 日付（yyyy-MM-dd）
+ * @param {string} userId - ユーザーid
  * @return {{schedule:{subject:string,time:string,homework:string[],submit:string[],bring:string[],event:string[],note:string[]}[][],scheduleType:string}}
  */
 function getSchedule(date, userId) {
@@ -752,10 +781,10 @@ function getSchedule(date, userId) {
 
 /**
  * 特定の授業の指定された回数後の授業を返す関数
- * @param {string} subject 授業の名称
- * @param {number} times 何回後か（1以上）
- * @param {string} userId ユーザーid
- * @param {boolean} is_fromUser ユーザーの時間割を元にするかどうか
+ * @param {string} subject - 授業の名称
+ * @param {number} times - 何回後か（1以上）
+ * @param {string} userId - ユーザーid
+ * @param {boolean} is_fromUser - ユーザーの時間割を元にするかどうか
  * @return {{date:string, period:number} | null} 授業の情報（見つからなかった場合はnull）
  */
 function getTimesClass(subject, times, userId, is_fromUser) {
@@ -785,7 +814,7 @@ function getTimesClass(subject, times, userId, is_fromUser) {
 
 /**
  * 教科のリストを返す関数
- * @param {string} userId ユーザーid
+ * @param {string} userId - ユーザーid
  * @return {string[]} 教科のリスト
  */
 function getAllSubjects(userId) {
@@ -812,7 +841,7 @@ function getAllSubjects(userId) {
 
 /**
  * 日付を文字列にして返す関数
- * @param {Date} date 日付
+ * @param {Date} date - 日付
  * @return {string} 日付を示す文字列（yyyy-MM-dd）
  */
 function dateToString(date) {

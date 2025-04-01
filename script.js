@@ -52,7 +52,7 @@ try {
 }
 /**
  * ユーザーid及びURLを求めるダイアログを表示
- * @param {string} [message="ユーザーidとURLを入力してください。"] ダイアログに表示するメッセージ
+ * @param {string} [message="ユーザーidとURLを入力してください。"] - ダイアログに表示するメッセージ
  */
 function showFirstDialog(message = "ユーザーidとURLを入力してください。") {
     document.getElementById("firstDialogMessage").textContent = message;
@@ -102,7 +102,7 @@ function failLoad() {
 }
 /**
  * データを取得
- * @param {(data:schoolScheduleData)} [callback] データを取得した後に実行する関数
+ * @param {(data:schoolScheduleData)} [callback] - データを取得した後に実行する関数
  */
 async function getData(callback) {
     const url = new URL(API_URL);
@@ -148,7 +148,7 @@ if (data) updateCurrentDate();
 
 /**
  * date-tableを作成する関数
- * @param {Date} date カレンダーに含む日
+ * @param {Date} date - カレンダーに含む日
  */
 function createDateTable(date) {
     const _date = new Date(date);
@@ -340,7 +340,7 @@ function updateSchedule() {
 
 /**
  * 日付を更新する関数
- * @param {string} dateString 日付を表す文字列（yyyy-MM-dd）
+ * @param {string} dateString - 日付を表す文字列（yyyy-MM-dd）
  */
 function updateCurrentDate(dateString = currentDate) {
     currentDate = dateString;
