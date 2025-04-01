@@ -95,7 +95,12 @@
  * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
- * @typedef {(scheduleChangeData | contentChangeData | userChangeData | classesChangeData | schoolChangeData)[]} changeData
+ * @typedef {object} settingsChangeData
+ * @property {"settings"} type
+ * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
+ */
+/**
+ * @typedef {(scheduleChangeData | contentChangeData | userChangeData | classesChangeData | schoolChangeData | settingsChangeData)[]} changeData
  */
 
 /**
@@ -154,19 +159,26 @@
  * @typedef {Object} classData
  * @property {string} name
  * @property {number} grade
- * @property {{[key:string]:{scheduleType:string, schedule:{ subject:string[], userSetting?:{[key:string]:{userId:string, subject:string[]}}}[]}}} table
+ * @property {{[scheduleType:string]:{scheduleType:string, schedule:{ subject:string[], userSetting?:{[userId:string]:{userId:string, subject:string[]}}}[]}}} table
  */
 /**
  * @typedef {Object} schoolData
- * @property {{[key:string]:{ timeType:string, time:{startTime:string, finishTime:string}[]}}} timeTable
+ * @property {{[timeType:string]:{timeType:string, time:{startTime:string, finishTime:string}[]}}} timeTable
+ */
+/**
+ * @typedef {Object} settingsData
+ * @property {{[startDate:string]:{startDate:string, beforeScheduleType:string, afterScheduleType:string}}} tableSchedule
+ * @property {string[]} scheduleTypeOrder
+ * @property {string[]} timeTypeOrder
  */
 /**
  * @typedef {Object} schoolScheduleData
  * @property {scheduleData[]} schedule
  * @property {(dateContentData | timesContentData)[]} contents
- * @property {{[key:userData["userId"]]:userData}} user
- * @property {{[key:classData["name"]]:classData}} classes
+ * @property {{[userId:userData["userId"]]:userData}} user
+ * @property {{[name:classData["name"]]:classData}} classes
  * @property {schoolData} school
+ * @property {settingsData} settings
  */
 
 /** @type {schoolScheduleData} */
