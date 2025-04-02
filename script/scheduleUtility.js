@@ -509,7 +509,7 @@ function getOneDayContents(date, userId) {
   function getTimes(date, subject, subjectFunction) {
     let currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
-    if (currentDate.getTime() > new Date(date).getTime()) return 0;
+    if (currentDate.getTime() > dateStringToDate(date).getTime()) return 0;
     let count = 0;
     currentDate.setDate(currentDate.getDate() - 1);
     while (dateToString(currentDate) != date) {

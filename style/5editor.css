@@ -1,0 +1,12 @@
+#schedule-edit fieldset {
+    border: none;
+}
+
+#schedule-edit fieldset legend {
+    font-size: 0.9rem;
+    color: #595959;
+}
+
+#schedule-edit input, #schedule-edit select {
+    margin-right: 1rem;
+}

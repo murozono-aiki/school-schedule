@@ -427,21 +427,12 @@ function updateScheduleEditor() {
     document.getElementById("schedule-edit").replaceWith(scheduleEditElement);
     scheduleEditElement.id = "schedule-edit";
 
-    /** @param {string[]} list */
-    const createList = list => {
-        const listElement = document.createElement("ul");
-        scheduleEditElement.appendChild(listElement);
-        for (let i = 0; i < list.length; i++) {
-            const element = document.createElement("li");
-            listElement.appendChild(element);
-            element.appendChild(document.createTextNode(list[i]));
-        }
-    }
+    const scopeTypes = ["whole", "general", "class", "user"];
 
     const currentSchedules = getOneDaySchedules(currentDate, USER_ID);
     const currentContents = getOneDayContents(currentDate, USER_ID);
 
-    const scheduleTypes = data.settings.scheduleTypeOrder;
+    const scheduleTypes = data.settings.scheduleTypeOrder || [];
     const table = getClassTableFromDate(currentDate, data.user[USER_ID].className);
 
     /**
@@ -465,10 +456,41 @@ function updateScheduleEditor() {
             addSelectOption(selectElement, scheduleTypes[i], scheduleTypes[i]);
         }
     }
+    /**
+     * scopeTypeを選択するselect要素を作成する関数
+     */
+    const createScopeSelect = () => {
+        const selectElement = document.createElement("select");
+        addSelectOption(selectElement, "学校", scopeTypes[0]);
+        addSelectOption(selectElement, "学年", scopeTypes[1]);
+        addSelectOption(selectElement, "クラス", scopeTypes[2]);
+        addSelectOption(selectElement, "ユーザー", scopeTypes[3]);
+        return selectElement;
+    }
 
-    const scheduleTypeLabel = document.createElement("label");
-    scheduleEditElement.appendChild(scheduleTypeLabel);
-    scheduleTypeLabel.appendChild(document.createTextNode("授業："));
+    // scheduleType
+        const scheduleTypeSet = document.createElement("fieldset");
+        scheduleEditElement.appendChild(scheduleTypeSet);
+
+        const scheduleTypeSetLegend = document.createElement("legend");
+        scheduleTypeSet.appendChild(scheduleTypeSetLegend);
+        scheduleTypeSetLegend.appendChild(document.createTextNode("授業"));
+
+        const scheduleTypeLabel = document.createElement("label");
+        scheduleTypeSet.appendChild(scheduleTypeLabel);
+        scheduleTypeLabel.appendChild(document.createTextNode("授業："));
+
+        const scheduleTypeSelect = document.createElement("select");
+        scheduleTypeLabel.appendChild(scheduleTypeSelect);
+        addSelectOption(scheduleTypeSelect, "-", "");
+        addScheduleTypesToSelect(scheduleTypeSelect);
+
+        const scheduleTypeScopeLabel = document.createElement("label");
+        scheduleTypeSet.appendChild(scheduleTypeScopeLabel);
+        scheduleTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
+
+        const scheduleTypeScopeSelect = createScopeSelect();
+        scheduleTypeScopeLabel.appendChild(scheduleTypeScopeSelect);
 }
 
 /**
