@@ -2,6 +2,7 @@ html {
     font-size: 1rem;
     font-family: 'Noto Sans JP', 'BIZ UDGothic', 'メイリオ', 'Meiryo', 'Meiryo UI', sans-serif;
     color: #333333;
+    line-height: 1.5;
 }
 body {
     margin-left: 20px;
