@@ -1,0 +1,17 @@
+#edit-switch-label {
+    padding: 5px;
+    border-radius: 5px;
+    background-color: #cffdfa;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+#edit-switch:checked ~ #edit-switch-label {
+    background-color: #fdd5dc;
+}
+
+#edit-switch:not(:checked) ~ #schedule-edit {
+    display: none;
+}
+#edit-switch:checked ~ #schedule {
+    display: none;
+}

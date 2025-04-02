@@ -6,7 +6,12 @@
     <title>時間割</title>
     <link rel="icon" href="./favicon.ico">
     <link rel="manifest" href="./manifest.json">
-    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="./style/0default.css">
+    <link rel="stylesheet" href="./style/1headers.css">
+    <link rel="stylesheet" href="./style/2calendar.css">
+    <link rel="stylesheet" href="./style/3editSwitch.css">
+    <link rel="stylesheet" href="./style/4viewer.css">
+    <link rel="stylesheet" href="./style/5editor.css">
 </head>
 <body>
     <header>
@@ -28,7 +33,10 @@
         </div>
         <table id="date-table"></table>
     </details>
+    <input type="checkbox" id="edit-switch" aria-controls="schedule schedule-edit">
+    <label for="edit-switch" id="edit-switch-label">編集</label>
     <div id="schedule">読み込み中、、、</div>
+    <div id="schedule-edit"></div>
     <dialog id="firstDialog">
         <p id="firstDialogMessage">
             ユーザーidとURLを入力してください。
@@ -44,8 +52,8 @@
         </form>
     </dialog>
 
-    <script src="./dateUtility.js"></script>
-    <script src="./scheduleUtility.js"></script>
-    <script src="./script.js"></script>
+    <script src="./script/dateUtility.js"></script>
+    <script src="./script/scheduleUtility.js"></script>
+    <script src="./script/script.js"></script>
 </body>
 </html>

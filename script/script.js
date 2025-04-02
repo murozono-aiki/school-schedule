@@ -7,6 +7,14 @@ const DAY_NAME = ["日", "月", "火", "水", "木", "金", "土"];
 let USER_ID = "";
 let API_URL = "";
 
+/**
+ * @type {changeData}
+ */
+let changesData = [];
+let changingDataCount = 0;
+let changingLoadCount = 0;
+
+
 let _dateForInitialize = new Date();
 
 /**
@@ -147,6 +155,60 @@ function getDataAndUpdate() {
 if (data) updateCurrentDate();
 
 /**
+ * 変更を追加する関数
+ * @param  {...(scheduleChangeData | contentChangeData | userChangeData | classesChangeData | schoolChangeData | settingsChangeData)} changes - 変更
+ */
+function addChanges(...changes) {
+    changesData.push(...changes);
+    setChanges();
+}
+/**
+ * 変更を適用してデータを取得
+ */
+async function setChanges() {
+    if (changingLoadCount <= 0 && changesData.length > 0) {
+        const url = new URL(API_URL);
+        url.searchParams.set("id", USER_ID);
+        startLoad();
+        changingLoadCount++;
+        try {
+            changingDataCount = changesData.length;
+            const response = await fetch(url, {method: "POST", body: JSON.stringify(changesData)});
+            if (response.ok) {
+                const responseText = await response.text();
+                localStorage.setItem("school-schedule_data", responseText);
+                const responseData = JSON.parse(responseText);
+                if (!responseData.error) {
+                    data = responseData;
+                    updateSchedule();
+                    changesData.splice(0, changingDataCount);
+                    finishLoad();
+                    setTimeout(setChanges, 500);
+                } else {
+                    if (responseData.message == "INVALID_USER_ID") {
+                        showFirstDialog("ユーザーidが誤っています。");
+                        finishLoad();
+                    } else if (responseData.message == "CHANGES_NOT_SAVED") {
+                        setTimeout(setChanges, 3000);
+                        failLoad();
+                    }
+                }
+                changingLoadCount--;
+            } else {
+                failLoad();
+                changingLoadCount--;
+                if (!data) showFirstDialog("データの取得に失敗しました。URLが正しいか確認してください。");
+            }
+        } catch(error) {
+            failLoad();
+            changingLoadCount--;
+            console.error(error);
+            if (!data) showFirstDialog("データの取得に失敗しました。ネットワーク接続を確認し、URLが正しいか確認してください。");
+        }
+    }
+}
+
+/**
  * date-tableを作成する関数
  * @param {Date} date - カレンダーに含む日
  */
@@ -211,10 +273,17 @@ function createDateTable(date) {
 }
 createDateTable(dateStringToDate(currentDate));
 
+function updateSchedule() {
+    updateScheduleViewer();
+    if (changesData.length == 0) {
+        updateScheduleEditor();
+    }
+}
+
 /**
  * 予定を更新する関数
  */
-function updateSchedule() {
+function updateScheduleViewer() {
     const scheduleElement = document.createElement("div");
     document.getElementById("schedule").replaceWith(scheduleElement);
     scheduleElement.id = "schedule";
@@ -348,6 +417,58 @@ function updateSchedule() {
             }
         }
     }
+}
+
+/**
+ * 予定の編集を更新する関数
+ */
+function updateScheduleEditor() {
+    const scheduleEditElement = document.createElement("div");
+    document.getElementById("schedule-edit").replaceWith(scheduleEditElement);
+    scheduleEditElement.id = "schedule-edit";
+
+    /** @param {string[]} list */
+    const createList = list => {
+        const listElement = document.createElement("ul");
+        scheduleEditElement.appendChild(listElement);
+        for (let i = 0; i < list.length; i++) {
+            const element = document.createElement("li");
+            listElement.appendChild(element);
+            element.appendChild(document.createTextNode(list[i]));
+        }
+    }
+
+    const currentSchedules = getOneDaySchedules(currentDate, USER_ID);
+    const currentContents = getOneDayContents(currentDate, USER_ID);
+
+    const scheduleTypes = data.settings.scheduleTypeOrder;
+    const table = getClassTableFromDate(currentDate, data.user[USER_ID].className);
+
+    /**
+     * select要素にoption要素を追加する関数
+     * @param {HTMLSelectElement} selectElement - option要素を追加する要素
+     * @param {string} text - option要素のtextContent
+     * @param {string} value - option要素のvalue属性
+     */
+    const addSelectOption = (selectElement, text, value) => {
+        const optionElement = document.createElement("option");
+        selectElement.appendChild(optionElement);
+        optionElement.appendChild(document.createTextNode(text));
+        optionElement.value = value;
+    };
+    /**
+     * select要素にscheduleTypeを追加する関数
+     * @param {HTMLSelectElement} selectElement - option要素を追加する要素
+     */
+    const addScheduleTypesToSelect = (selectElement) => {
+        for (let i = 0; i < scheduleTypes.length; i++) {
+            addSelectOption(selectElement, scheduleTypes[i], scheduleTypes[i]);
+        }
+    }
+
+    const scheduleTypeLabel = document.createElement("label");
+    scheduleEditElement.appendChild(scheduleTypeLabel);
+    scheduleTypeLabel.appendChild(document.createTextNode("授業："));
 }
 
 /**
