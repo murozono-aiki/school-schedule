@@ -10,3 +10,11 @@
 #schedule-edit input, #schedule-edit select {
     margin-right: 1rem;
 }
+
+#schedule-edit label {
+    white-space: nowrap;
+}
+
+#schedule-edit input[type="number"] {
+    width: 3em;
+}

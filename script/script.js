@@ -427,6 +427,9 @@ function updateScheduleEditor() {
     document.getElementById("schedule-edit").replaceWith(scheduleEditElement);
     scheduleEditElement.id = "schedule-edit";
 
+    const scheduleEditForm = document.createElement("form");
+    scheduleEditElement.appendChild(scheduleEditForm);
+
     const scopeTypes = ["whole", "general", "class", "user"];
 
     const currentSchedules = getOneDaySchedules(currentDate, USER_ID);
@@ -480,7 +483,7 @@ function updateScheduleEditor() {
 
     // scheduleType
         const scheduleTypeSet = document.createElement("fieldset");
-        scheduleEditElement.appendChild(scheduleTypeSet);
+        scheduleEditForm.appendChild(scheduleTypeSet);
 
         const scheduleTypeSetLegend = document.createElement("legend");
         scheduleTypeSet.appendChild(scheduleTypeSetLegend);
@@ -492,6 +495,7 @@ function updateScheduleEditor() {
 
         const scheduleTypeSelect = document.createElement("select");
         scheduleTypeLabel.appendChild(scheduleTypeSelect);
+        scheduleTypeSelect.id = "schedule-type-select";
         addSelectOption(scheduleTypeSelect, "-", "");
         addScheduleTypesToSelect(scheduleTypeSelect);
 
@@ -501,10 +505,11 @@ function updateScheduleEditor() {
 
         const scheduleTypeScopeSelect = createScopeSelect();
         scheduleTypeScopeLabel.appendChild(scheduleTypeScopeSelect);
+        scheduleTypeScopeSelect.id = "schedule-type-scope-select";
 
     // timeType
         const timeTypeSet = document.createElement("fieldset");
-        scheduleEditElement.appendChild(timeTypeSet);
+        scheduleEditForm.appendChild(timeTypeSet);
 
         const timeTypeSetLegend = document.createElement("legend");
         timeTypeSet.appendChild(timeTypeSetLegend);
@@ -515,6 +520,7 @@ function updateScheduleEditor() {
         timeTypeLabel.appendChild(document.createTextNode("時程："));
 
         const timeTypeSelect = document.createElement("select");
+        timeTypeSelect.id = "time-type-select";
         timeTypeLabel.appendChild(timeTypeSelect);
         addSelectOption(timeTypeSelect, "-", "");
         addTimeTypesToSelect(timeTypeSelect);
@@ -525,6 +531,69 @@ function updateScheduleEditor() {
 
         const timeTypeScopeSelect = createScopeSelect();
         timeTypeScopeLabel.appendChild(timeTypeScopeSelect);
+        timeTypeScopeSelect.id = "time-type-scope-select";
+
+    // 授業
+        /**
+         * 時限の要素が格納された配列
+         * @type {HTMLElement[]}
+         */
+        let periodElements = [];
+        const createPeriodElements = period => {
+            const sectionElement = document.createElement("section");
+            periodElements[period - 1] = sectionElement;
+            
+            const header = document.createElement("h3");
+            sectionElement.appendChild(header);
+            header.appendChild(document.createTextNode(period + "時限目"));
+
+            const periodScheduleTypeSet = document.createElement("fieldset");
+            sectionElement.appendChild(periodScheduleTypeSet);
+
+            const periodScheduleTypeSetLegend = document.createElement("legend");
+            periodScheduleTypeSet.appendChild(periodScheduleTypeSetLegend);
+            periodScheduleTypeSetLegend.appendChild(document.createTextNode("授業"));
+
+            const periodScheduleTypeLabel = document.createElement("label");
+            periodScheduleTypeSet.appendChild(periodScheduleTypeLabel);
+            periodScheduleTypeLabel.appendChild(document.createTextNode("授業："));
+
+            const periodScheduleTypeSelect = document.createElement("select");
+            periodScheduleTypeLabel.appendChild(periodScheduleTypeSelect);
+            periodScheduleTypeSelect.id = `period-${period}-schedule-type-select`;
+            addSelectOption(periodScheduleTypeSelect, "-", "");
+            addScheduleTypesToSelect(periodScheduleTypeSelect);
+
+            const periodScheduleTypePeriodLabel = document.createElement("label");
+            periodScheduleTypeSet.appendChild(periodScheduleTypePeriodLabel);
+            periodScheduleTypePeriodLabel.appendChild(document.createTextNode("時限："));
+
+            const periodScheduleTypePeriodInput = document.createElement("input");
+            periodScheduleTypePeriodLabel.appendChild(periodScheduleTypePeriodInput);
+            periodScheduleTypePeriodInput.id = `period-${period}-schedule-type-period-input`;
+            periodScheduleTypePeriodInput.type = "number";
+            periodScheduleTypePeriodInput.min = "0";
+
+            const periodScheduleTypeScopeLabel = document.createElement("label");
+            periodScheduleTypeSet.appendChild(periodScheduleTypeScopeLabel);
+            periodScheduleTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
+
+            const periodScheduleTypeScopeSelect = createScopeSelect();
+            periodScheduleTypeScopeLabel.appendChild(periodScheduleTypeScopeSelect);
+            periodScheduleTypeScopeSelect.id = `period-${period}-schedule-type-scope-input`;
+
+            const periodSubjectElementsList = document.createElement("ul");
+            sectionElement.appendChild(periodSubjectElementsList);
+            periodSubjectElementsList.classList.add("subject-list");
+
+            const periodAddButton = document.createElement("button");
+            sectionElement.appendChild(periodAddButton);
+            periodAddButton.type = "button";
+            periodAddButton.appendChild(document.createTextNode("教科を追加"));
+
+            return sectionElement;
+        };
+        scheduleEditForm.appendChild(createPeriodElements(1));
 }
 
 /**
