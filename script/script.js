@@ -434,6 +434,7 @@ function updateScheduleEditor() {
 
     const scheduleTypes = data.settings.scheduleTypeOrder || [];
     const table = getClassTableFromDate(currentDate, data.user[USER_ID].className);
+    const timeTypes = data.settings.timeTypeOrder || [];
 
     /**
      * select要素にoption要素を追加する関数
@@ -454,6 +455,15 @@ function updateScheduleEditor() {
     const addScheduleTypesToSelect = (selectElement) => {
         for (let i = 0; i < scheduleTypes.length; i++) {
             addSelectOption(selectElement, scheduleTypes[i], scheduleTypes[i]);
+        }
+    }
+    /**
+     * select要素にtimeTypeを追加する関数
+     * @param {HTMLSelectElement} selectElement - option要素を追加する要素
+     */
+    const addTimeTypesToSelect = (selectElement) => {
+        for (let i = 0; i < timeTypes.length; i++) {
+            addSelectOption(selectElement, timeTypes[i], timeTypes[i]);
         }
     }
     /**
@@ -491,6 +501,30 @@ function updateScheduleEditor() {
 
         const scheduleTypeScopeSelect = createScopeSelect();
         scheduleTypeScopeLabel.appendChild(scheduleTypeScopeSelect);
+
+    // timeType
+        const timeTypeSet = document.createElement("fieldset");
+        scheduleEditElement.appendChild(timeTypeSet);
+
+        const timeTypeSetLegend = document.createElement("legend");
+        timeTypeSet.appendChild(timeTypeSetLegend);
+        timeTypeSetLegend.appendChild(document.createTextNode("時程"));
+
+        const timeTypeLabel = document.createElement("label");
+        timeTypeSet.appendChild(timeTypeLabel);
+        timeTypeLabel.appendChild(document.createTextNode("時程："));
+
+        const timeTypeSelect = document.createElement("select");
+        timeTypeLabel.appendChild(timeTypeSelect);
+        addSelectOption(timeTypeSelect, "-", "");
+        addTimeTypesToSelect(timeTypeSelect);
+
+        const timeTypeScopeLabel = document.createElement("label");
+        timeTypeSet.appendChild(timeTypeScopeLabel);
+        timeTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
+
+        const timeTypeScopeSelect = createScopeSelect();
+        timeTypeScopeLabel.appendChild(timeTypeScopeSelect);
 }
 
 /**
