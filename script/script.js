@@ -596,7 +596,34 @@ function updateScheduleEditor() {
         scheduleEditForm.appendChild(createPeriodElements(1));
 }
 
-function updateScheduleEditDialog() {
+document.getElementById("schedule-edit-scope-type").addEventListener("change", event => {
+    const value = document.getElementById("schedule-edit-scope-type").value;
+    if (value == "whole" || value == "user") {
+        document.getElementById("schedule-edit-scope-grade-container").style.display = "none";
+        document.getElementById("schedule-edit-scope-class-container").style.display = "none";
+    } else if (value == "general") {
+        document.getElementById("schedule-edit-scope-grade-container").style.display = "";
+        document.getElementById("schedule-edit-scope-class-container").style.display = "none";
+    } else if (value == "class") {
+        document.getElementById("schedule-edit-scope-grade-container").style.display = "none";
+        document.getElementById("schedule-edit-scope-class-container").style.display = "";
+    }
+});
+
+/**
+ * 時間割を編集するダイアログを更新する関数
+ * @param {{editType?:("schedule-type"|"time-type"|"period-schedule-type"|"subject"|"time"), scopeType?:("whole"|"general"|"class"|"user"), scopeName?:string, date?:string}} [initialValue]
+ */
+function updateScheduleEditDialog(initialValue = {}) {
+    if (initialValue.editType) {
+        document.getElementById("schedule-edit-type").value = initialValue.editType;
+    }
+    if (initialValue.scopeType) {
+        document.getElementById("schedule-edit-scope-type").value = initialValue.scopeType;
+    } else {
+        document.getElementById("schedule-edit-scope-type").value = "class";
+    }
+    document.getElementById("schedule-edit-scope-type").dispatchEvent(new Event("change"));
     // 適用範囲（学年）
     {
         const scheduleEditScopeGradeSelect = document.getElementById("schedule-edit-scope-grade");
@@ -616,7 +643,11 @@ function updateScheduleEditDialog() {
             optionElement.value = gradeString;
             optionElement.appendChild(document.createTextNode(gradeString + "年"));
         }
-        scheduleEditScopeGradeSelect.value = data.user[USER_ID].grade.toString();
+        if (initialValue.scopeName) {
+            scheduleEditScopeGradeSelect.value = initialValue.scopeName;
+        } else {
+            scheduleEditScopeGradeSelect.value = data.user[USER_ID].grade.toString();
+        }
     }
     // 適用範囲（クラス）
     {
@@ -644,7 +675,11 @@ function updateScheduleEditDialog() {
             optionElement.value = className;
             optionElement.appendChild(document.createTextNode(className));
         }
-        scheduleEditScopeClassSelect.value = data.user[USER_ID].className;
+        if (initialValue.scopeName) {
+            scheduleEditScopeClassSelect.value = initialValue.scopeName;
+        } else {
+            scheduleEditScopeClassSelect.value = data.user[USER_ID].className;
+        }
     }
     // 日付
     document.getElementById("schedule-edit-date").min = TODAY_DATE_STRING;

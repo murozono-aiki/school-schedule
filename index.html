@@ -20,7 +20,7 @@
         </div>
         <div>
             <span id="load" role="status"></span>
-            <button type="button" id="show-menu">ﾒﾆｭｰ</button>
+            <button type="button" id="show-menu" style="display: none;">ﾒﾆｭｰ</button>
         </div>
     </header>
     <h2 id="date">0月0日 (日)</h2>
@@ -65,17 +65,17 @@
             <div>
                 <label for="schedule-edit-scope-type">適用範囲：</label>
                 <select id="schedule-edit-scope-type">
-                    <option value="schedule-type">学校</option>
-                    <option value="time-type">学年</option>
-                    <option value="subject">クラス</option>
-                    <option value="time">ユーザー</option>
+                    <option value="whole">学校</option>
+                    <option value="general">学年</option>
+                    <option value="class">クラス</option>
+                    <option value="user">ユーザー</option>
                 </select>
             </div>
-            <div>
+            <div id="schedule-edit-scope-grade-container">
                 <label for="schedule-edit-scope-grade">適用範囲の詳細：</label>
                 <select id="schedule-edit-scope-grade"></select>
             </div>
-            <div>
+            <div id="schedule-edit-scope-class-container">
                 <label for="schedule-edit-scope-class">適用範囲の詳細：</label>
                 <select id="schedule-edit-scope-class"></select>
             </div>
