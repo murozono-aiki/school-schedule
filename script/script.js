@@ -596,6 +596,45 @@ function updateScheduleEditor() {
         scheduleEditForm.appendChild(createPeriodElements(1));
 }
 
+document.getElementById("schedule-edit-type").addEventListener("change", event => {
+    const value = document.getElementById("schedule-edit-type").value;
+    if (value == "schedule-type") {
+        document.getElementById("schedule-edit-period-container").style.display = "none";
+        document.getElementById("schedule-edit-schedule-type-field").style.display = "";
+        document.getElementById("schedule-edit-time-type-field").style.display = "none";
+        document.getElementById("schedule-edit-period-schedule-type-field").style.display = "none";
+        document.getElementById("schedule-edit-subject-field").style.display = "none";
+        document.getElementById("schedule-edit-time-field").style.display = "none";
+    } else if (value == "time-type") {
+        document.getElementById("schedule-edit-period-container").style.display = "none";
+        document.getElementById("schedule-edit-schedule-type-field").style.display = "none";
+        document.getElementById("schedule-edit-time-type-field").style.display = "";
+        document.getElementById("schedule-edit-period-schedule-type-field").style.display = "none";
+        document.getElementById("schedule-edit-subject-field").style.display = "none";
+        document.getElementById("schedule-edit-time-field").style.display = "none";
+    } else if (value == "period-schedule-type") {
+        document.getElementById("schedule-edit-period-container").style.display = "";
+        document.getElementById("schedule-edit-schedule-type-field").style.display = "none";
+        document.getElementById("schedule-edit-time-type-field").style.display = "none";
+        document.getElementById("schedule-edit-period-schedule-type-field").style.display = "";
+        document.getElementById("schedule-edit-subject-field").style.display = "none";
+        document.getElementById("schedule-edit-time-field").style.display = "none";
+    } else if (value == "subject") {
+        document.getElementById("schedule-edit-period-container").style.display = "";
+        document.getElementById("schedule-edit-schedule-type-field").style.display = "none";
+        document.getElementById("schedule-edit-time-type-field").style.display = "none";
+        document.getElementById("schedule-edit-period-schedule-type-field").style.display = "none";
+        document.getElementById("schedule-edit-subject-field").style.display = "";
+        document.getElementById("schedule-edit-time-field").style.display = "none";
+    } else if (value == "time") {
+        document.getElementById("schedule-edit-period-container").style.display = "";
+        document.getElementById("schedule-edit-schedule-type-field").style.display = "none";
+        document.getElementById("schedule-edit-time-type-field").style.display = "none";
+        document.getElementById("schedule-edit-period-schedule-type-field").style.display = "none";
+        document.getElementById("schedule-edit-subject-field").style.display = "none";
+        document.getElementById("schedule-edit-time-field").style.display = "";
+    }
+});
 document.getElementById("schedule-edit-scope-type").addEventListener("change", event => {
     const value = document.getElementById("schedule-edit-scope-type").value;
     if (value == "whole" || value == "user") {
@@ -609,15 +648,26 @@ document.getElementById("schedule-edit-scope-type").addEventListener("change", e
         document.getElementById("schedule-edit-scope-class-container").style.display = "";
     }
 });
-
+document.getElementById("schedule-edit-subject-checkbox").addEventListener("change", event => {
+    if (document.getElementById("schedule-edit-subject-checkbox").checked) {
+        document.getElementById("schedule-edit-subject-select-container").style.display = "";
+        document.getElementById("schedule-edit-subject-input-container").style.display = "none";
+    } else {
+        document.getElementById("schedule-edit-subject-select-container").style.display = "none";
+        document.getElementById("schedule-edit-subject-input-container").style.display = "";
+    }
+});
 /**
  * 時間割を編集するダイアログを更新する関数
  * @param {{editType?:("schedule-type"|"time-type"|"period-schedule-type"|"subject"|"time"), scopeType?:("whole"|"general"|"class"|"user"), scopeName?:string, date?:string}} [initialValue]
  */
 function updateScheduleEditDialog(initialValue = {}) {
+    // 編集項目
     if (initialValue.editType) {
         document.getElementById("schedule-edit-type").value = initialValue.editType;
     }
+    document.getElementById("schedule-edit-type").dispatchEvent(new Event("change"));
+    // 適用範囲（種類）
     if (initialValue.scopeType) {
         document.getElementById("schedule-edit-scope-type").value = initialValue.scopeType;
     } else {
@@ -684,6 +734,9 @@ function updateScheduleEditDialog(initialValue = {}) {
     // 日付
     document.getElementById("schedule-edit-date").min = TODAY_DATE_STRING;
     document.getElementById("schedule-edit-date").value = currentDate;
+    // 教科 > チェックボックス
+    document.getElementById("schedule-edit-subject-checkbox").checked = true;
+    document.getElementById("schedule-edit-subject-checkbox").dispatchEvent(new Event("change"));
 }
 
 function updateContentsEditDialog() {}

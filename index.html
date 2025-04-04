@@ -20,7 +20,7 @@
         </div>
         <div>
             <span id="load" role="status"></span>
-            <button type="button" id="show-menu" style="display: none;">ﾒﾆｭｰ</button>
+            <button type="button" id="show-menu">ﾒﾆｭｰ</button>
         </div>
     </header>
     <h2 id="date">0月0日 (日)</h2>
@@ -82,6 +82,56 @@
             <div>
                 <label for="schedule-edit-date">日付：</label>
                 <input type="date" id="schedule-edit-date">
+            </div>
+            <div id="schedule-edit-period-container">
+                <label for="schedule-edit-period">時限：</label>
+                <select id="schedule-edit-period"></select>
+            </div>
+            <div id="schedule-edit-schedule-type-field">
+                <div>
+                    <label for="schedule-edit-schedule-type">時間割：</label>
+                    <select id="schedule-edit-schedule-type"></select>
+                </div>
+            </div>
+            <div id="schedule-edit-time-type-field">
+                <div>
+                    <label for="schedule-edit-time-type">時程：</label>
+                    <select id="schedule-edit-time-type"></select>
+                </div>
+            </div>
+            <div id="schedule-edit-period-schedule-type-field">
+                <div>
+                    <label for="schedule-edit-period-schedule-type">時間割：</label>
+                    <select id="schedule-edit-period-schedule-type"></select>
+                </div>
+                <div>
+                    <label for="schedule-edit-period-schedule-type-period">時間割の時限：</label>
+                    <select id="schedule-edit-period-schedule-type-period"></select>
+                </div>
+            </div>
+            <div id="schedule-edit-subject-field">
+                <div>
+                    <label for="schedule-edit-subject-checkbox">時間割から教科を選択：</label>
+                    <input type="checkbox" id="schedule-edit-subject-checkbox">
+                </div>
+                <div id="schedule-edit-subject-select-container">
+                    <label for="schedule-edit-subject-select">教科：</label>
+                    <select id="schedule-edit-subject-select"></select>
+                </div>
+                <div id="schedule-edit-subject-input-container">
+                    <label for="schedule-edit-subject-input">教科：</label>
+                    <input type="text" id="schedule-edit-subject-input">
+                </div>
+            </div>
+            <div id="schedule-edit-time-field">
+                <div>
+                    <label for="schedule-edit-time-start">開始時刻：</label>
+                    <input type="time" id="schedule-edit-time-start">
+                </div>
+                <div>
+                    <label for="schedule-edit-time-finish">終了時刻：</label>
+                    <input type="time" id="schedule-edit-time-finish">
+                </div>
             </div>
             <div class="form-submit">
                 <button type="submit">保存</button>
