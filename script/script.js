@@ -596,6 +596,55 @@ function updateScheduleEditor() {
         scheduleEditForm.appendChild(createPeriodElements(1));
 }
 
+function updateScheduleEditDialog() {
+    // 適用範囲（学年）
+    {
+        const grades = [];
+        for (let className in data.classes) {
+            const grade = data.classes[className].grade;
+            if (!grades.includes(grade)) grades.push(grade);
+        }
+        grades.sort();
+        for (let i = 0; i < grades.length; i++) {
+            const gradeString = grades[i].toString();
+            const optionElement = document.createElement("option");
+            document.getElementById("schedule-edit-scope-grade").appendChild(optionElement);
+            optionElement.value = gradeString;
+            optionElement.appendChild(document.createTextNode(gradeString + "年"));
+        }
+        document.getElementById("schedule-edit-scope-grade").value = data.user[USER_ID].grade.toString();
+    }
+    // 適用範囲（クラス）
+    {
+        const classes = [];
+        for (let className in data.classes) {
+            classes.push(className);
+        }
+        const collator = new Intl.Collator("ja");
+        classes.sort((a, b) => {
+            const gradeA = data.classes[a].grade;
+            const gradeB = data.classes[b].grade;
+            if (gradeA != gradeB) {
+                return gradeA - gradeB;
+            }
+            return collator.compare(a, b);
+        });
+        for (let i = 0; i < classes.length; i++) {
+            const className = classes[i];
+            const optionElement = document.createElement("option");
+            document.getElementById("schedule-edit-scope-class").appendChild(optionElement);
+            optionElement.value = className;
+            optionElement.appendChild(document.createTextNode(className));
+        }
+        document.getElementById("schedule-edit-scope-class").value = data.user[USER_ID].className;
+    }
+    // 日付
+    document.getElementById("schedule-edit-date").min = TODAY_DATE_STRING;
+    document.getElementById("schedule-edit-date").value = currentDate;
+}
+
+function updateContentsEditDialog() {}
+
 /**
  * 日付を更新する関数
  * @param {string} dateString - 日付を表す文字列（yyyy-MM-dd）
@@ -643,6 +692,29 @@ document.getElementById("date-table-last-month").addEventListener("click", event
 });
 document.getElementById("date-table-next-month").addEventListener("click", event => {
     createDateTable(new Date(dateTableYear, dateTableMonth + 1));
+});
+
+document.getElementById("show-menu").addEventListener("click", event => {
+    document.getElementById("menu").showModal();
+});
+document.getElementById("menu-dialog-close").addEventListener("click", event => {
+    document.getElementById("menu").close();
+});
+document.getElementById("schedule-edit-dialog-menu").addEventListener("click", event => {
+    document.getElementById("schedule-edit-dialog").showModal();
+    updateScheduleEditDialog();
+});
+document.getElementById("contsnts-edit-dialog-menu").addEventListener("click", event => {
+    document.getElementById("contsnts-edit-dialog").showModal();
+    updateContentsEditDialog();
+});
+
+document.getElementById("schedule-edit-dialog-close").addEventListener("click", event => {
+    document.getElementById("schedule-edit-dialog").close();
+});
+
+document.getElementById("contsnts-edit-dialog-close").addEventListener("click", event => {
+    document.getElementById("contsnts-edit-dialog").close();
 });
 
 

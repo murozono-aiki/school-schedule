@@ -15,28 +15,105 @@
 </head>
 <body>
     <header>
-        <h1>時間割</h1>
-        <span id="load" role="status"></span>
+        <div>
+            <h1>時間割</h1>
+        </div>
+        <div>
+            <span id="load" role="status"></span>
+            <button type="button" id="show-menu">ﾒﾆｭｰ</button>
+        </div>
     </header>
     <h2 id="date">0月0日 (日)</h2>
     <div id="toolbar">
-        <button id="last-day">前の日</button>
-        <button id="today">今日</button>
-        <button id="next-day">次の日</button>
+        <button type="button" id="last-day">前の日</button>
+        <button type="button" id="today">今日</button>
+        <button type="button" id="next-day">次の日</button>
     </div>
     <details>
         <summary>カレンダー</summary>
         <div id="date-table-header">
-            <button id="date-table-last-month">前の月</button>
+            <button type="button" id="date-table-last-month">前の月</button>
             <span id="date-table-month">0月</span>
-            <button id="date-table-next-month">次の月</button>
+            <button type="button" id="date-table-next-month">次の月</button>
         </div>
         <table id="date-table"></table>
     </details>
-    <input type="checkbox" id="edit-switch" aria-controls="schedule schedule-edit">
-    <label for="edit-switch" id="edit-switch-label">編集</label>
+    <input type="checkbox" id="edit-switch" aria-controls="schedule schedule-edit" style="display: none;">
+    <label for="edit-switch" id="edit-switch-label"  style="display: none;">編集</label>
     <div id="schedule">読み込み中、、、</div>
     <div id="schedule-edit"></div>
+
+    <dialog id="schedule-edit-dialog">
+        <div class="form-submit">
+            <button type="button" id="schedule-edit-dialog-close">閉じる</button>
+        </div>
+        <form method="dialog" id="schedule-edit-form">
+            <div>
+                <label for="schedule-edit-type">編集項目：</label>
+                <select id="schedule-edit-type">
+                    <optgroup label="一日全体">
+                        <option value="schedule-type">時間割</option>
+                        <option value="time-type">時程</option>
+                    </optgroup>
+                    <optgroup label="時限ごと">
+                        <option value="period-schedule-type">時間割</option>
+                        <option value="subject">教科</option>
+                        <option value="time">時刻</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div>
+                <label for="schedule-edit-scope-type">適用範囲：</label>
+                <select id="schedule-edit-scope-type">
+                    <option value="schedule-type">学校</option>
+                    <option value="time-type">学年</option>
+                    <option value="subject">クラス</option>
+                    <option value="time">ユーザー</option>
+                </select>
+            </div>
+            <div>
+                <label for="schedule-edit-scope-grade">適用範囲の詳細：</label>
+                <select id="schedule-edit-scope-grade"></select>
+            </div>
+            <div>
+                <label for="schedule-edit-scope-class">適用範囲の詳細：</label>
+                <select id="schedule-edit-scope-class"></select>
+            </div>
+            <div>
+                <label for="schedule-edit-date">日付：</label>
+                <input type="date" id="schedule-edit-date">
+            </div>
+            <div class="form-submit">
+                <button type="submit">保存</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="contsnts-edit-dialog">
+        <div class="form-submit">
+            <button type="button" id="contsnts-edit-dialog-close">閉じる</button>
+        </div>
+        <form method="dialog" id="schedule-edit-form">
+            <div>
+                <label for="contsnts-edit-type">編集項目：</label>
+                <select id="contsnts-edit-type">
+                    <optgroup label="一日全体">
+                        <option value="schedule-type">時間割</option>
+                        <option value="time-type">時程</option>
+                    </optgroup>
+                    <optgroup label="時限ごと">
+                        <option value="period-schedule-type">時間割</option>
+                        <option value="subject">教科</option>
+                        <option value="time">時刻</option>
+                    </optgroup>
+                </select>
+            </div>
+            <div class="form-submit">
+                <button type="submit">保存</button>
+            </div>
+        </form>
+    </dialog>
+
     <dialog id="firstDialog">
         <p id="firstDialogMessage">
             ユーザーidとURLを入力してください。
@@ -50,6 +127,33 @@
                 <button type="submit">決定</button>
             </div>
         </form>
+    </dialog>
+
+    <dialog id="menu">
+        <div class="form-submit">
+            <button type="button" id="menu-dialog-close">閉じる</button>
+        </div>
+        <ul>
+            <li>
+                編集
+                <ul>
+                    <li>
+                        <button type="button" id="schedule-edit-dialog-menu">時間割</button>
+                    </li>
+                    <li>
+                        <button type="button" id="contsnts-edit-dialog-menu">授業内容</button>
+                    </li>
+                </ul>
+            </li>
+            <!--li>
+                全般設定
+                <ul>
+                    <li>
+                        <a href="./settings/">全般設定ページに移動</a>
+                    </li>
+                </ul>
+            </li-->
+        </ul>
     </dialog>
 
     <script src="./script/dateUtility.js"></script>

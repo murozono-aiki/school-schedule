@@ -9,7 +9,7 @@ body {
     margin-right: 20px;
     margin-bottom: 30px;
 }
-button, input, textarea {
+button, input, textarea, select {
     font-size: inherit;
     font-family: inherit;
     color: inherit;
@@ -30,7 +30,7 @@ button:focus-visible {
     background-color: var(--hover-color);
 }
 button:disabled {
-    color: #595959;
+    opacity: 0.8;
     cursor: default;
 }
 button:disabled:hover {
