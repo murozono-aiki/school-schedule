@@ -599,6 +599,10 @@ function updateScheduleEditor() {
 function updateScheduleEditDialog() {
     // 適用範囲（学年）
     {
+        const scheduleEditScopeGradeSelect = document.getElementById("schedule-edit-scope-grade");
+        while (scheduleEditScopeGradeSelect.firstChild) {
+            scheduleEditScopeGradeSelect.removeChild(scheduleEditScopeGradeSelect.firstChild);
+        }
         const grades = [];
         for (let className in data.classes) {
             const grade = data.classes[className].grade;
@@ -608,14 +612,18 @@ function updateScheduleEditDialog() {
         for (let i = 0; i < grades.length; i++) {
             const gradeString = grades[i].toString();
             const optionElement = document.createElement("option");
-            document.getElementById("schedule-edit-scope-grade").appendChild(optionElement);
+            scheduleEditScopeGradeSelect.appendChild(optionElement);
             optionElement.value = gradeString;
             optionElement.appendChild(document.createTextNode(gradeString + "年"));
         }
-        document.getElementById("schedule-edit-scope-grade").value = data.user[USER_ID].grade.toString();
+        scheduleEditScopeGradeSelect.value = data.user[USER_ID].grade.toString();
     }
     // 適用範囲（クラス）
     {
+        const scheduleEditScopeClassSelect = document.getElementById("schedule-edit-scope-class");
+        while (scheduleEditScopeClassSelect.firstChild) {
+            scheduleEditScopeClassSelect.removeChild(scheduleEditScopeClassSelect.firstChild);
+        }
         const classes = [];
         for (let className in data.classes) {
             classes.push(className);
@@ -632,11 +640,11 @@ function updateScheduleEditDialog() {
         for (let i = 0; i < classes.length; i++) {
             const className = classes[i];
             const optionElement = document.createElement("option");
-            document.getElementById("schedule-edit-scope-class").appendChild(optionElement);
+            scheduleEditScopeClassSelect.appendChild(optionElement);
             optionElement.value = className;
             optionElement.appendChild(document.createTextNode(className));
         }
-        document.getElementById("schedule-edit-scope-class").value = data.user[USER_ID].className;
+        scheduleEditScopeClassSelect.value = data.user[USER_ID].className;
     }
     // 日付
     document.getElementById("schedule-edit-date").min = TODAY_DATE_STRING;
