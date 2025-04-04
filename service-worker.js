@@ -2,10 +2,6 @@ const cacheName = "SchoolSchedulePWA";
 
 const appShellFiles = [
     "./",
-    "./script.js",
-    "./dateUtility.js",
-    "./scheduleUtility.js",
-    "./style.css",
     "./favicon.ico",
     "./icons/icon (512).png",
 ];

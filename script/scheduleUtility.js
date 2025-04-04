@@ -213,6 +213,43 @@ function getClassTableFromDate(date, className) {
 }
 
 /**
+ * 1日の時間割に係るscheduleを取得する
+ * @param {string} date - 日付（yyyy-MM-dd）
+ * @param {string} userId - ユーザーid
+ * @return {{whole:scheduleData, general:scheduleData, class:scheduleData, user:scheduleData}}
+ */
+function getOneDaySchedules(date, userId) {
+  const userData = data.user[userId];
+  const grade = userData.grade;
+  const className = userData.className;
+  let wholeSchedule = {};  // 学校全体での予定
+  let generalSchedule = {};  // 学年全体での予定
+  let classSchedule = {};  // クラスの予定
+  let userSchedule = {};  // 個人が設定した予定
+  // データから予定を取得
+  for (let schedule of data.schedule) {
+    if (!schedule) continue;
+    if (schedule.date == date) {
+      if (schedule.scope.scopeType == "whole") {
+        wholeSchedule = data.schedule[schedule.key];
+      } else if (schedule.scope.scopeType == "general" && schedule.scope.name == grade) {
+        generalSchedule = data.schedule[schedule.key];
+      } else if (schedule.scope.scopeType == "class" && schedule.scope.name == className) {
+        classSchedule = data.schedule[schedule.key];
+      } else if (schedule.scope.scopeType == "user" && schedule.scope.name == userId) {
+        userSchedule = data.schedule[schedule.key];
+      }
+    }
+  }
+  return {
+    whole: wholeSchedule,
+    general: generalSchedule,
+    class: classSchedule,
+    user: userSchedule
+  };
+}
+
+/**
  * クラスの1日の教科のリストを取得する
  * @param {string} date - 日付（yyyy-MM-dd）
  * @param {string} className - クラス名
@@ -472,7 +509,7 @@ function getOneDayContents(date, userId) {
   function getTimes(date, subject, subjectFunction) {
     let currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
-    if (currentDate.getTime() > new Date(date).getTime()) return 0;
+    if (currentDate.getTime() > dateStringToDate(date).getTime()) return 0;
     let count = 0;
     currentDate.setDate(currentDate.getDate() - 1);
     while (dateToString(currentDate) != date) {

@@ -7,6 +7,14 @@ const DAY_NAME = ["日", "月", "火", "水", "木", "金", "土"];
 let USER_ID = "";
 let API_URL = "";
 
+/**
+ * @type {changeData}
+ */
+let changesData = [];
+let changingDataCount = 0;
+let changingLoadCount = 0;
+
+
 let _dateForInitialize = new Date();
 
 /**
@@ -147,6 +155,60 @@ function getDataAndUpdate() {
 if (data) updateCurrentDate();
 
 /**
+ * 変更を追加する関数
+ * @param  {...(scheduleChangeData | contentChangeData | userChangeData | classesChangeData | schoolChangeData | settingsChangeData)} changes - 変更
+ */
+function addChanges(...changes) {
+    changesData.push(...changes);
+    setChanges();
+}
+/**
+ * 変更を適用してデータを取得
+ */
+async function setChanges() {
+    if (changingLoadCount <= 0 && changesData.length > 0) {
+        const url = new URL(API_URL);
+        url.searchParams.set("id", USER_ID);
+        startLoad();
+        changingLoadCount++;
+        try {
+            changingDataCount = changesData.length;
+            const response = await fetch(url, {method: "POST", body: JSON.stringify(changesData)});
+            if (response.ok) {
+                const responseText = await response.text();
+                localStorage.setItem("school-schedule_data", responseText);
+                const responseData = JSON.parse(responseText);
+                if (!responseData.error) {
+                    data = responseData;
+                    updateSchedule();
+                    changesData.splice(0, changingDataCount);
+                    finishLoad();
+                    setTimeout(setChanges, 500);
+                } else {
+                    if (responseData.message == "INVALID_USER_ID") {
+                        showFirstDialog("ユーザーidが誤っています。");
+                        finishLoad();
+                    } else if (responseData.message == "CHANGES_NOT_SAVED") {
+                        setTimeout(setChanges, 3000);
+                        failLoad();
+                    }
+                }
+                changingLoadCount--;
+            } else {
+                failLoad();
+                changingLoadCount--;
+                if (!data) showFirstDialog("データの取得に失敗しました。URLが正しいか確認してください。");
+            }
+        } catch(error) {
+            failLoad();
+            changingLoadCount--;
+            console.error(error);
+            if (!data) showFirstDialog("データの取得に失敗しました。ネットワーク接続を確認し、URLが正しいか確認してください。");
+        }
+    }
+}
+
+/**
  * date-tableを作成する関数
  * @param {Date} date - カレンダーに含む日
  */
@@ -211,10 +273,17 @@ function createDateTable(date) {
 }
 createDateTable(dateStringToDate(currentDate));
 
+function updateSchedule() {
+    updateScheduleViewer();
+    if (changesData.length == 0) {
+        updateScheduleEditor();
+    }
+}
+
 /**
  * 予定を更新する関数
  */
-function updateSchedule() {
+function updateScheduleViewer() {
     const scheduleElement = document.createElement("div");
     document.getElementById("schedule").replaceWith(scheduleElement);
     scheduleElement.id = "schedule";
@@ -351,6 +420,275 @@ function updateSchedule() {
 }
 
 /**
+ * 予定の編集を更新する関数
+ */
+function updateScheduleEditor() {
+    const scheduleEditElement = document.createElement("div");
+    document.getElementById("schedule-edit").replaceWith(scheduleEditElement);
+    scheduleEditElement.id = "schedule-edit";
+
+    const scheduleEditForm = document.createElement("form");
+    scheduleEditElement.appendChild(scheduleEditForm);
+
+    const scopeTypes = ["whole", "general", "class", "user"];
+
+    const currentSchedules = getOneDaySchedules(currentDate, USER_ID);
+    const currentContents = getOneDayContents(currentDate, USER_ID);
+
+    const scheduleTypes = data.settings.scheduleTypeOrder || [];
+    const table = getClassTableFromDate(currentDate, data.user[USER_ID].className);
+    const timeTypes = data.settings.timeTypeOrder || [];
+
+    /**
+     * select要素にoption要素を追加する関数
+     * @param {HTMLSelectElement} selectElement - option要素を追加する要素
+     * @param {string} text - option要素のtextContent
+     * @param {string} value - option要素のvalue属性
+     */
+    const addSelectOption = (selectElement, text, value) => {
+        const optionElement = document.createElement("option");
+        selectElement.appendChild(optionElement);
+        optionElement.appendChild(document.createTextNode(text));
+        optionElement.value = value;
+    };
+    /**
+     * select要素にscheduleTypeを追加する関数
+     * @param {HTMLSelectElement} selectElement - option要素を追加する要素
+     */
+    const addScheduleTypesToSelect = (selectElement) => {
+        for (let i = 0; i < scheduleTypes.length; i++) {
+            addSelectOption(selectElement, scheduleTypes[i], scheduleTypes[i]);
+        }
+    }
+    /**
+     * select要素にtimeTypeを追加する関数
+     * @param {HTMLSelectElement} selectElement - option要素を追加する要素
+     */
+    const addTimeTypesToSelect = (selectElement) => {
+        for (let i = 0; i < timeTypes.length; i++) {
+            addSelectOption(selectElement, timeTypes[i], timeTypes[i]);
+        }
+    }
+    /**
+     * scopeTypeを選択するselect要素を作成する関数
+     */
+    const createScopeSelect = () => {
+        const selectElement = document.createElement("select");
+        addSelectOption(selectElement, "学校", scopeTypes[0]);
+        addSelectOption(selectElement, "学年", scopeTypes[1]);
+        addSelectOption(selectElement, "クラス", scopeTypes[2]);
+        addSelectOption(selectElement, "ユーザー", scopeTypes[3]);
+        return selectElement;
+    }
+
+    // scheduleType
+        const scheduleTypeSet = document.createElement("fieldset");
+        scheduleEditForm.appendChild(scheduleTypeSet);
+
+        const scheduleTypeSetLegend = document.createElement("legend");
+        scheduleTypeSet.appendChild(scheduleTypeSetLegend);
+        scheduleTypeSetLegend.appendChild(document.createTextNode("授業"));
+
+        const scheduleTypeLabel = document.createElement("label");
+        scheduleTypeSet.appendChild(scheduleTypeLabel);
+        scheduleTypeLabel.appendChild(document.createTextNode("授業："));
+
+        const scheduleTypeSelect = document.createElement("select");
+        scheduleTypeLabel.appendChild(scheduleTypeSelect);
+        scheduleTypeSelect.id = "schedule-type-select";
+        addSelectOption(scheduleTypeSelect, "-", "");
+        addScheduleTypesToSelect(scheduleTypeSelect);
+
+        const scheduleTypeScopeLabel = document.createElement("label");
+        scheduleTypeSet.appendChild(scheduleTypeScopeLabel);
+        scheduleTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
+
+        const scheduleTypeScopeSelect = createScopeSelect();
+        scheduleTypeScopeLabel.appendChild(scheduleTypeScopeSelect);
+        scheduleTypeScopeSelect.id = "schedule-type-scope-select";
+
+    // timeType
+        const timeTypeSet = document.createElement("fieldset");
+        scheduleEditForm.appendChild(timeTypeSet);
+
+        const timeTypeSetLegend = document.createElement("legend");
+        timeTypeSet.appendChild(timeTypeSetLegend);
+        timeTypeSetLegend.appendChild(document.createTextNode("時程"));
+
+        const timeTypeLabel = document.createElement("label");
+        timeTypeSet.appendChild(timeTypeLabel);
+        timeTypeLabel.appendChild(document.createTextNode("時程："));
+
+        const timeTypeSelect = document.createElement("select");
+        timeTypeSelect.id = "time-type-select";
+        timeTypeLabel.appendChild(timeTypeSelect);
+        addSelectOption(timeTypeSelect, "-", "");
+        addTimeTypesToSelect(timeTypeSelect);
+
+        const timeTypeScopeLabel = document.createElement("label");
+        timeTypeSet.appendChild(timeTypeScopeLabel);
+        timeTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
+
+        const timeTypeScopeSelect = createScopeSelect();
+        timeTypeScopeLabel.appendChild(timeTypeScopeSelect);
+        timeTypeScopeSelect.id = "time-type-scope-select";
+
+    // 授業
+        /**
+         * 時限の要素が格納された配列
+         * @type {HTMLElement[]}
+         */
+        let periodElements = [];
+        const createPeriodElements = period => {
+            const sectionElement = document.createElement("section");
+            periodElements[period - 1] = sectionElement;
+            
+            const header = document.createElement("h3");
+            sectionElement.appendChild(header);
+            header.appendChild(document.createTextNode(period + "時限目"));
+
+            const periodScheduleTypeSet = document.createElement("fieldset");
+            sectionElement.appendChild(periodScheduleTypeSet);
+
+            const periodScheduleTypeSetLegend = document.createElement("legend");
+            periodScheduleTypeSet.appendChild(periodScheduleTypeSetLegend);
+            periodScheduleTypeSetLegend.appendChild(document.createTextNode("授業"));
+
+            const periodScheduleTypeLabel = document.createElement("label");
+            periodScheduleTypeSet.appendChild(periodScheduleTypeLabel);
+            periodScheduleTypeLabel.appendChild(document.createTextNode("授業："));
+
+            const periodScheduleTypeSelect = document.createElement("select");
+            periodScheduleTypeLabel.appendChild(periodScheduleTypeSelect);
+            periodScheduleTypeSelect.id = `period-${period}-schedule-type-select`;
+            addSelectOption(periodScheduleTypeSelect, "-", "");
+            addScheduleTypesToSelect(periodScheduleTypeSelect);
+
+            const periodScheduleTypePeriodLabel = document.createElement("label");
+            periodScheduleTypeSet.appendChild(periodScheduleTypePeriodLabel);
+            periodScheduleTypePeriodLabel.appendChild(document.createTextNode("時限："));
+
+            const periodScheduleTypePeriodInput = document.createElement("input");
+            periodScheduleTypePeriodLabel.appendChild(periodScheduleTypePeriodInput);
+            periodScheduleTypePeriodInput.id = `period-${period}-schedule-type-period-input`;
+            periodScheduleTypePeriodInput.type = "number";
+            periodScheduleTypePeriodInput.min = "0";
+
+            const periodScheduleTypeScopeLabel = document.createElement("label");
+            periodScheduleTypeSet.appendChild(periodScheduleTypeScopeLabel);
+            periodScheduleTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
+
+            const periodScheduleTypeScopeSelect = createScopeSelect();
+            periodScheduleTypeScopeLabel.appendChild(periodScheduleTypeScopeSelect);
+            periodScheduleTypeScopeSelect.id = `period-${period}-schedule-type-scope-input`;
+
+            const periodSubjectElementsList = document.createElement("ul");
+            sectionElement.appendChild(periodSubjectElementsList);
+            periodSubjectElementsList.classList.add("subject-list");
+
+            const periodAddButton = document.createElement("button");
+            sectionElement.appendChild(periodAddButton);
+            periodAddButton.type = "button";
+            periodAddButton.appendChild(document.createTextNode("教科を追加"));
+
+            return sectionElement;
+        };
+        scheduleEditForm.appendChild(createPeriodElements(1));
+}
+
+document.getElementById("schedule-edit-scope-type").addEventListener("change", event => {
+    const value = document.getElementById("schedule-edit-scope-type").value;
+    if (value == "whole" || value == "user") {
+        document.getElementById("schedule-edit-scope-grade-container").style.display = "none";
+        document.getElementById("schedule-edit-scope-class-container").style.display = "none";
+    } else if (value == "general") {
+        document.getElementById("schedule-edit-scope-grade-container").style.display = "";
+        document.getElementById("schedule-edit-scope-class-container").style.display = "none";
+    } else if (value == "class") {
+        document.getElementById("schedule-edit-scope-grade-container").style.display = "none";
+        document.getElementById("schedule-edit-scope-class-container").style.display = "";
+    }
+});
+
+/**
+ * 時間割を編集するダイアログを更新する関数
+ * @param {{editType?:("schedule-type"|"time-type"|"period-schedule-type"|"subject"|"time"), scopeType?:("whole"|"general"|"class"|"user"), scopeName?:string, date?:string}} [initialValue]
+ */
+function updateScheduleEditDialog(initialValue = {}) {
+    if (initialValue.editType) {
+        document.getElementById("schedule-edit-type").value = initialValue.editType;
+    }
+    if (initialValue.scopeType) {
+        document.getElementById("schedule-edit-scope-type").value = initialValue.scopeType;
+    } else {
+        document.getElementById("schedule-edit-scope-type").value = "class";
+    }
+    document.getElementById("schedule-edit-scope-type").dispatchEvent(new Event("change"));
+    // 適用範囲（学年）
+    {
+        const scheduleEditScopeGradeSelect = document.getElementById("schedule-edit-scope-grade");
+        while (scheduleEditScopeGradeSelect.firstChild) {
+            scheduleEditScopeGradeSelect.removeChild(scheduleEditScopeGradeSelect.firstChild);
+        }
+        const grades = [];
+        for (let className in data.classes) {
+            const grade = data.classes[className].grade;
+            if (!grades.includes(grade)) grades.push(grade);
+        }
+        grades.sort();
+        for (let i = 0; i < grades.length; i++) {
+            const gradeString = grades[i].toString();
+            const optionElement = document.createElement("option");
+            scheduleEditScopeGradeSelect.appendChild(optionElement);
+            optionElement.value = gradeString;
+            optionElement.appendChild(document.createTextNode(gradeString + "年"));
+        }
+        if (initialValue.scopeName) {
+            scheduleEditScopeGradeSelect.value = initialValue.scopeName;
+        } else {
+            scheduleEditScopeGradeSelect.value = data.user[USER_ID].grade.toString();
+        }
+    }
+    // 適用範囲（クラス）
+    {
+        const scheduleEditScopeClassSelect = document.getElementById("schedule-edit-scope-class");
+        while (scheduleEditScopeClassSelect.firstChild) {
+            scheduleEditScopeClassSelect.removeChild(scheduleEditScopeClassSelect.firstChild);
+        }
+        const classes = [];
+        for (let className in data.classes) {
+            classes.push(className);
+        }
+        const collator = new Intl.Collator("ja");
+        classes.sort((a, b) => {
+            const gradeA = data.classes[a].grade;
+            const gradeB = data.classes[b].grade;
+            if (gradeA != gradeB) {
+                return gradeA - gradeB;
+            }
+            return collator.compare(a, b);
+        });
+        for (let i = 0; i < classes.length; i++) {
+            const className = classes[i];
+            const optionElement = document.createElement("option");
+            scheduleEditScopeClassSelect.appendChild(optionElement);
+            optionElement.value = className;
+            optionElement.appendChild(document.createTextNode(className));
+        }
+        if (initialValue.scopeName) {
+            scheduleEditScopeClassSelect.value = initialValue.scopeName;
+        } else {
+            scheduleEditScopeClassSelect.value = data.user[USER_ID].className;
+        }
+    }
+    // 日付
+    document.getElementById("schedule-edit-date").min = TODAY_DATE_STRING;
+    document.getElementById("schedule-edit-date").value = currentDate;
+}
+
+function updateContentsEditDialog() {}
+
+/**
  * 日付を更新する関数
  * @param {string} dateString - 日付を表す文字列（yyyy-MM-dd）
  */
@@ -397,6 +735,29 @@ document.getElementById("date-table-last-month").addEventListener("click", event
 });
 document.getElementById("date-table-next-month").addEventListener("click", event => {
     createDateTable(new Date(dateTableYear, dateTableMonth + 1));
+});
+
+document.getElementById("show-menu").addEventListener("click", event => {
+    document.getElementById("menu").showModal();
+});
+document.getElementById("menu-dialog-close").addEventListener("click", event => {
+    document.getElementById("menu").close();
+});
+document.getElementById("schedule-edit-dialog-menu").addEventListener("click", event => {
+    document.getElementById("schedule-edit-dialog").showModal();
+    updateScheduleEditDialog();
+});
+document.getElementById("contsnts-edit-dialog-menu").addEventListener("click", event => {
+    document.getElementById("contsnts-edit-dialog").showModal();
+    updateContentsEditDialog();
+});
+
+document.getElementById("schedule-edit-dialog-close").addEventListener("click", event => {
+    document.getElementById("schedule-edit-dialog").close();
+});
+
+document.getElementById("contsnts-edit-dialog-close").addEventListener("click", event => {
+    document.getElementById("contsnts-edit-dialog").close();
 });
 
 

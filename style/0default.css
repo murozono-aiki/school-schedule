@@ -1,0 +1,63 @@
+html {
+    font-size: 1rem;
+    font-family: 'Noto Sans JP', 'BIZ UDGothic', 'メイリオ', 'Meiryo', 'Meiryo UI', sans-serif;
+    color: #333333;
+    line-height: 1.5;
+}
+body {
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-bottom: 30px;
+}
+button, input, textarea, select {
+    font-size: inherit;
+    font-family: inherit;
+    color: inherit;
+}
+button {
+    cursor: pointer;
+    background: none;
+    border: 2px solid var(--border-color);
+    border-radius: 3px;
+    padding: 7px 12px;
+    --border-color: #2f5a80;
+    --hover-color: #e0f0ff;
+}
+button:hover {
+    background-color: var(--hover-color);
+}
+button:focus-visible {
+    background-color: var(--hover-color);
+}
+button:disabled {
+    opacity: 0.8;
+    cursor: default;
+}
+button:disabled:hover {
+    background: none;
+}
+details {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+details > summary {
+    cursor: pointer;
+    padding-top: 9px;
+    padding-bottom: 9px;
+    margin-bottom: 5px;
+}
+table {
+    border-collapse: collapse;
+}
+dialog {
+    border-radius: 7px;
+    min-width: 40vw;
+    overscroll-behavior: contain;
+}
+.form-submit {
+    text-align: right;
+}
+
+.gray {
+    color: #595959;
+}

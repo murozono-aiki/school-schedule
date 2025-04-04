@@ -1,0 +1,32 @@
+h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0;
+    font-size: 1.5rem;
+    font-weight: normal;
+    color: #1c2d39;
+}
+h4 {
+    margin-top: 0.8rem;
+    margin-bottom: 0;
+    font-size: 1.2rem;
+    font-weight: normal;
+}
+h5 {
+    margin-top: 0.6rem;
+    margin-bottom: 0;
+    font-size: 1rem;
+    font-weight: normal;
+}
+#schedule > div.scheduleType {
+    margin-top: 2rem;
+    font-size: 1.3rem;
+}
+#schedule div.time {
+    font-size: 0.9rem;
+    color: #595959;
+    margin-top: 0.3rem;
+}
+#schedule ul {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+}
