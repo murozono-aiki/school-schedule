@@ -1,0 +1,9 @@
+#schedule-edit-dialog form div, #contsnts-edit-dialog form div {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+#schedule-edit-dialog form button[type="submit"], #contsnts-edit-dialog form button[type="submit"] {
+    --border-color: #c5c500;
+    --hover-color: #ffffd6;
+}

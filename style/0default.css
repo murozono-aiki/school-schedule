@@ -9,7 +9,7 @@ body {
     margin-right: 20px;
     margin-bottom: 30px;
 }
-button, input, textarea, select {
+button, input, textarea, select, dialog {
     font-size: inherit;
     font-family: inherit;
     color: inherit;

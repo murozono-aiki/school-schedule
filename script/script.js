@@ -599,35 +599,35 @@ function updateScheduleEditor() {
 document.getElementById("schedule-edit-type").addEventListener("change", event => {
     const value = document.getElementById("schedule-edit-type").value;
     if (value == "schedule-type") {
-        document.getElementById("schedule-edit-period-container").style.display = "none";
+        document.getElementById("schedule-edit-period-field").style.display = "none";
         document.getElementById("schedule-edit-schedule-type-field").style.display = "";
         document.getElementById("schedule-edit-time-type-field").style.display = "none";
         document.getElementById("schedule-edit-period-schedule-type-field").style.display = "none";
         document.getElementById("schedule-edit-subject-field").style.display = "none";
         document.getElementById("schedule-edit-time-field").style.display = "none";
     } else if (value == "time-type") {
-        document.getElementById("schedule-edit-period-container").style.display = "none";
+        document.getElementById("schedule-edit-period-field").style.display = "none";
         document.getElementById("schedule-edit-schedule-type-field").style.display = "none";
         document.getElementById("schedule-edit-time-type-field").style.display = "";
         document.getElementById("schedule-edit-period-schedule-type-field").style.display = "none";
         document.getElementById("schedule-edit-subject-field").style.display = "none";
         document.getElementById("schedule-edit-time-field").style.display = "none";
     } else if (value == "period-schedule-type") {
-        document.getElementById("schedule-edit-period-container").style.display = "";
+        document.getElementById("schedule-edit-period-field").style.display = "";
         document.getElementById("schedule-edit-schedule-type-field").style.display = "none";
         document.getElementById("schedule-edit-time-type-field").style.display = "none";
         document.getElementById("schedule-edit-period-schedule-type-field").style.display = "";
         document.getElementById("schedule-edit-subject-field").style.display = "none";
         document.getElementById("schedule-edit-time-field").style.display = "none";
     } else if (value == "subject") {
-        document.getElementById("schedule-edit-period-container").style.display = "";
+        document.getElementById("schedule-edit-period-field").style.display = "";
         document.getElementById("schedule-edit-schedule-type-field").style.display = "none";
         document.getElementById("schedule-edit-time-type-field").style.display = "none";
         document.getElementById("schedule-edit-period-schedule-type-field").style.display = "none";
         document.getElementById("schedule-edit-subject-field").style.display = "";
         document.getElementById("schedule-edit-time-field").style.display = "none";
     } else if (value == "time") {
-        document.getElementById("schedule-edit-period-container").style.display = "";
+        document.getElementById("schedule-edit-period-field").style.display = "";
         document.getElementById("schedule-edit-schedule-type-field").style.display = "none";
         document.getElementById("schedule-edit-time-type-field").style.display = "none";
         document.getElementById("schedule-edit-period-schedule-type-field").style.display = "none";
@@ -647,6 +647,17 @@ document.getElementById("schedule-edit-scope-type").addEventListener("change", e
         document.getElementById("schedule-edit-scope-grade-container").style.display = "none";
         document.getElementById("schedule-edit-scope-class-container").style.display = "";
     }
+});
+document.getElementById("schedule-edit-period-add").dataset.nextPeriod = "1";
+document.getElementById("schedule-edit-period-add").addEventListener("click", event => {
+    const newPeriod = parseInt(document.getElementById("schedule-edit-period-add").dataset.nextPeriod);
+    const newPeriodOptionElement = document.createElement("option");
+    document.getElementById("schedule-edit-period").appendChild(newPeriodOptionElement);
+    newPeriodOptionElement.appendChild(document.createTextNode(newPeriod + "時限目"));
+    newPeriodOptionElement.value = newPeriod.toString();
+    document.getElementById("schedule-edit-period").value = newPeriod.toString();
+    document.getElementById("schedule-edit-period-add").dataset.nextPeriod = (newPeriod + 1).toString();
+    document.getElementById("schedule-edit-period-add").textContent = (newPeriod + 1) + "時限目を追加";
 });
 document.getElementById("schedule-edit-subject-checkbox").addEventListener("change", event => {
     if (document.getElementById("schedule-edit-subject-checkbox").checked) {
