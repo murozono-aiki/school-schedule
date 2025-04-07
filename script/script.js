@@ -745,6 +745,32 @@ function updateScheduleEditDialog(initialValue = {}) {
     // 日付
     document.getElementById("schedule-edit-date").min = TODAY_DATE_STRING;
     document.getElementById("schedule-edit-date").value = currentDate;
+    // 時限
+    let maxPeriod = 1;
+    if (data.classes[data.user[USER_ID].className].table) {
+        for (let scheduleType of data.classes[data.user[USER_ID].className].table) {
+            let currentMaxPeriod = data.classes[data.user[USER_ID].className].table[scheduleType].schedule.length - 1;
+            if (currentMaxPeriod > maxPeriod) {
+                maxPeriod = currentMaxPeriod;
+            }
+        }
+    }
+    {
+        const periodSelect = document.getElementById("schedule-edit-period");
+        while (periodSelect.firstChild) {
+            periodSelect.removeChild(periodSelect.firstChild);
+        }
+        for (let i = 1; i <= maxPeriod; i++) {
+            const newPeriod = i;
+            const newPeriodOptionElement = document.createElement("option");
+            periodSelect.appendChild(newPeriodOptionElement);
+            newPeriodOptionElement.appendChild(document.createTextNode(newPeriod + "時限目"));
+            newPeriodOptionElement.value = newPeriod.toString();
+        }
+        periodSelect.value = "1";
+        document.getElementById("schedule-edit-period-add").dataset.nextPeriod = (maxPeriod + 1).toString();
+        document.getElementById("schedule-edit-period-add").textContent = (maxPeriod + 1) + "時限目を追加";
+    }
     // 教科 > チェックボックス
     document.getElementById("schedule-edit-subject-checkbox").checked = true;
     document.getElementById("schedule-edit-subject-checkbox").dispatchEvent(new Event("change"));
