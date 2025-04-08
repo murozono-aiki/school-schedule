@@ -253,9 +253,10 @@ function getOneDaySchedules(date, userId) {
  * クラスの1日の教科のリストを取得する
  * @param {string} date - 日付（yyyy-MM-dd）
  * @param {string} className - クラス名
+ * @param {string} [userId=undefined] - ユーザーid
  * @return {{subject:string[],scheduleType:{scheduleType:string,period:number},time:{startTime:string,finishTime:string}}[]}
  */
-function getClassSubjects(date, className) {
+function getClassSubjects(date, className, userId = undefined) {
   const grade = data.classes[className].grade;
   const classTable = getClassTableFromDate(date, className);
   let wholeSchedule = {};  // 学校全体での予定
@@ -299,11 +300,13 @@ function getClassSubjects(date, className) {
                 result[j].scheduleType.scheduleType = object.scheduleType;
                 result[j].scheduleType.period = j;
               }
-              if (schedule[j].userSetting && schedule[j].userSetting[userId]) {
-                if (schedule[j].userSetting[userId].subject) {
-                  result[j].subject = schedule[j].userSetting[userId].subject;
-                  result[j].scheduleType.scheduleType = object.scheduleType;
-                  result[j].scheduleType.period = j;
+              if (userId) {
+                if (schedule[j].userSetting && schedule[j].userSetting[userId]) {
+                  if (schedule[j].userSetting[userId].subject) {
+                    result[j].subject = schedule[j].userSetting[userId].subject;
+                    result[j].scheduleType.scheduleType = object.scheduleType;
+                    result[j].scheduleType.period = j;
+                  }
                 }
               }
             }
@@ -395,7 +398,7 @@ function getSubjects(date, userId) {
     }
   }
 
-  const result = getClassSubjects(date, className);
+  const result = getClassSubjects(date, className, userId);
 
   if (userData.selectClass) {
     for (let i = 0; i < result.length; i++) {
