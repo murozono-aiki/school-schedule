@@ -368,6 +368,9 @@ function getClassSubjects(date, className) {
       }
     }
   }
+  for (let j = 0; j < result.length; j++) {
+    if (!result[j]) result[j] = {subject: [], scheduleType: {}, time: {}};
+  }
   return result;
 }
 
