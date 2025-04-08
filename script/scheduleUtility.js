@@ -884,3 +884,6 @@ function getAllSubjects(userId) {
 function dateToString(date) {
   return formatDate(date);
 }
+
+
+const scopeTypes = ["whole", "general", "class", "user"];

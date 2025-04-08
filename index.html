@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./style/4viewer.css">
     <link rel="stylesheet" href="./style/5editor.css">
     <link rel="stylesheet" href="./style/6dialogEditor.css">
+    <link rel="stylesheet" href="./style/7menuDialog.css">
 </head>
 <body>
     <header>
@@ -88,8 +89,6 @@
                 <div>
                     <label for="schedule-edit-period">時限：</label>
                     <select id="schedule-edit-period"></select>
-                </div>
-                <div>
                     <button type="button" id="schedule-edit-period-add">1時限目を追加</button>
                 </div>
             </div>
@@ -112,7 +111,10 @@
                 </div>
                 <div>
                     <label for="schedule-edit-period-schedule-type-period">時間割の時限：</label>
-                    <select id="schedule-edit-period-schedule-type-period"></select>
+                    <select id="schedule-edit-period-schedule-type-period" aria-describedby="schedule-edit-period-schedule-type-period-description"></select>
+                    <div class="description" id="schedule-edit-period-schedule-type-period-description">
+                        「-」を選択した場合は、「時限」の項目の入力が使用されます。
+                    </div>
                 </div>
             </div>
             <div id="schedule-edit-subject-field">
@@ -133,15 +135,11 @@
                 <div>
                     <label for="schedule-edit-time-start">開始時刻：</label>
                     <input type="time" id="schedule-edit-time-start">
-                </div>
-                <div>
                     <button type="button" id="schedule-edit-time-start-delete">開始時刻を削除</button>
                 </div>
                 <div>
                     <label for="schedule-edit-time-finish">終了時刻：</label>
                     <input type="time" id="schedule-edit-time-finish">
-                </div>
-                <div>
                     <button type="button" id="schedule-edit-time-finish-delete">終了時刻を削除</button>
                 </div>
             </div>

@@ -430,8 +430,6 @@ function updateScheduleEditor() {
     const scheduleEditForm = document.createElement("form");
     scheduleEditElement.appendChild(scheduleEditForm);
 
-    const scopeTypes = ["whole", "general", "class", "user"];
-
     const currentSchedules = getOneDaySchedules(currentDate, USER_ID);
     const currentContents = getOneDayContents(currentDate, USER_ID);
 
@@ -668,6 +666,41 @@ document.getElementById("schedule-edit-subject-checkbox").addEventListener("chan
         document.getElementById("schedule-edit-subject-input-container").style.display = "";
     }
 });
+document.getElementById("schedule-edit-time-start-delete").addEventListener("click", event => {
+    document.getElementById("schedule-edit-time-start").value = "";
+});
+document.getElementById("schedule-edit-time-finish-delete").addEventListener("click", event => {
+    document.getElementById("schedule-edit-time-finish").value = "";
+});
+document.getElementById("schedule-edit-form").addEventListener("submit", event => {
+    /** @type {scheduleChangeKey} */
+    const changeKey = {};
+    const scopeType = document.getElementById("schedule-edit-scope-type").value;
+    changeKey.scopeType = scopeType;
+    if (scopeType == "general") {
+        const scopeGrade = document.getElementById("schedule-edit-scope-grade").value;
+        changeKey.scopeName = parseInt(scopeGrade);
+    } else if (scopeType == "class") {
+        const scopeClass = document.getElementById("schedule-edit-scope-class").value;
+        changeKey.scopeName = scopeClass;
+    } else if (scopeType == "user") {
+        changeKey.scopeName = USER_ID;
+    }
+    const editDate = document.getElementById("schedule-edit-date").value;
+    changeKey.date = editDate;
+    const editType = document.getElementById("schedule-edit-type").value;
+    if (editType == "schedule-type") {
+        ;
+    } else if (editType == "time-type") {
+        ;
+    } else if (editType == "period-schedule-type") {
+        ;
+    } else if (editType == "subject") {
+        ;
+    } else if (editType == "time") {
+        ;
+    }
+});
 /**
  * 時間割を編集するダイアログを更新する関数
  * @param {{editType?:("schedule-type"|"time-type"|"period-schedule-type"|"subject"|"time"), scopeType?:("whole"|"general"|"class"|"user"), scopeName?:string, date?:string}} [initialValue]
@@ -748,7 +781,8 @@ function updateScheduleEditDialog(initialValue = {}) {
     // 時限
     let maxPeriod = 1;
     if (data.classes[data.user[USER_ID].className].table) {
-        for (let scheduleType of data.classes[data.user[USER_ID].className].table) {
+        for (let scheduleType in data.classes[data.user[USER_ID].className].table) {
+            if (!data.classes[data.user[USER_ID].className].table[scheduleType]) continue;
             let currentMaxPeriod = data.classes[data.user[USER_ID].className].table[scheduleType].schedule.length - 1;
             if (currentMaxPeriod > maxPeriod) {
                 maxPeriod = currentMaxPeriod;
@@ -771,9 +805,99 @@ function updateScheduleEditDialog(initialValue = {}) {
         document.getElementById("schedule-edit-period-add").dataset.nextPeriod = (maxPeriod + 1).toString();
         document.getElementById("schedule-edit-period-add").textContent = (maxPeriod + 1) + "時限目を追加";
     }
+    // 時間割
+    {
+        const scheduleTypeSelect = document.getElementById("schedule-edit-schedule-type");
+        const periodScheduleTypeSelect = document.getElementById("schedule-edit-period-schedule-type");
+        while (scheduleTypeSelect.firstChild) {
+            scheduleTypeSelect.removeChild(scheduleTypeSelect.firstChild);
+        }
+        while (periodScheduleTypeSelect.firstChild) {
+            periodScheduleTypeSelect.removeChild(periodScheduleTypeSelect.firstChild);
+        }
+        const scheduleTypeDeleteOption = document.createElement("option");
+        const periodScheduleTypeDeleteOption = document.createElement("option");
+        scheduleTypeSelect.appendChild(scheduleTypeDeleteOption);
+        periodScheduleTypeSelect.appendChild(periodScheduleTypeDeleteOption);
+        scheduleTypeDeleteOption.appendChild(document.createTextNode("-"));
+        periodScheduleTypeDeleteOption.appendChild(document.createTextNode("-"));
+        scheduleTypeDeleteOption.value = "";
+        periodScheduleTypeDeleteOption.value = "";
+        if (data.settings.scheduleTypeOrder) {
+            for (let i = 0; i < data.settings.scheduleTypeOrder.length; i++) {
+                if (!data.settings.scheduleTypeOrder[i]) continue;
+                const scheduleTypeOption = document.createElement("option");
+                const periodScheduleTypeOption = document.createElement("option");
+                scheduleTypeSelect.appendChild(scheduleTypeOption);
+                periodScheduleTypeSelect.appendChild(periodScheduleTypeOption);
+                scheduleTypeOption.appendChild(document.createTextNode(data.settings.scheduleTypeOrder[i]));
+                periodScheduleTypeOption.appendChild(document.createTextNode(data.settings.scheduleTypeOrder[i]));
+                scheduleTypeOption.value = data.settings.scheduleTypeOrder[i];
+                periodScheduleTypeOption.value = data.settings.scheduleTypeOrder[i];
+            }
+        }
+    }
+    // 時程
+    {
+        const timeTypeSelect = document.getElementById("schedule-edit-time-type");
+        while (timeTypeSelect.firstChild) {
+            timeTypeSelect.removeChild(timeTypeSelect.firstChild);
+        }
+        const timeTypeNoneOption = document.createElement("option");
+        timeTypeSelect.appendChild(timeTypeNoneOption);
+        timeTypeNoneOption.appendChild(document.createTextNode("-"));
+        timeTypeNoneOption.value = "";
+        if (data.settings.timeTypeOrder) {
+            for (let i = 0; i <= data.settings.timeTypeOrder.length; i++) {
+                if (!data.settings.timeTypeOrder[i]) continue;
+                const timeTypeOption = document.createElement("option");
+                timeTypeSelect.appendChild(timeTypeOption);
+                timeTypeOption.appendChild(document.createTextNode(data.settings.timeTypeOrder[i]));
+                timeTypeOption.value = data.settings.timeTypeOrder[i];
+            }
+        }
+    }
+    // 時間割の時限
+    {
+        const periodScheduleTypePeriodSelect = document.getElementById("schedule-edit-period-schedule-type-period");
+        while (periodScheduleTypePeriodSelect.firstChild) {
+            periodScheduleTypePeriodSelect.removeChild(periodScheduleTypePeriodSelect.firstChild);
+        }
+        const periodScheduleTypePeriodNoneOption = document.createElement("option");
+        periodScheduleTypePeriodSelect.appendChild(periodScheduleTypePeriodNoneOption);
+        periodScheduleTypePeriodNoneOption.appendChild(document.createTextNode("-"));
+        periodScheduleTypePeriodNoneOption.value = "";
+        for (let i = 1; i <= maxPeriod; i++) {
+            const periodScheduleTypePeriodOption = document.createElement("option");
+            periodScheduleTypePeriodSelect.appendChild(periodScheduleTypePeriodOption);
+            periodScheduleTypePeriodOption.appendChild(document.createTextNode(i + "時限目"));
+            periodScheduleTypePeriodOption.value = i.toString();
+        }
+    }
     // 教科 > チェックボックス
     document.getElementById("schedule-edit-subject-checkbox").checked = true;
     document.getElementById("schedule-edit-subject-checkbox").dispatchEvent(new Event("change"));
+    // 教科 > プルダウン
+    {
+        const subjectSelect = document.getElementById("schedule-edit-subject-select");
+        while (subjectSelect.firstChild) {
+            subjectSelect.removeChild(subjectSelect.firstChild);
+        }
+        const subjects = getAllSubjects(USER_ID);
+        if (subjects.length > 0) {
+            for (let i = 0; i < subjects.length; i++) {
+                const subjectOption = document.createElement("option");
+                subjectSelect.appendChild(subjectOption);
+                subjectOption.appendChild(document.createTextNode(subjects[i]));
+                subjectOption.value = subjects[i];
+            }
+        } else {
+            const subjectOption = document.createElement("option");
+            subjectSelect.appendChild(subjectOption);
+            subjectOption.appendChild(document.createTextNode("選択できる教科がありません。"));
+            subjectOption.value = "";
+        }
+    }
 }
 
 function updateContentsEditDialog() {}
