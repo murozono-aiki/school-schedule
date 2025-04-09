@@ -31,7 +31,8 @@ button:focus-visible {
     background-color: var(--hover-color);
 }
 button:disabled {
-    opacity: 0.8;
+    color: #5c5c5c;
+    border-color: rgb(from var(--border-color) r g b / 0.8);
     cursor: default;
 }
 button:disabled:hover {
