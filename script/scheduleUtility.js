@@ -259,8 +259,11 @@ function getOneDaySchedules(date, userId) {
 function getClassSubjects(date, className, userId = undefined) {
   const grade = data.classes[className].grade;
   const classTable = getClassTableFromDate(date, className);
+  /** @type {scheduleData} */
   let wholeSchedule = {};  // 学校全体での予定
+  /** @type {scheduleData} */
   let generalSchedule = {};  // 学年全体での予定
+  /** @type {scheduleData} */
   let classSchedule = {};  // クラスの予定
   // データから予定を取得
   for (let schedule of data.schedule) {
@@ -363,7 +366,10 @@ function getClassSubjects(date, className, userId = undefined) {
       for (let j = 0; j < object.contents.length; j++) {
         if (!object.contents[j]) continue;
         if (!result[j]) result[j] = {subject: [], scheduleType: {}, time: {}};
-        if (object.contents[j].subject && object.contents[j].subject.some(value => value)) result[j].subject = object.contents[j].subject.filter(value => value);
+        if (object.contents[j].subject && object.contents[j].subject.some(value => value)) {
+          result[j].subject = object.contents[j].subject.filter(value => value);
+          result[j].scheduleType = {};
+        }
         if (object.contents[j].time) {
           if (object.contents[j].time.startTime) result[j].time.startTime = object.contents[j].time.startTime;
           if (object.contents[j].time.finishTime) result[j].time.finishTime = object.contents[j].time.finishTime;
@@ -387,6 +393,7 @@ function getSubjects(date, userId) {
   const userData = data.user[userId];
   const className = userData.className;
   const classTable = getClassTableFromDate(date, className);
+  /** @type {scheduleData} */
   let userSchedule = {};  // 個人が設定した予定
   // データから予定を取得
   for (let schedule of data.schedule) {
@@ -495,7 +502,10 @@ function getSubjects(date, userId) {
     for (let i = 0; i < userSchedule.contents.length; i++) {
       if (!userSchedule.contents[i]) continue;
       if (!result[i]) result[i] = {subject: [], scheduleType: {}, time: {}};
-      if (userSchedule.contents[i].subject && userSchedule.contents[i].subject.some(value => value)) result[i].subject = userSchedule.contents[i].subject.filter(value => value);
+      if (userSchedule.contents[i].subject && userSchedule.contents[i].subject.some(value => value)) {
+        result[i].subject = userSchedule.contents[i].subject.filter(value => value);
+        result[i].scheduleType = {};
+      }
       if (userSchedule.contents[i].time) {
         if (userSchedule.contents[i].time.startTime) result[i].time.startTime = userSchedule.contents[i].time.startTime;
         if (userSchedule.contents[i].time.finishTime) result[i].time.finishTime = userSchedule.contents[i].time.finishTime;
@@ -751,7 +761,7 @@ function getSchedule(date, userId) {
   for (let i = 1; i < subjects.length; i++) {
     if (!subjects[i].subject[0]) continue;
     if (!subjects[i].scheduleType || !subjects[i].scheduleType.scheduleType) {
-      result.scheduleType += "+";
+      result.scheduleType += " +";
       lastScheduleType = "";
       continue;
     }

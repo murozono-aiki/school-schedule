@@ -306,10 +306,12 @@ function updateScheduleViewer() {
         scheduleTypeElement.classList.add("scheduleType");
         scheduleTypeElement.appendChild(document.createTextNode(currentSchedule.scheduleType));
     }
+    let is_school = false
     if (currentSchedule.schedule.length > 1) {
         for (let period = 1; period < currentSchedule.schedule.length; period++) {
             const currentPeriod = currentSchedule.schedule[period];
             if (!currentPeriod || currentPeriod.length == 0) continue;
+            is_school = true;
             const periodHeader = document.createElement("h3");
             scheduleElement.appendChild(periodHeader);
             periodHeader.appendChild(document.createTextNode(`${period}時限目`));
@@ -358,7 +360,8 @@ function updateScheduleViewer() {
                 }
             }
         }
-    } else {
+    }
+    if (!is_school) {
         const noClassElement = document.createElement("p");
         scheduleElement.appendChild(noClassElement);
         noClassElement.appendChild(document.createTextNode(`授業はありません`));

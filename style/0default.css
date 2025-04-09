@@ -3,11 +3,12 @@ html {
     font-family: 'Noto Sans JP', 'BIZ UDGothic', 'メイリオ', 'Meiryo', 'Meiryo UI', sans-serif;
     color: #333333;
     line-height: 1.5;
+    background-color: white;
 }
 body {
     margin-left: 20px;
     margin-right: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 3rem;
 }
 button, input, textarea, select, dialog {
     font-size: inherit;
