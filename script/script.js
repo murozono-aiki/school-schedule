@@ -328,17 +328,17 @@ function updateScheduleViewer() {
                     timeElement.className = "time";
                     timeElement.appendChild(document.createTextNode(`${subject.time}`));
                 }
-                if (subject.homework && subject.homework.length >= 1) {
-                    const homeworkHeader = document.createElement("h5");
-                    scheduleElement.appendChild(homeworkHeader);
-                    homeworkHeader.appendChild(document.createTextNode("宿題"));
-                    createList(subject.homework);
-                }
                 if (subject.submit && subject.submit.length >= 1) {
                     const submitHeader = document.createElement("h5");
                     scheduleElement.appendChild(submitHeader);
                     submitHeader.appendChild(document.createTextNode("提出物"));
                     createList(subject.submit);
+                }
+                if (subject.homework && subject.homework.length >= 1) {
+                    const homeworkHeader = document.createElement("h5");
+                    scheduleElement.appendChild(homeworkHeader);
+                    homeworkHeader.appendChild(document.createTextNode("宿題"));
+                    createList(subject.homework);
                 }
                 if (subject.bring && subject.bring.length >= 1) {
                     const bringHeader = document.createElement("h5");
@@ -368,7 +368,7 @@ function updateScheduleViewer() {
     }
     if (currentSchedule.schedule[0] && currentSchedule.schedule[0].length >= 1) {
         const currentPeriod = currentSchedule.schedule[0];
-        if (currentPeriod.length >= 2 || (currentPeriod[0] && ((currentPeriod[0].homework && currentPeriod[0].homework.length >= 1) || (currentPeriod[0].submit && currentPeriod[0].submit.length >= 1) || (currentPeriod[0].bring && currentPeriod[0].bring.length >= 1) || (currentPeriod[0].event && currentPeriod[0].event.length >= 1) || (currentPeriod[0].note && currentPeriod[0].note.length >= 1)))) {
+        if (currentPeriod.length >= 2 || (currentPeriod[0] && ((currentPeriod[0].submit && currentPeriod[0].submit.length >= 1) || (currentPeriod[0].homework && currentPeriod[0].homework.length >= 1) || (currentPeriod[0].bring && currentPeriod[0].bring.length >= 1) || (currentPeriod[0].event && currentPeriod[0].event.length >= 1) || (currentPeriod[0].note && currentPeriod[0].note.length >= 1)))) {
             const periodHeader = document.createElement("h3");
             scheduleElement.appendChild(periodHeader);
             periodHeader.appendChild(document.createTextNode(`その他`));
@@ -387,17 +387,17 @@ function updateScheduleViewer() {
                     timeElement.className = "time";
                     timeElement.appendChild(document.createTextNode(`${subject.time}`));
                 }
-                if (subject.homework && subject.homework.length >= 1) {
-                    const homeworkHeader = document.createElement("h5");
-                    scheduleElement.appendChild(homeworkHeader);
-                    homeworkHeader.appendChild(document.createTextNode("宿題"));
-                    createList(subject.homework);
-                }
                 if (subject.submit && subject.submit.length >= 1) {
                     const submitHeader = document.createElement("h5");
                     scheduleElement.appendChild(submitHeader);
                     submitHeader.appendChild(document.createTextNode("提出物"));
                     createList(subject.submit);
+                }
+                if (subject.homework && subject.homework.length >= 1) {
+                    const homeworkHeader = document.createElement("h5");
+                    scheduleElement.appendChild(homeworkHeader);
+                    homeworkHeader.appendChild(document.createTextNode("宿題"));
+                    createList(subject.homework);
                 }
                 if (subject.bring && subject.bring.length >= 1) {
                     const bringHeader = document.createElement("h5");
@@ -597,6 +597,56 @@ function updateScheduleEditor() {
         scheduleEditForm.appendChild(createPeriodElements(1));
 }
 
+const updateEditDialogCurrentSubjectsSelect = () => {
+    const scope = {};
+    scope.scopeType = document.getElementById("schedule-edit-scope-type").value;
+    if (scope.scopeType == "general") {
+        scope.scopeName = parseInt(document.getElementById("schedule-edit-scope-grade").value);
+    } else if (scope.scopeType == "class") {
+        scope.scopeType = document.getElementById("schedule-edit-scope-class").value;
+    } else if (scope.scopeType == "user") {
+        scope.scopeType = USER_ID;
+    }
+    const date = document.getElementById("schedule-edit-date").value;
+    const period = parseInt(document.getElementById("schedule-edit-period").value);
+    let is_contentsSubjects = false;
+    for (let schedule of data.schedule) {
+        if (!schedule) continue;
+        if (schedule.scope.scopeType == scope.scopeType && schedule.scope.name == scope.scopeName && schedule.date == date) {
+            if (schedule.contents && schedule.contents[period] && schedule.contents[period].subject && schedule.contents[period].subject.length > 0) {
+                const subjectSelects = [
+                    document.getElementById("schedule-edit-subject-delete-select"),
+                    document.getElementById("schedule-edit-subject-edit-before-select")
+                ];
+                for (let subjectSelect of subjectSelects) {
+                    while (subjectSelect.firstChild) {
+                        subjectSelect.removeChild(subjectSelect.firstChild);
+                    }
+                }
+                const subjects = schedule.contents[period].subject;
+                for (let i = 0; i < subjects.length; i++) {
+                    if (!subjects[i]) continue;
+                    is_contentsSubjects = true;
+                    for (let subjectSelect of subjectSelects) {
+                        const subjectOption = document.createElement("option");
+                        subjectSelect.appendChild(subjectOption);
+                        subjectOption.appendChild(document.createTextNode(subjects[i]));
+                        subjectOption.value = subjects[i];
+                    }
+                }
+            }
+            break;
+        }
+    }
+    if (is_contentsSubjects) {
+        document.getElementById("schedule-edit-subject-method-option-delete").disabled = false;
+        document.getElementById("schedule-edit-subject-method-option-edit").disabled = false;
+    } else {
+        document.getElementById("schedule-edit-subject-method-option-delete").disabled = true;
+        document.getElementById("schedule-edit-subject-method-option-edit").disabled = true;
+        document.getElementById("schedule-edit-subject-method").value = "add";
+    }
+};
 document.getElementById("schedule-edit-type").addEventListener("change", event => {
     const value = document.getElementById("schedule-edit-type").value;
     if (value == "schedule-type") {
@@ -635,6 +685,13 @@ document.getElementById("schedule-edit-type").addEventListener("change", event =
         document.getElementById("schedule-edit-subject-field").style.display = "none";
         document.getElementById("schedule-edit-time-field").style.display = "";
     }
+    if (value == "schedule-type" || value == "time-type") {
+        document.getElementById("schedule-edit-type-option-period-schedule-type").disabled = false;
+        document.getElementById("schedule-edit-type-option-time").disabled = false;
+        if (document.getElementById("schedule-edit-period").value == "0") {
+            document.getElementById("schedule-edit-period").value = "1"
+        }
+    }
 });
 document.getElementById("schedule-edit-scope-type").addEventListener("change", event => {
     const value = document.getElementById("schedule-edit-scope-type").value;
@@ -648,6 +705,28 @@ document.getElementById("schedule-edit-scope-type").addEventListener("change", e
         document.getElementById("schedule-edit-scope-grade-container").style.display = "none";
         document.getElementById("schedule-edit-scope-class-container").style.display = "";
     }
+    updateEditDialogCurrentSubjectsSelect();
+});
+document.getElementById("schedule-edit-scope-grade").addEventListener("change", event => {
+    updateEditDialogCurrentSubjectsSelect();
+});
+document.getElementById("schedule-edit-scope-class").addEventListener("change", event => {
+    updateEditDialogCurrentSubjectsSelect();
+});
+document.getElementById("schedule-edit-date").addEventListener("change", event => {
+    updateEditDialogCurrentSubjectsSelect();
+});
+document.getElementById("schedule-edit-period").addEventListener("change", event => {
+    if (document.getElementById("schedule-edit-period").value == "0") {
+        document.getElementById("schedule-edit-type-option-period-schedule-type").disabled = true;
+        document.getElementById("schedule-edit-type-option-time").disabled = true;
+        document.getElementById("schedule-edit-type").value = "subject";
+        document.getElementById("schedule-edit-type").dispatchEvent(new Event("change"));
+    } else {
+        document.getElementById("schedule-edit-type-option-period-schedule-type").disabled = false;
+        document.getElementById("schedule-edit-type-option-time").disabled = false;
+    }
+    updateEditDialogCurrentSubjectsSelect();
 });
 document.getElementById("schedule-edit-period-add").dataset.nextPeriod = "1";
 document.getElementById("schedule-edit-period-add").addEventListener("click", event => {
@@ -657,16 +736,42 @@ document.getElementById("schedule-edit-period-add").addEventListener("click", ev
     newPeriodOptionElement.appendChild(document.createTextNode(newPeriod + "時限目"));
     newPeriodOptionElement.value = newPeriod.toString();
     document.getElementById("schedule-edit-period").value = newPeriod.toString();
+    document.getElementById("schedule-edit-period").dispatchEvent(new Event("change"));
     document.getElementById("schedule-edit-period-add").dataset.nextPeriod = (newPeriod + 1).toString();
     document.getElementById("schedule-edit-period-add").textContent = (newPeriod + 1) + "時限目を追加";
 });
-document.getElementById("schedule-edit-subject-checkbox").addEventListener("change", event => {
-    if (document.getElementById("schedule-edit-subject-checkbox").checked) {
-        document.getElementById("schedule-edit-subject-select-container").style.display = "";
-        document.getElementById("schedule-edit-subject-input-container").style.display = "none";
+document.getElementById("schedule-edit-subject-method").addEventListener("change", event => {
+    const value = document.getElementById("schedule-edit-subject-method").value;
+    if (value == "add") {
+        document.getElementById("schedule-edit-subject-add-field").style.display = "";
+        document.getElementById("schedule-edit-subject-delete-field").style.display = "none";
+        document.getElementById("schedule-edit-subject-edit-field").style.display = "none";
+    } else if (value == "delete") {
+        document.getElementById("schedule-edit-subject-add-field").style.display = "none";
+        document.getElementById("schedule-edit-subject-delete-field").style.display = "";
+        document.getElementById("schedule-edit-subject-edit-field").style.display = "none";
+    } else if (value == "edit") {
+        document.getElementById("schedule-edit-subject-add-field").style.display = "none";
+        document.getElementById("schedule-edit-subject-delete-field").style.display = "none";
+        document.getElementById("schedule-edit-subject-edit-field").style.display = "";
+    }
+});
+document.getElementById("schedule-edit-subject-add-checkbox").addEventListener("change", event => {
+    if (document.getElementById("schedule-edit-subject-add-checkbox").checked) {
+        document.getElementById("schedule-edit-subject-add-select-container").style.display = "";
+        document.getElementById("schedule-edit-subject-add-input-container").style.display = "none";
     } else {
-        document.getElementById("schedule-edit-subject-select-container").style.display = "none";
-        document.getElementById("schedule-edit-subject-input-container").style.display = "";
+        document.getElementById("schedule-edit-subject-add-select-container").style.display = "none";
+        document.getElementById("schedule-edit-subject-add-input-container").style.display = "";
+    }
+});
+document.getElementById("schedule-edit-subject-edit-checkbox").addEventListener("change", event => {
+    if (document.getElementById("schedule-edit-subject-edit-checkbox").checked) {
+        document.getElementById("schedule-edit-subject-edit-select-container").style.display = "";
+        document.getElementById("schedule-edit-subject-edit-input-container").style.display = "none";
+    } else {
+        document.getElementById("schedule-edit-subject-edit-select-container").style.display = "none";
+        document.getElementById("schedule-edit-subject-edit-input-container").style.display = "";
     }
 });
 document.getElementById("schedule-edit-time-start-delete").addEventListener("click", event => {
@@ -797,6 +902,10 @@ function updateScheduleEditDialog(initialValue = {}) {
         while (periodSelect.firstChild) {
             periodSelect.removeChild(periodSelect.firstChild);
         }
+        const otherPeriodOptionElement = document.createElement("option");
+        periodSelect.appendChild(otherPeriodOptionElement);
+        otherPeriodOptionElement.appendChild(document.createTextNode("その他"));
+        otherPeriodOptionElement.value = "0";
         for (let i = 1; i <= maxPeriod; i++) {
             const newPeriod = i;
             const newPeriodOptionElement = document.createElement("option");
@@ -877,30 +986,42 @@ function updateScheduleEditDialog(initialValue = {}) {
             periodScheduleTypePeriodOption.value = i.toString();
         }
     }
+    // 教科 > 編集内容
+    document.getElementById("schedule-edit-subject-method").value = "add";
+    document.getElementById("schedule-edit-subject-method").dispatchEvent(new Event("change"));
     // 教科 > チェックボックス
-    document.getElementById("schedule-edit-subject-checkbox").checked = true;
-    document.getElementById("schedule-edit-subject-checkbox").dispatchEvent(new Event("change"));
+    document.getElementById("schedule-edit-subject-add-checkbox").checked = true;
+    document.getElementById("schedule-edit-subject-add-checkbox").dispatchEvent(new Event("change"));
+    document.getElementById("schedule-edit-subject-edit-checkbox").checked = true;
+    document.getElementById("schedule-edit-subject-edit-checkbox").dispatchEvent(new Event("change"));
     // 教科 > プルダウン
     {
-        const subjectSelect = document.getElementById("schedule-edit-subject-select");
-        while (subjectSelect.firstChild) {
-            subjectSelect.removeChild(subjectSelect.firstChild);
-        }
-        const subjects = getAllSubjects(USER_ID);
-        if (subjects.length > 0) {
-            for (let i = 0; i < subjects.length; i++) {
+        const subjectSelects = [
+            document.getElementById("schedule-edit-subject-add-select"),
+            document.getElementById("schedule-edit-subject-edit-select")
+        ];
+        for (let subjectSelect of subjectSelects) {
+            while (subjectSelect.firstChild) {
+                subjectSelect.removeChild(subjectSelect.firstChild);
+            }
+            const subjects = getAllSubjects(USER_ID);
+            if (subjects.length > 0) {
+                for (let i = 0; i < subjects.length; i++) {
+                    const subjectOption = document.createElement("option");
+                    subjectSelect.appendChild(subjectOption);
+                    subjectOption.appendChild(document.createTextNode(subjects[i]));
+                    subjectOption.value = subjects[i];
+                }
+            } else {
                 const subjectOption = document.createElement("option");
                 subjectSelect.appendChild(subjectOption);
-                subjectOption.appendChild(document.createTextNode(subjects[i]));
-                subjectOption.value = subjects[i];
+                subjectOption.appendChild(document.createTextNode("選択できる教科がありません。"));
+                subjectOption.value = "";
             }
-        } else {
-            const subjectOption = document.createElement("option");
-            subjectSelect.appendChild(subjectOption);
-            subjectOption.appendChild(document.createTextNode("選択できる教科がありません。"));
-            subjectOption.value = "";
         }
     }
+    // 教科
+    updateEditDialogCurrentSubjectsSelect();
 }
 
 function updateContentsEditDialog() {}

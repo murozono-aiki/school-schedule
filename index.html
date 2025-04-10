@@ -22,7 +22,7 @@
         </div>
         <div>
             <span id="load" role="status"></span>
-            <button type="button" id="show-menu" style="display: none;">ﾒﾆｭｰ</button>
+            <button type="button" id="show-menu">ﾒﾆｭｰ</button>
         </div>
     </header>
     <h2 id="date">0月0日 (日)</h2>
@@ -58,9 +58,9 @@
                         <option value="time-type">時程</option>
                     </optgroup>
                     <optgroup label="時限ごと">
-                        <option value="period-schedule-type">時間割</option>
+                        <option value="period-schedule-type" id="schedule-edit-type-option-period-schedule-type">時間割</option>
                         <option value="subject">教科</option>
-                        <option value="time">時刻</option>
+                        <option value="time" id="schedule-edit-type-option-time">時刻</option>
                     </optgroup>
                 </select>
             </div>
@@ -119,16 +119,50 @@
             </div>
             <div id="schedule-edit-subject-field">
                 <div>
-                    <label for="schedule-edit-subject-checkbox">時間割から教科を選択：</label>
-                    <input type="checkbox" id="schedule-edit-subject-checkbox">
+                    <label for="schedule-edit-subject-method">編集内容：</label>
+                    <select id="schedule-edit-subject-method">
+                        <option value="add" id="schedule-edit-subject-method-option-add">追加</option>
+                        <option value="delete" id="schedule-edit-subject-method-option-delete">削除</option>
+                        <option value="edit" id="schedule-edit-subject-method-option-edit">変更</option>
+                    </select>
                 </div>
-                <div id="schedule-edit-subject-select-container">
-                    <label for="schedule-edit-subject-select">教科：</label>
-                    <select id="schedule-edit-subject-select"></select>
+                <div id="schedule-edit-subject-add-field">
+                    <div>
+                        <label for="schedule-edit-subject-add-checkbox">時間割から教科を選択：</label>
+                        <input type="checkbox" id="schedule-edit-subject-add-checkbox">
+                    </div>
+                    <div id="schedule-edit-subject-add-select-container">
+                        <label for="schedule-edit-subject-add-select">追加する教科：</label>
+                        <select id="schedule-edit-subject-add-select"></select>
+                    </div>
+                    <div id="schedule-edit-subject-add-input-container">
+                        <label for="schedule-edit-subject-add-input">追加する教科：</label>
+                        <input type="text" id="schedule-edit-subject-add-input">
+                    </div>
                 </div>
-                <div id="schedule-edit-subject-input-container">
-                    <label for="schedule-edit-subject-input">教科：</label>
-                    <input type="text" id="schedule-edit-subject-input">
+                <div id="schedule-edit-subject-delete-field">
+                    <div>
+                        <label for="schedule-edit-subject-delete-select">削除する教科：</label>
+                        <select id="schedule-edit-subject-delete-select"></select>
+                    </div>
+                </div>
+                <div id="schedule-edit-subject-edit-field">
+                    <div>
+                        <label for="schedule-edit-subject-edit-before-select">変更する教科：</label>
+                        <select id="schedule-edit-subject-edit-before-select"></select>
+                    </div>
+                    <div>
+                        <label for="schedule-edit-subject-edit-checkbox">時間割から変更後の教科を選択：</label>
+                        <input type="checkbox" id="schedule-edit-subject-edit-checkbox">
+                    </div>
+                    <div id="schedule-edit-subject-edit-select-container">
+                        <label for="schedule-edit-subject-edit-select">変更後の教科：</label>
+                        <select id="schedule-edit-subject-edit-select"></select>
+                    </div>
+                    <div id="schedule-edit-subject-edit-input-container">
+                        <label for="schedule-edit-subject-edit-input">変更後の教科：</label>
+                        <input type="text" id="schedule-edit-subject-edit-input">
+                    </div>
                 </div>
             </div>
             <div id="schedule-edit-time-field">
