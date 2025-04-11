@@ -1,18 +1,18 @@
 /**
  * @typedef {object} editChange
  * @property {"edit"} method
- * @property {string} key
+ * @property {string | number} key
  * @property {string} [editValue] 配列の場合
- * @property {string} value
+ * @property {string} value 空白・空文字等で削除
  */
 /**
- * @typedef {object} addChange
+ * @typedef {object} addChange 配列の場合
  * @property {"add"} method
  * @property {string} key
  * @property {string} value
  */
 /**
- * @typedef {object} deleteChange
+ * @typedef {object} deleteChange 配列の場合
  * @property {"delete"} method
  * @property {string} key
  * @property {string} deleteValue

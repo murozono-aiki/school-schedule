@@ -603,9 +603,9 @@ const updateEditDialogCurrentSubjectsSelect = () => {
     if (scope.scopeType == "general") {
         scope.scopeName = parseInt(document.getElementById("schedule-edit-scope-grade").value);
     } else if (scope.scopeType == "class") {
-        scope.scopeType = document.getElementById("schedule-edit-scope-class").value;
+        scope.scopeName = document.getElementById("schedule-edit-scope-class").value;
     } else if (scope.scopeType == "user") {
-        scope.scopeType = USER_ID;
+        scope.scopeName = USER_ID;
     }
     const date = document.getElementById("schedule-edit-date").value;
     const period = parseInt(document.getElementById("schedule-edit-period").value);
@@ -645,6 +645,7 @@ const updateEditDialogCurrentSubjectsSelect = () => {
         document.getElementById("schedule-edit-subject-method-option-delete").disabled = true;
         document.getElementById("schedule-edit-subject-method-option-edit").disabled = true;
         document.getElementById("schedule-edit-subject-method").value = "add";
+        document.getElementById("schedule-edit-subject-method").dispatchEvent(new Event("change"));
     }
 };
 document.getElementById("schedule-edit-type").addEventListener("change", event => {
@@ -798,13 +799,137 @@ document.getElementById("schedule-edit-form").addEventListener("submit", event =
     changeKey.date = editDate;
     const editType = document.getElementById("schedule-edit-type").value;
     if (editType == "schedule-type") {
-        ;
+        const scheduleType = document.getElementById("schedule-edit-schedule-type").value;
+        addChanges({
+            type: "schedule",
+            key: changeKey,
+            changes: [
+                {
+                    method: "edit",
+                    key: "scheduleType",
+                    value: scheduleType
+                }
+            ]
+        });
     } else if (editType == "time-type") {
-        ;
+        const timeType = document.getElementById("schedule-edit-time-type").value;
+        addChanges({
+            type: "schedule",
+            key: changeKey,
+            changes: [
+                {
+                    method: "edit",
+                    key: "timeType",
+                    value: timeType
+                }
+            ]
+        });
     } else if (editType == "period-schedule-type") {
-        ;
+        const period = parseInt(document.getElementById("schedule-edit-period").value);
+        const scheduleType = document.getElementById("schedule-edit-period-schedule-type").value;
+        const scheduleTypePeriod = document.getElementById("schedule-edit-period-schedule-type-period").value;
+        addChanges({
+            type: "schedule",
+            key: changeKey,
+            changes: [
+                {
+                    method: "structuredChange",
+                    key: "periodScheduleType",
+                    period: period,
+                    change: {
+                        method: "edit",
+                        key: "scheduleType",
+                        value: scheduleType
+                    }
+                },
+                {
+                    method: "structuredChange",
+                    key: "periodScheduleType",
+                    period: period,
+                    change: {
+                        method: "edit",
+                        key: "period",
+                        value: scheduleTypePeriod
+                    }
+                }
+            ]
+        });
     } else if (editType == "subject") {
-        ;
+        const period = parseInt(document.getElementById("schedule-edit-period").value);
+        const method = document.getElementById("schedule-edit-subject-method").value;
+        if (method == "add") {
+            let addSubject;
+            if (document.getElementById("schedule-edit-subject-add-checkbox").checked) {
+                addSubject = document.getElementById("schedule-edit-subject-add-select").value;
+            } else {
+                addSubject = document.getElementById("schedule-edit-subject-add-input").value;
+            }
+            if (addSubject) {
+                addChanges({
+                    type: "schedule",
+                    key: changeKey,
+                    changes: [
+                        {
+                            method: "structuredChange",
+                            key: "contents",
+                            period: period,
+                            change: {
+                                method: "add",
+                                key: "subject",
+                                value: addSubject
+                            }
+                        }
+                    ]
+                });
+            }
+        } else if (method == "delete") {
+            const deleteSubject = document.getElementById("schedule-edit-subject-delete-select").value;
+            if (deleteSubject) {
+                addChanges({
+                    type: "schedule",
+                    key: changeKey,
+                    changes: [
+                        {
+                            method: "structuredChange",
+                            key: "contents",
+                            period: period,
+                            change: {
+                                method: "delete",
+                                key: "subject",
+                                value: deleteSubject
+                            }
+                        }
+                    ]
+                });
+            }
+        } else if (method == "edit") {
+            const beforeSubject = document.getElementById("schedule-edit-subject-edit-before-select").value;
+            let afterSubject;
+            if (document.getElementById("schedule-edit-subject-edit-checkbox").checked) {
+                afterSubject = document.getElementById("schedule-edit-subject-edit-select").value;
+            } else {
+                afterSubject = document.getElementById("schedule-edit-subject-edit-input").value;
+            }
+            if (beforeSubject && afterSubject) {
+                addChanges({
+                    type: "schedule",
+                    key: changeKey,
+                    changes: [
+                        {
+                            method: "structuredChange",
+                            key: "contents",
+                            period: period,
+                            change: {
+                                method: "edit",
+                                key: "subject",
+                                editValue: beforeSubject,
+                                value: afterSubject
+                            }
+                        }
+                    ]
+                });
+            }
+        }
     } else if (editType == "time") {
         ;
     }
@@ -885,7 +1010,11 @@ function updateScheduleEditDialog(initialValue = {}) {
     }
     // 日付
     document.getElementById("schedule-edit-date").min = TODAY_DATE_STRING;
-    document.getElementById("schedule-edit-date").value = currentDate;
+    if (initialValue.date) {
+        document.getElementById("schedule-edit-date").value = initialValue.date;
+    } else {
+        document.getElementById("schedule-edit-date").value = currentDate;
+    }
     // 時限
     let maxPeriod = 1;
     if (data.classes[data.user[USER_ID].className].table) {
@@ -1073,6 +1202,10 @@ document.getElementById("date-table-last-month").addEventListener("click", event
 });
 document.getElementById("date-table-next-month").addEventListener("click", event => {
     createDateTable(new Date(dateTableYear, dateTableMonth + 1));
+});
+
+document.getElementById("edit-switch").addEventListener("change", event => {
+    if (document.getElementById("edit-switch").checked) updateScheduleEditor();
 });
 
 document.getElementById("show-menu").addEventListener("click", event => {
