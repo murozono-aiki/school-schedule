@@ -490,6 +490,14 @@ function updateScheduleEditor() {
         scheduleTypeSet.appendChild(scheduleTypeSetLegend);
         scheduleTypeSetLegend.appendChild(document.createTextNode("授業"));
 
+        const scheduleTypeScopeLabel = document.createElement("label");
+        scheduleTypeSet.appendChild(scheduleTypeScopeLabel);
+        scheduleTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
+
+        const scheduleTypeScopeSelect = createScopeSelect();
+        scheduleTypeScopeLabel.appendChild(scheduleTypeScopeSelect);
+        scheduleTypeScopeSelect.id = "schedule-type-scope-select";
+
         const scheduleTypeLabel = document.createElement("label");
         scheduleTypeSet.appendChild(scheduleTypeLabel);
         scheduleTypeLabel.appendChild(document.createTextNode("授業："));
@@ -500,14 +508,6 @@ function updateScheduleEditor() {
         addSelectOption(scheduleTypeSelect, "-", "");
         addScheduleTypesToSelect(scheduleTypeSelect);
 
-        const scheduleTypeScopeLabel = document.createElement("label");
-        scheduleTypeSet.appendChild(scheduleTypeScopeLabel);
-        scheduleTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
-
-        const scheduleTypeScopeSelect = createScopeSelect();
-        scheduleTypeScopeLabel.appendChild(scheduleTypeScopeSelect);
-        scheduleTypeScopeSelect.id = "schedule-type-scope-select";
-
     // timeType
         const timeTypeSet = document.createElement("fieldset");
         scheduleEditForm.appendChild(timeTypeSet);
@@ -515,6 +515,14 @@ function updateScheduleEditor() {
         const timeTypeSetLegend = document.createElement("legend");
         timeTypeSet.appendChild(timeTypeSetLegend);
         timeTypeSetLegend.appendChild(document.createTextNode("時程"));
+
+        const timeTypeScopeLabel = document.createElement("label");
+        timeTypeSet.appendChild(timeTypeScopeLabel);
+        timeTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
+
+        const timeTypeScopeSelect = createScopeSelect();
+        timeTypeScopeLabel.appendChild(timeTypeScopeSelect);
+        timeTypeScopeSelect.id = "time-type-scope-select";
 
         const timeTypeLabel = document.createElement("label");
         timeTypeSet.appendChild(timeTypeLabel);
@@ -525,14 +533,6 @@ function updateScheduleEditor() {
         timeTypeLabel.appendChild(timeTypeSelect);
         addSelectOption(timeTypeSelect, "-", "");
         addTimeTypesToSelect(timeTypeSelect);
-
-        const timeTypeScopeLabel = document.createElement("label");
-        timeTypeSet.appendChild(timeTypeScopeLabel);
-        timeTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
-
-        const timeTypeScopeSelect = createScopeSelect();
-        timeTypeScopeLabel.appendChild(timeTypeScopeSelect);
-        timeTypeScopeSelect.id = "time-type-scope-select";
 
     // 授業
         /**
@@ -555,6 +555,14 @@ function updateScheduleEditor() {
             periodScheduleTypeSet.appendChild(periodScheduleTypeSetLegend);
             periodScheduleTypeSetLegend.appendChild(document.createTextNode("授業"));
 
+            const periodScheduleTypeScopeLabel = document.createElement("label");
+            periodScheduleTypeSet.appendChild(periodScheduleTypeScopeLabel);
+            periodScheduleTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
+
+            const periodScheduleTypeScopeSelect = createScopeSelect();
+            periodScheduleTypeScopeLabel.appendChild(periodScheduleTypeScopeSelect);
+            periodScheduleTypeScopeSelect.id = `period-${period}-schedule-type-scope-input`;
+
             const periodScheduleTypeLabel = document.createElement("label");
             periodScheduleTypeSet.appendChild(periodScheduleTypeLabel);
             periodScheduleTypeLabel.appendChild(document.createTextNode("授業："));
@@ -574,14 +582,6 @@ function updateScheduleEditor() {
             periodScheduleTypePeriodInput.id = `period-${period}-schedule-type-period-input`;
             periodScheduleTypePeriodInput.type = "number";
             periodScheduleTypePeriodInput.min = "0";
-
-            const periodScheduleTypeScopeLabel = document.createElement("label");
-            periodScheduleTypeSet.appendChild(periodScheduleTypeScopeLabel);
-            periodScheduleTypeScopeLabel.appendChild(document.createTextNode("適用範囲："));
-
-            const periodScheduleTypeScopeSelect = createScopeSelect();
-            periodScheduleTypeScopeLabel.appendChild(periodScheduleTypeScopeSelect);
-            periodScheduleTypeScopeSelect.id = `period-${period}-schedule-type-scope-input`;
 
             const periodSubjectElementsList = document.createElement("ul");
             sectionElement.appendChild(periodSubjectElementsList);
@@ -1250,8 +1250,8 @@ document.getElementById("schedule-edit-dialog-menu").addEventListener("click", e
     document.getElementById("schedule-edit-dialog").showModal();
     updateScheduleEditDialog();
 });
-document.getElementById("contsnts-edit-dialog-menu").addEventListener("click", event => {
-    document.getElementById("contsnts-edit-dialog").showModal();
+document.getElementById("contents-edit-dialog-menu").addEventListener("click", event => {
+    document.getElementById("contents-edit-dialog").showModal();
     updateContentsEditDialog();
 });
 
@@ -1259,8 +1259,8 @@ document.getElementById("schedule-edit-dialog-close").addEventListener("click", 
     document.getElementById("schedule-edit-dialog").close();
 });
 
-document.getElementById("contsnts-edit-dialog-close").addEventListener("click", event => {
-    document.getElementById("contsnts-edit-dialog").close();
+document.getElementById("contents-edit-dialog-close").addEventListener("click", event => {
+    document.getElementById("contents-edit-dialog").close();
 });
 
 
