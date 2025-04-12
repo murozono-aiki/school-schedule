@@ -1245,6 +1245,37 @@ const updateContentsDialogCurrentSubjectsSelect = () => {
         }
     }
 };
+document.getElementById("contents-edit-scope-type").addEventListener("change", event => {
+    const value = document.getElementById("contents-edit-scope-type").value;
+    if (value == "whole" || value == "user") {
+        document.getElementById("contents-edit-scope-grade-container").style.display = "none";
+        document.getElementById("contents-edit-scope-class-container").style.display = "none";
+    } else if (value == "general") {
+        document.getElementById("contents-edit-scope-grade-container").style.display = "";
+        document.getElementById("contents-edit-scope-class-container").style.display = "none";
+    } else if (value == "class") {
+        document.getElementById("contents-edit-scope-grade-container").style.display = "none";
+        document.getElementById("contents-edit-scope-class-container").style.display = "";
+    }
+    updateContentsDialogCurrentSubjectsSelect();
+});
+document.getElementById("contents-edit-scope-grade").addEventListener("change", event => {
+    updateContentsDialogCurrentSubjectsSelect();
+});
+document.getElementById("contents-edit-scope-class").addEventListener("change", event => {
+    updateContentsDialogCurrentSubjectsSelect();
+});
+document.getElementById("contents-edit-content-type").addEventListener("change", event => {
+    const value = document.getElementById("contents-edit-content-type").value;
+    if (value == "date") {
+        document.getElementById("contents-edit-date-field").style.display = "";
+        document.getElementById("contents-edit-times-field").style.display = "none";
+    } else if (value == "times") {
+        document.getElementById("contents-edit-date-field").style.display = "none";
+        document.getElementById("contents-edit-times-field").style.display = "";
+    }
+    updateContentsDialogCurrentSubjectsSelect();
+});
 function updateContentsEditDialog(initialValue = {}) {}
 
 /**
