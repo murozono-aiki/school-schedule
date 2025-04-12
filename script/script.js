@@ -686,9 +686,7 @@ document.getElementById("schedule-edit-type").addEventListener("change", event =
         document.getElementById("schedule-edit-subject-field").style.display = "none";
         document.getElementById("schedule-edit-time-field").style.display = "";
     }
-    if (value == "schedule-type" || value == "time-type") {
-        document.getElementById("schedule-edit-type-option-period-schedule-type").disabled = false;
-        document.getElementById("schedule-edit-type-option-time").disabled = false;
+    if (value == "period-schedule-type" || value == "time") {
         if (document.getElementById("schedule-edit-period").value == "0") {
             document.getElementById("schedule-edit-period").value = "1"
         }
@@ -719,8 +717,6 @@ document.getElementById("schedule-edit-date").addEventListener("change", event =
 });
 document.getElementById("schedule-edit-period").addEventListener("change", event => {
     if (document.getElementById("schedule-edit-period").value == "0") {
-        document.getElementById("schedule-edit-type-option-period-schedule-type").disabled = true;
-        document.getElementById("schedule-edit-type-option-time").disabled = true;
         document.getElementById("schedule-edit-type").value = "subject";
         document.getElementById("schedule-edit-type").dispatchEvent(new Event("change"));
     } else {
@@ -896,7 +892,7 @@ document.getElementById("schedule-edit-form").addEventListener("submit", event =
                             change: {
                                 method: "delete",
                                 key: "subject",
-                                value: deleteSubject
+                                deleteValue: deleteSubject
                             }
                         }
                     ]
@@ -931,7 +927,43 @@ document.getElementById("schedule-edit-form").addEventListener("submit", event =
             }
         }
     } else if (editType == "time") {
-        ;
+        const period = parseInt(document.getElementById("schedule-edit-period").value);
+        const startTime = document.getElementById("schedule-edit-time-start").value.replace(/^0/, "");
+        const finishTime = document.getElementById("schedule-edit-time-finish").value.replace(/^0/, "");
+        addChanges({
+            type: "schedule",
+            key: changeKey,
+            changes: [
+                {
+                    method: "structuredChange",
+                    key: "contents",
+                    period: period,
+                    change: {
+                        method: "structuredChange",
+                        key: "time",
+                        change: {
+                            method: "edit",
+                            key: "startTime",
+                            value: startTime
+                        }
+                    }
+                },
+                {
+                    method: "structuredChange",
+                    key: "contents",
+                    period: period,
+                    change: {
+                        method: "structuredChange",
+                        key: "time",
+                        change: {
+                            method: "edit",
+                            key: "finishTime",
+                            value: finishTime
+                        }
+                    }
+                }
+            ]
+        });
     }
 });
 /**
