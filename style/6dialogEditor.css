@@ -21,3 +21,14 @@
     --border-color: #c5c500;
     --hover-color: #ffffd6;
 }
+
+#contents-edit-dialog form select {
+    max-width: min(90%, 20rem);
+}
+
+#contents-edit-dialog form textarea {
+    display: block;
+    resize: none;
+    width: 90%;
+    height: 4rem;
+}

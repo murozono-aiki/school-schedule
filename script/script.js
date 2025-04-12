@@ -1185,7 +1185,67 @@ function updateScheduleEditDialog(initialValue = {}) {
     updateEditDialogCurrentSubjectsSelect();
 }
 
-function updateContentsEditDialog() {}
+const updateContentsDialogCurrentSubjectsSelect = () => {
+    const scope = {};
+    scope.scopeType = document.getElementById("contents-edit-scope-type").value;
+    if (scope.scopeType == "general") {
+        scope.scopeName = parseInt(document.getElementById("contents-edit-scope-grade").value);
+    } else if (scope.scopeType == "class") {
+        scope.scopeName = document.getElementById("contents-edit-scope-class").value;
+    } else if (scope.scopeType == "user") {
+        scope.scopeName = USER_ID;
+    }
+    const contentType = document.getElementById("contents-edit-content-type").value;
+    const date = document.getElementById("contents-edit-date").value;
+    const period = parseInt(document.getElementById("contents-edit-period").value || "0") || undefined;
+    const times = parseInt(document.getElementById("contents-edit-times").value || "0") || undefined;
+    const userId = document.getElementById("contents-edit-schedule-scope").value == "user" ? USER_ID : undefined;
+    const subject = document.getElementById("contents-edit-subject-checkbox").checked ? document.getElementById("contents-edit-subject-input").value : document.getElementById("contents-edit-subject-select").value;
+    const editType = document.getElementById("contents-edit-type").value;
+    let is_contentsSubjects = false;
+    if (editType != "time") {
+        for (let contents of data.contents) {
+            if (!contents) continue;
+            if (contents.scope.scopeType == scope.scopeType && contents.scope.name == scope.scopeName && contents.contentType == contentType && contents.subject == subject) {
+                if ((contents.contentType == "date" && contents.date == date && contents.period == period) || (contents.contentType == "times" && contents.times == times && contents.userId == userId)) {
+                    if (contents[editType] && contents[editType].length > 0) {
+                        const itemSelects = [
+                            document.getElementById("schedule-edit-item-delete-select"),
+                            document.getElementById("schedule-edit-item-edit-before-select")
+                        ];
+                        for (let itemSelect of itemSelects) {
+                            while (itemSelect.firstChild) {
+                                itemSelect.removeChild(itemSelect.firstChild);
+                            }
+                        }
+                        const items = contents[editType];
+                        for (let i = 0; i < items.length; i++) {
+                            if (!items[i]) continue;
+                            is_contentsSubjects = true;
+                            for (let itemSelect of itemSelects) {
+                                const itemOption = document.createElement("option");
+                                itemSelect.appendChild(itemOption);
+                                itemOption.appendChild(document.createTextNode(items[i]));
+                                itemOption.value = items[i];
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+        if (is_contentsSubjects) {
+            document.getElementById("schedule-edit-item-method-option-delete").disabled = false;
+            document.getElementById("schedule-edit-item-method-option-edit").disabled = false;
+        } else {
+            document.getElementById("schedule-edit-item-method-option-delete").disabled = true;
+            document.getElementById("schedule-edit-item-method-option-edit").disabled = true;
+            document.getElementById("schedule-edit-item-method").value = "add";
+            document.getElementById("schedule-edit-item-method").dispatchEvent(new Event("change"));
+        }
+    }
+};
+function updateContentsEditDialog(initialValue = {}) {}
 
 /**
  * 日付を更新する関数
