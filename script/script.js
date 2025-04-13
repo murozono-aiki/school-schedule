@@ -1194,7 +1194,7 @@ function updateScheduleEditDialog(initialValue = {}) {
     updateEditDialogCurrentSubjectsSelect();
 }
 
-const updateContentsDialogCurrentSubjectsSelect = () => {
+const updateContentsDialogCurrentItemsSelect = () => {
     const scope = {};
     scope.scopeType = document.getElementById("contents-edit-scope-type").value;
     if (scope.scopeType == "general") {
@@ -1206,16 +1206,15 @@ const updateContentsDialogCurrentSubjectsSelect = () => {
     }
     const contentType = document.getElementById("contents-edit-content-type").value;
     const date = document.getElementById("contents-edit-date").value;
-    const period = parseInt(document.getElementById("contents-edit-period").value || "0") || undefined;
+    const period = document.getElementById("contents-edit-period").value ? parseInt(document.getElementById("contents-edit-period").value) : undefined;
     const times = parseInt(document.getElementById("contents-edit-times").value || "0") || undefined;
     const userId = document.getElementById("contents-edit-schedule-scope").value == "user" ? USER_ID : undefined;
-    const subject = document.getElementById("contents-edit-subject-checkbox").checked ? document.getElementById("contents-edit-subject-select").value : document.getElementById("contents-edit-subject-input").value;
+    const subject = (document.getElementById("contents-edit-subject-checkbox").checked ? document.getElementById("contents-edit-subject-select").value : document.getElementById("contents-edit-subject-input").value) || undefined;
     const editType = document.getElementById("contents-edit-type").value;
     let is_contentsSubjects = false;
     for (let contents of data.contents) {
         if (!contents) continue;
         if (contents.scope.scopeType == scope.scopeType && contents.scope.name == scope.scopeName && contents.contentType == contentType && contents.subject == subject) {
-            
             if ((contents.contentType == "date" && contents.date == date && contents.period == period) || (contents.contentType == "times" && contents.times == times && contents.userId == userId)) {
                 if (contents[editType] && contents[editType].length > 0) {
                     const itemSelects = [
@@ -1253,6 +1252,20 @@ const updateContentsDialogCurrentSubjectsSelect = () => {
         document.getElementById("schedule-edit-item-method").dispatchEvent(new Event("change"));
     }
 };
+const updateContentsDialogCurrentSubjectsSelect = () => {
+    const contentType = document.getElementById("contents-edit-content-type").value;
+    const period = document.getElementById("contents-edit-period").value;
+    if (contentType == "date" && period == "0") {
+        document.getElementById("contents-edit-subject-select-other-option").disabled = false;
+    } else {
+        document.getElementById("contents-edit-subject-select-other-option").disabled = true;
+        const subjectSelect = document.getElementById("contents-edit-subject-select");
+        if (!subjectSelect.value) {
+            subjectSelect.value = subjectSelect.dataset.initialValue;
+            subjectSelect.dispatchEvent(new Event("change"));
+        }
+    }
+}
 document.getElementById("contents-edit-scope-type").addEventListener("change", event => {
     const value = document.getElementById("contents-edit-scope-type").value;
     if (value == "whole" || value == "user") {
@@ -1265,13 +1278,13 @@ document.getElementById("contents-edit-scope-type").addEventListener("change", e
         document.getElementById("contents-edit-scope-grade-container").style.display = "none";
         document.getElementById("contents-edit-scope-class-container").style.display = "";
     }
-    updateContentsDialogCurrentSubjectsSelect();
+    updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-scope-grade").addEventListener("change", event => {
-    updateContentsDialogCurrentSubjectsSelect();
+    updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-scope-class").addEventListener("change", event => {
-    updateContentsDialogCurrentSubjectsSelect();
+    updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-content-type").addEventListener("change", event => {
     const value = document.getElementById("contents-edit-content-type").value;
@@ -1282,6 +1295,10 @@ document.getElementById("contents-edit-content-type").addEventListener("change",
         document.getElementById("contents-edit-date-field").style.display = "none";
         document.getElementById("contents-edit-times-field").style.display = "";
     }
+    updateContentsDialogCurrentItemsSelect();
+    updateContentsDialogCurrentSubjectsSelect();
+});
+document.getElementById("contents-edit-period").addEventListener("change", event => {
     updateContentsDialogCurrentSubjectsSelect();
 });
 document.getElementById("contents-edit-period-add").dataset.nextPeriod = "1";
@@ -1309,7 +1326,7 @@ document.getElementById("contents-edit-times-add").addEventListener("click", eve
     document.getElementById("contents-edit-times-add").textContent = (newTimes + 1) + "回後を追加";
 });
 document.getElementById("contents-edit-schedule-scope").addEventListener("change", event => {
-    updateContentsDialogCurrentSubjectsSelect();
+    updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-subject-checkbox").addEventListener("change", event => {
     if (document.getElementById("contents-edit-subject-checkbox").checked) {
@@ -1321,10 +1338,28 @@ document.getElementById("contents-edit-subject-checkbox").addEventListener("chan
     }
 });
 document.getElementById("contents-edit-subject-select").addEventListener("change", event => {
-    updateContentsDialogCurrentSubjectsSelect();
+    if (!document.getElementById("contents-edit-subject-select").value) {
+        document.getElementById("contents-edit-type-time-option").disabled = true;
+        if (document.getElementById("contents-edit-type").value == "time") {
+            document.getElementById("contents-edit-type").value = "submit";
+            document.getElementById("contents-edit-type").dispatchEvent(new Event("change"));
+        }
+    } else {
+        document.getElementById("contents-edit-type-time-option").disabled = false;
+    }
+    updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-subject-input").addEventListener("change", event => {
-    updateContentsDialogCurrentSubjectsSelect();
+    if (!document.getElementById("contents-edit-subject-input").value) {
+        document.getElementById("contents-edit-type-time-option").disabled = true;
+        if (document.getElementById("contents-edit-type").value == "time") {
+            document.getElementById("contents-edit-type").value = "submit";
+            document.getElementById("contents-edit-type").dispatchEvent(new Event("change"));
+        }
+    } else {
+        document.getElementById("contents-edit-type-time-option").disabled = false;
+    }
+    updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-type").addEventListener("change", event => {
     if (document.getElementById("contents-edit-type").value == "time") {
@@ -1334,7 +1369,7 @@ document.getElementById("contents-edit-type").addEventListener("change", event =
         document.getElementById("contents-edit-time-field").style.display = "none";
         document.getElementById("schedule-edit-item-field").style.display = "";
     }
-    updateContentsDialogCurrentSubjectsSelect();
+    updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-time-start-delete").addEventListener("click", event => {
     document.getElementById("contents-edit-time-start").value = "";
@@ -1375,7 +1410,93 @@ document.getElementById("contents-edit-form").addEventListener("submit", event =
     const contentType = document.getElementById("contents-edit-content-type").value;
     changeKey.contentType = contentType;
     if (changeKey.contentType == "date") {
-        ;
+        const date = document.getElementById("contents-edit-date").value;
+        changeKey.date = date;
+        const period = document.getElementById("contents-edit-period").value;
+        if (period) changeKey.period = parseInt(period);
+    } else if (changeKey.contentType == "times") {
+        const times = parseInt(document.getElementById("contents-edit-times").value);
+        changeKey.times = times;
+        if (document.getElementById("contents-edit-schedule-scope").value == "user") {
+            changeKey.userId = USER_ID;
+        }
+    }
+    const subject = document.getElementById("contents-edit-subject-checkbox").checked ? document.getElementById("contents-edit-subject-select").value : document.getElementById("contents-edit-subject-input").value;
+    if (subject) changeKey.subject = subject;
+    if ((changeKey.contentType != "date" || changeKey.date) && (changeKey.contentType != "times" || changeKey.subject)) {
+        const editType = document.getElementById("contents-edit-type").value;
+        if (editType == "time") {
+            const startTime = document.getElementById("contents-edit-time-start").value.replace(/^0/, "");
+            const finishTime = document.getElementById("contents-edit-time-finish").value.replace(/^0/, "");
+            addChanges({
+                type: "content",
+                key: changeKey,
+                changes: [
+                    {
+                        method: "structuredChange",
+                        key: "time",
+                        change: {
+                            method: "edit",
+                            key: "startTime",
+                            value: startTime
+                        }
+                    },
+                    {
+                        method: "structuredChange",
+                        key: "time",
+                        change: {
+                            method: "edit",
+                            key: "finishTime",
+                            value: finishTime
+                        }
+                    }
+                ]
+            });
+        } else {
+            const method = document.getElementById("schedule-edit-item-method").value;
+            if (method == "add") {
+                const value = document.getElementById("schedule-edit-item-add-input").value;
+                addChanges({
+                    type: "content",
+                    key: changeKey,
+                    changes: [
+                        {
+                            method: "add",
+                            key: editType,
+                            value: value
+                        }
+                    ]
+                });
+            } else if (method == "delete") {
+                const deleteValue = document.getElementById("schedule-edit-item-delete-select").value;
+                addChanges({
+                    type: "content",
+                    key: changeKey,
+                    changes: [
+                        {
+                            method: "delete",
+                            key: editType,
+                            deleteValue: deleteValue
+                        }
+                    ]
+                });
+            } else if (method == "edit") {
+                const beforeValue = document.getElementById("schedule-edit-item-edit-before-select").value;
+                const afterValue = document.getElementById("schedule-edit-item-edit-input").value;
+                addChanges({
+                    type: "content",
+                    key: changeKey,
+                    changes: [
+                        {
+                            method: "edit",
+                            key: editType,
+                            editValue: beforeValue,
+                            value: afterValue
+                        }
+                    ]
+                });
+            }
+        }
     }
 });
 /**
@@ -1527,6 +1648,11 @@ function updateContentsEditDialog(initialValue = {}) {
             while (subjectSelect.firstChild) {
                 subjectSelect.removeChild(subjectSelect.firstChild);
             }
+            const otherSubjectOption = document.createElement("option");
+            subjectSelect.appendChild(otherSubjectOption);
+            otherSubjectOption.appendChild(document.createTextNode("その他"));
+            otherSubjectOption.value = "";
+            otherSubjectOption.id = "contents-edit-subject-select-other-option";
             if (subjects.length > 0) {
                 for (let i = 0; i < subjects.length; i++) {
                     const subjectOption = document.createElement("option");
@@ -1535,12 +1661,7 @@ function updateContentsEditDialog(initialValue = {}) {
                     subjectOption.value = subjects[i];
                 }
                 subjectSelect.value = subjects[0];
-            } else {
-                const subjectOption = document.createElement("option");
-                subjectSelect.appendChild(subjectOption);
-                subjectOption.appendChild(document.createTextNode("選択できる教科がありません。"));
-                subjectOption.value = "";
-                subjectSelect.value = "";
+                subjectSelect.dataset.initialValue = subjects[0];
             }
         }
     }
@@ -1555,6 +1676,7 @@ function updateContentsEditDialog(initialValue = {}) {
     document.getElementById("contents-edit-time-start").value = "";
     document.getElementById("contents-edit-time-finish").value = "";
     // 授業内容
+    updateContentsDialogCurrentItemsSelect();
     updateContentsDialogCurrentSubjectsSelect();
 }
 

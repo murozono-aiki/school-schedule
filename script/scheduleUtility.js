@@ -49,7 +49,7 @@
  * @typedef {object} dateContentChangeData
  * @property {"content"} type
  * @property {dateContentChangeKey} key
- * @property {(editChange | addChange | deleteChange)[]} changes
+ * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
  * @typedef {object} timesContentChangeKey
@@ -64,7 +64,7 @@
  * @typedef {object} timesContentChangeData
  * @property {"content"} type
  * @property {timesContentChangeKey} key
- * @property {(editChange | addChange | deleteChange)[]} changes
+ * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
  * @typedef {dateContentChangeData | timesContentChangeData} contentChangeData
