@@ -1,18 +1,18 @@
 /**
  * @typedef {object} editChange
  * @property {"edit"} method
- * @property {string} key
+ * @property {string | number} key
  * @property {string} [editValue] 配列の場合
- * @property {string} value
+ * @property {string} value 空白・空文字等で削除
  */
 /**
- * @typedef {object} addChange
+ * @typedef {object} addChange 配列の場合
  * @property {"add"} method
  * @property {string} key
  * @property {string} value
  */
 /**
- * @typedef {object} deleteChange
+ * @typedef {object} deleteChange 配列の場合
  * @property {"delete"} method
  * @property {string} key
  * @property {string} deleteValue
@@ -49,7 +49,7 @@
  * @typedef {object} dateContentChangeData
  * @property {"content"} type
  * @property {dateContentChangeKey} key
- * @property {(editChange | addChange | deleteChange)[]} changes
+ * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
  * @typedef {object} timesContentChangeKey
@@ -64,7 +64,7 @@
  * @typedef {object} timesContentChangeData
  * @property {"content"} type
  * @property {timesContentChangeKey} key
- * @property {(editChange | addChange | deleteChange)[]} changes
+ * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
  * @typedef {dateContentChangeData | timesContentChangeData} contentChangeData
@@ -126,8 +126,8 @@
  * @property {string} date
  * @property {number} [period]
  * @property {string} subject
- * @property {string[]} [homework]
  * @property {string[]} [submit]
+ * @property {string[]} [homework]
  * @property {string[]} [bring]
  * @property {string[]} [event]
  * @property {string[]} [note]
@@ -141,8 +141,8 @@
  * @property {number} times
  * @property {string} [userId]
  * @property {string} subject
- * @property {string[]} [homework]
  * @property {string[]} [submit]
+ * @property {string[]} [homework]
  * @property {string[]} [bring]
  * @property {string[]} [event]
  * @property {string[]} [note]
@@ -726,11 +726,11 @@ function getOneDayContents(date, userId) {
  * 1日の時間割を取得する
  * @param {string} date - 日付（yyyy-MM-dd）
  * @param {string} userId - ユーザーid
- * @return {{schedule:{subject:string,time:string,homework:string[],submit:string[],bring:string[],event:string[],note:string[]}[][],scheduleType:string}}
+ * @return {{schedule:{subject:string,time:string,submit:string[],homework:string[],bring:string[],event:string[],note:string[]}[][],scheduleType:string}}
  */
 function getSchedule(date, userId) {
   /**
-   * @type {{schedule:{subject:string,time:string,homework:string[],submit:string[],bring:string[],event:string[],note:string[]}[][],scheduleType:string}}
+   * @type {{schedule:{subject:string,time:string,submit:string[],homework:string[],bring:string[],event:string[],note:string[]}[][],scheduleType:string}}
    */
   const result = {schedule: [], scheduleType: ""};
   
@@ -761,7 +761,7 @@ function getSchedule(date, userId) {
   for (let i = 1; i < subjects.length; i++) {
     if (!subjects[i].subject[0]) continue;
     if (!subjects[i].scheduleType || !subjects[i].scheduleType.scheduleType) {
-      result.scheduleType += " +";
+      result.scheduleType += " *";
       lastScheduleType = "";
       continue;
     }
@@ -812,10 +812,10 @@ function getSchedule(date, userId) {
       for (let k = 0; k < result.schedule[i].length; k++) {
         if (!contentObjects[j]) continue;
         if (result.schedule[i][k].subject == contentObjects[j].subject || (result.schedule[i][k].subject == "その他" && !contentObjects[j].subject)) {
-          result.schedule[i][k].homework = (result.schedule[i][k].homework || []).concat(contentObjects[j].homework || []);
-          result.schedule[i][k].homework = result.schedule[i][k].homework.filter(value => value);
           result.schedule[i][k].submit = (result.schedule[i][k].submit || []).concat(contentObjects[j].submit || []);
           result.schedule[i][k].submit = result.schedule[i][k].submit.filter(value => value);
+          result.schedule[i][k].homework = (result.schedule[i][k].homework || []).concat(contentObjects[j].homework || []);
+          result.schedule[i][k].homework = result.schedule[i][k].homework.filter(value => value);
           result.schedule[i][k].bring = (result.schedule[i][k].bring || []).concat(contentObjects[j].bring || []);
           result.schedule[i][k].bring = result.schedule[i][k].bring.filter(value => value);
           result.schedule[i][k].event = (result.schedule[i][k].event || []).concat(contentObjects[j].event || []);

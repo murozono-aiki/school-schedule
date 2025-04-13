@@ -55,6 +55,8 @@ dialog {
     border-radius: 7px;
     min-width: 40vw;
     overscroll-behavior: contain;
+    max-width: 80vw;
+    max-height: 90vh;
 }
 .form-submit {
     text-align: right;

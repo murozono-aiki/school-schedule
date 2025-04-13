@@ -17,6 +17,9 @@ h5 {
     font-size: 1rem;
     font-weight: normal;
 }
+#schedule {
+    white-space: pre-wrap;
+}
 #schedule > div.scheduleType {
     margin-top: 2rem;
     font-size: 1.3rem;

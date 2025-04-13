@@ -2,3 +2,26 @@
     --border-color: #ffa6b6;
     --hover-color: #fff3f5;
 }
+
+#menu > ul li {
+    list-style: none;
+}
+#menu li button, #menu li a {
+    display: inline-block;
+    cursor: pointer;
+    background: none;
+    border: 2px solid var(--border-color);
+    border-radius: 3px;
+    padding: 7px 12px;
+    --border-color: #2f5a80;
+    --hover-color: #e0f0ff;
+    text-decoration: none;
+    color: inherit;
+    margin: 0.4rem 0;
+}
+#menu li button:hover, #menu li a:hover {
+    background-color: var(--hover-color);
+}
+#menu li button:focus-visible, #menu li a:focus-visible {
+    background-color: var(--hover-color);
+}
