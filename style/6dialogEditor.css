@@ -1,3 +1,7 @@
+#schedule-edit-dialog, #contents-edit-dialog {
+    width: 80vw;
+}
+
 #schedule-edit-dialog-close, #contents-edit-dialog-close {
     --border-color: #ffa6b6;
     --hover-color: #fff3f5;

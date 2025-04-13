@@ -107,7 +107,10 @@
             <div id="schedule-edit-period-schedule-type-field">
                 <div>
                     <label for="schedule-edit-period-schedule-type">時間割：</label>
-                    <select id="schedule-edit-period-schedule-type"></select>
+                    <select id="schedule-edit-period-schedule-type" aria-describedby="schedule-edit-period-schedule-type-description"></select>
+                    <div class="description" id="schedule-edit-period-schedule-type-description">
+                        「-」を選択した場合は、「日付」の日の「時間割」が使用されます。
+                    </div>
                 </div>
                 <div>
                     <label for="schedule-edit-period-schedule-type-period">時間割の時限：</label>
