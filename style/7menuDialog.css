@@ -3,6 +3,12 @@
     --hover-color: #fff3f5;
 }
 
+#menu > ul {
+    padding-left: 0;
+}
+#menu > ul > li > ul {
+    padding-left: 1rem;
+}
 #menu > ul li {
     list-style: none;
 }
