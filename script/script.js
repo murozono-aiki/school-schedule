@@ -1358,6 +1358,26 @@ document.getElementById("schedule-edit-item-method").addEventListener("change", 
         document.getElementById("schedule-edit-item-edit-field").style.display = "";
     }
 });
+document.getElementById("contents-edit-form").addEventListener("submit", event => {
+    /** @type {dateContentChangeKey | timesContentChangeKey} */
+    const changeKey = {};
+    const scopeType = document.getElementById("contents-edit-scope-type").value;
+    changeKey.scopeType = scopeType;
+    if (scopeType == "general") {
+        const scopeGrade = document.getElementById("contents-edit-scope-grade").value;
+        changeKey.scopeName = parseInt(scopeGrade);
+    } else if (scopeType == "class") {
+        const scopeClass = document.getElementById("contents-edit-scope-class").value;
+        changeKey.scopeName = scopeClass;
+    } else if (scopeType == "user") {
+        changeKey.scopeName = USER_ID;
+    }
+    const contentType = document.getElementById("contents-edit-content-type").value;
+    changeKey.contentType = contentType;
+    if (changeKey.contentType == "date") {
+        ;
+    }
+});
 /**
  * 授業内容を編集するダイアログを更新する関数
  * @param {{scopeType?:("whole"|"general"|"class"|"user"), scopeName?:string, contentType?:("date"|"times"), date?:string, editType?:("time"|"submit"|"homework"|"bring"|"event"|"note")}} [initialValue]
