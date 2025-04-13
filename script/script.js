@@ -1211,11 +1211,28 @@ const updateContentsDialogCurrentItemsSelect = () => {
     const userId = document.getElementById("contents-edit-schedule-scope").value == "user" ? USER_ID : undefined;
     const subject = (document.getElementById("contents-edit-subject-checkbox").checked ? document.getElementById("contents-edit-subject-select").value : document.getElementById("contents-edit-subject-input").value) || undefined;
     const editType = document.getElementById("contents-edit-type").value;
+    let todaySubjectCount = 0;
+    if (contentType == "times") {
+        let todaySubjects;
+        if (document.getElementById("contents-edit-schedule-scope").value == "class") {
+            if (scope.scopeType == "class") {
+                todaySubjects = getClassSubjects(TODAY_DATE_STRING, scope.scopeName);
+            } else {
+                todaySubjects = getClassSubjects(TODAY_DATE_STRING, data.user[USER_ID].className);
+            }
+        } else {
+            todaySubjects = getSubjects(TODAY_DATE_STRING, USER_ID);
+        }
+        for (let i = 1; i < todaySubjects.length; i++) {
+            const subjectObject = todaySubjects[i];
+            if (subjectObject.subject.includes(subject)) todaySubjectCount++;
+        }
+    }
     let is_contentsSubjects = false;
     for (let contents of data.contents) {
         if (!contents) continue;
         if (contents.scope.scopeType == scope.scopeType && contents.scope.name == scope.scopeName && contents.contentType == contentType && contents.subject == subject) {
-            if ((contents.contentType == "date" && contents.date == date && contents.period == period) || (contents.contentType == "times" && contents.times == times && contents.userId == userId)) {
+            if ((contents.contentType == "date" && contents.date == date && contents.period == period) || (contents.contentType == "times" && contents.times == times + todaySubjectCount && contents.userId == userId)) {
                 if (contents[editType] && contents[editType].length > 0) {
                     const itemSelects = [
                         document.getElementById("schedule-edit-item-delete-select"),
@@ -1291,9 +1308,18 @@ document.getElementById("contents-edit-content-type").addEventListener("change",
     if (value == "date") {
         document.getElementById("contents-edit-date-field").style.display = "";
         document.getElementById("contents-edit-times-field").style.display = "none";
+        document.getElementById("contents-edit-scope-type-whole-option").disabled = false;
+        document.getElementById("contents-edit-scope-type-general-option").disabled = false;
     } else if (value == "times") {
         document.getElementById("contents-edit-date-field").style.display = "none";
         document.getElementById("contents-edit-times-field").style.display = "";
+        document.getElementById("contents-edit-scope-type-whole-option").disabled = true;
+        document.getElementById("contents-edit-scope-type-general-option").disabled = true;
+        const scopeTypeValue = document.getElementById("contents-edit-scope-type").value;
+        if (scopeTypeValue == "whole" || scopeTypeValue == "general") {
+            document.getElementById("contents-edit-scope-type").value = "class";
+            document.getElementById("contents-edit-scope-type").dispatchEvent(new Event("change"));
+        }
     }
     updateContentsDialogCurrentItemsSelect();
     updateContentsDialogCurrentSubjectsSelect();
@@ -1407,6 +1433,7 @@ document.getElementById("contents-edit-form").addEventListener("submit", event =
     } else if (scopeType == "user") {
         changeKey.scopeName = USER_ID;
     }
+    const subject = document.getElementById("contents-edit-subject-checkbox").checked ? document.getElementById("contents-edit-subject-select").value : document.getElementById("contents-edit-subject-input").value;
     const contentType = document.getElementById("contents-edit-content-type").value;
     changeKey.contentType = contentType;
     if (changeKey.contentType == "date") {
@@ -1415,13 +1442,24 @@ document.getElementById("contents-edit-form").addEventListener("submit", event =
         const period = document.getElementById("contents-edit-period").value;
         if (period) changeKey.period = parseInt(period);
     } else if (changeKey.contentType == "times") {
-        const times = parseInt(document.getElementById("contents-edit-times").value);
-        changeKey.times = times;
-        if (document.getElementById("contents-edit-schedule-scope").value == "user") {
+        let times = parseInt(document.getElementById("contents-edit-times").value);
+        let todaySubjects;
+        if (document.getElementById("contents-edit-schedule-scope").value == "class") {
+            if (scopeType == "class") {
+                todaySubjects = getClassSubjects(TODAY_DATE_STRING, changeKey.scopeName);
+            } else {
+                todaySubjects = getClassSubjects(TODAY_DATE_STRING, data.user[USER_ID].className);
+            }
+        } else {
+            todaySubjects = getSubjects(TODAY_DATE_STRING, USER_ID);
             changeKey.userId = USER_ID;
         }
+        for (let i = 1; i < todaySubjects.length; i++) {
+            const subjectObject = todaySubjects[i];
+            if (subjectObject.subject.includes(subject)) times++;
+        }
+        changeKey.times = times;
     }
-    const subject = document.getElementById("contents-edit-subject-checkbox").checked ? document.getElementById("contents-edit-subject-select").value : document.getElementById("contents-edit-subject-input").value;
     if (subject) changeKey.subject = subject;
     if ((changeKey.contentType != "date" || changeKey.date) && (changeKey.contentType != "times" || changeKey.subject)) {
         const editType = document.getElementById("contents-edit-type").value;
@@ -1675,6 +1713,9 @@ function updateContentsEditDialog(initialValue = {}) {
     // 時刻
     document.getElementById("contents-edit-time-start").value = "";
     document.getElementById("contents-edit-time-finish").value = "";
+    // textarea
+    document.getElementById("schedule-edit-item-add-input").value = "";
+    document.getElementById("schedule-edit-item-edit-input").value = "";
     // 授業内容
     updateContentsDialogCurrentItemsSelect();
     updateContentsDialogCurrentSubjectsSelect();
