@@ -54,7 +54,9 @@ try {
     API_URL = localStorage.getItem("school-schedule_URL");
     data = JSON.parse(localStorage.getItem("school-schedule_data"));
     let lastCurrentDate = sessionStorage.getItem("currentDate");
-    if (lastCurrentDate) currentDate = lastCurrentDate;
+    if (lastCurrentDate && dateStringToDate(lastCurrentDate).getTime() >= dateStringToDate(TODAY_DATE_STRING).getTime()) {
+        currentDate = lastCurrentDate;
+    }
 } catch (error) {
     console.error(error);
 }

@@ -761,7 +761,7 @@ function getSchedule(date, userId) {
   for (let i = 1; i < subjects.length; i++) {
     if (!subjects[i].subject[0]) continue;
     if (!subjects[i].scheduleType || !subjects[i].scheduleType.scheduleType) {
-      result.scheduleType += " +";
+      result.scheduleType += " *";
       lastScheduleType = "";
       continue;
     }
