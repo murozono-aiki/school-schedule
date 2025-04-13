@@ -797,10 +797,14 @@ function getSchedule(date, userId) {
     if (!end) {
       result.scheduleType += start;
     } else {
-      result.scheduleType += start + "-" + end;
+      if (end = start + 1) {
+        result.scheduleType += start + "," + end;
+      } else {
+        result.scheduleType += start + "-" + end;
+      }
     }
   }
-  if (/^(\+| )+$/.test(result.scheduleType)) result.scheduleType = "他";
+  if (/^(\*| )+$/.test(result.scheduleType)) result.scheduleType = "他";
 
   const contents = getOneDayContents(date, userId);
   // i：時限、j：contentObjectsのインデックス、k：result.schedule[i]のインデックス
