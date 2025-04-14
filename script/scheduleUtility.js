@@ -797,7 +797,7 @@ function getSchedule(date, userId) {
     if (!end) {
       result.scheduleType += start;
     } else {
-      if (end = start + 1) {
+      if (end == start + 1) {
         result.scheduleType += start + "," + end;
       } else {
         result.scheduleType += start + "-" + end;
