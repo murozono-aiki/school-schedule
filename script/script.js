@@ -1613,6 +1613,8 @@ function updateContentsEditDialog(initialValue = {}) {
     // contentType
     if (initialValue.contentType) {
         document.getElementById("contents-edit-content-type").value = initialValue.contentType;
+    } else {
+        document.getElementById("contents-edit-content-type").value = "times";
     }
     document.getElementById("contents-edit-content-type").dispatchEvent(new Event("change"));
     // date
