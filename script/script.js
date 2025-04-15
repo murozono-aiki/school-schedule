@@ -1339,6 +1339,9 @@ document.getElementById("contents-edit-period-add").addEventListener("click", ev
     document.getElementById("contents-edit-period-add").dataset.nextPeriod = (newPeriod + 1).toString();
     document.getElementById("contents-edit-period-add").textContent = (newPeriod + 1) + "時限目を追加";
 });
+document.getElementById("contents-edit-times").addEventListener("change", event => {
+    updateContentsDialogCurrentItemsSelect();
+});
 document.getElementById("contents-edit-times-add").dataset.nextTimes = "3";
 document.getElementById("contents-edit-times-add").addEventListener("click", event => {
     const newTimes = parseInt(document.getElementById("contents-edit-times-add").dataset.nextTimes);
@@ -1362,6 +1365,7 @@ document.getElementById("contents-edit-subject-checkbox").addEventListener("chan
         document.getElementById("contents-edit-subject-select-container").style.display = "none";
         document.getElementById("contents-edit-subject-input-container").style.display = "";
     }
+    updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-subject-select").addEventListener("change", event => {
     if (!document.getElementById("contents-edit-subject-select").value) {
