@@ -222,8 +222,8 @@
                 </div>
                 <div>
                     <label for="contents-edit-period">時限：</label>
-                    <select id="contents-edit-period"></select>
-                    <button type="button" id="contents-edit-period-add" aria-describedby="contents-edit-period-description">1時限目を追加</button>
+                    <select id="contents-edit-period" aria-describedby="contents-edit-period-description"></select>
+                    <button type="button" id="contents-edit-period-add">1時限目を追加</button>
                     <div class="description" id="contents-edit-period-description">
                         「-」を選択した場合は、「日付」の日付の一番最初の「教科」の教科の授業になります。
                     </div>
@@ -232,8 +232,11 @@
             <div id="contents-edit-times-field">
                 <div>
                     <label for="contents-edit-times">回数：</label>
-                    <select id="contents-edit-times"></select>
+                    <select id="contents-edit-times" aria-describedby="contents-edit-times-description"></select>
                     <button type="button" id="contents-edit-times-add">3回後を追加</button>
+                    <div class="description" id="contents-edit-times-description">
+                        「明日」以降の最初の「教科」の授業が1回後の授業となります。
+                    </div>
                 </div>
                 <div>
                     <label for="contents-edit-schedule-scope">参照する時間割：</label>
