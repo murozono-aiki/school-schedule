@@ -1295,6 +1295,13 @@ document.getElementById("contents-edit-scope-type").addEventListener("change", e
         document.getElementById("contents-edit-scope-grade-container").style.display = "none";
         document.getElementById("contents-edit-scope-class-container").style.display = "";
     }
+    if (value == "whole" || value == "general") {
+        const contentTypeSelect = document.getElementById("contents-edit-content-type");
+        if (contentTypeSelect.value == "times") {
+            contentTypeSelect.value = "date";
+            contentTypeSelect.dispatchEvent(new Event("change"));
+        }
+    }
     updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-scope-grade").addEventListener("change", event => {
@@ -1308,13 +1315,9 @@ document.getElementById("contents-edit-content-type").addEventListener("change",
     if (value == "date") {
         document.getElementById("contents-edit-date-field").style.display = "";
         document.getElementById("contents-edit-times-field").style.display = "none";
-        document.getElementById("contents-edit-scope-type-whole-option").disabled = false;
-        document.getElementById("contents-edit-scope-type-general-option").disabled = false;
     } else if (value == "times") {
         document.getElementById("contents-edit-date-field").style.display = "none";
         document.getElementById("contents-edit-times-field").style.display = "";
-        document.getElementById("contents-edit-scope-type-whole-option").disabled = true;
-        document.getElementById("contents-edit-scope-type-general-option").disabled = true;
         const scopeTypeValue = document.getElementById("contents-edit-scope-type").value;
         if (scopeTypeValue == "whole" || scopeTypeValue == "general") {
             document.getElementById("contents-edit-scope-type").value = "class";
@@ -1450,12 +1453,12 @@ document.getElementById("contents-edit-form").addEventListener("submit", event =
         let todaySubjects;
         if (document.getElementById("contents-edit-schedule-scope").value == "class") {
             if (scopeType == "class") {
-                todaySubjects = getClassSubjects(TODAY_DATE_STRING, changeKey.scopeName);
+                todaySubjects = getClassSubjects(dateToString(new Date()), changeKey.scopeName);
             } else {
-                todaySubjects = getClassSubjects(TODAY_DATE_STRING, data.user[USER_ID].className);
+                todaySubjects = getClassSubjects(dateToString(new Date()), data.user[USER_ID].className);
             }
         } else {
-            todaySubjects = getSubjects(TODAY_DATE_STRING, USER_ID);
+            todaySubjects = getSubjects(dateToString(new Date()), USER_ID);
             changeKey.userId = USER_ID;
         }
         for (let i = 1; i < todaySubjects.length; i++) {
@@ -1614,7 +1617,7 @@ function updateContentsEditDialog(initialValue = {}) {
     if (initialValue.contentType) {
         document.getElementById("contents-edit-content-type").value = initialValue.contentType;
     } else {
-        document.getElementById("contents-edit-content-type").value = "date";
+        document.getElementById("contents-edit-content-type").value = "times";
     }
     document.getElementById("contents-edit-content-type").dispatchEvent(new Event("change"));
     // date
