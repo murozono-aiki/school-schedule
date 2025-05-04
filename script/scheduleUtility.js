@@ -339,7 +339,7 @@ function getClassSubjects(date, className, userId = undefined) {
       for (let j = 0; j < object.periodScheduleType.length; j++) {
         if (!object.periodScheduleType[j]) continue;
         if (!result[j]) result[j] = {subject: [], scheduleType: {}, time: {}};
-        const scheduleType_ = object.periodScheduleType[j].scheduleType || object.scheduleType;
+        const scheduleType_ = object.periodScheduleType[j].scheduleType || object.scheduleType || result[j].scheduleType.scheduleType;
         const period_ = object.periodScheduleType[j].period || j;
         if (classTable) {
           if (classTable[scheduleType_] && classTable[scheduleType_].schedule) {
@@ -475,7 +475,7 @@ function getSubjects(date, userId) {
     for (let i = 0; i < userSchedule.periodScheduleType.length; i++) {
       if (!userSchedule.periodScheduleType[i]) continue;
       if (!result[i]) result[i] = {subject: [], scheduleType: {}, time: {}};
-      const scheduleType_ = userSchedule.periodScheduleType[i].scheduleType || userSchedule.scheduleType;
+      const scheduleType_ = userSchedule.periodScheduleType[i].scheduleType || userSchedule.scheduleType || result[i].scheduleType.scheduleType;
       const period_ = userSchedule.periodScheduleType[i].period || i;
       if (classTable) {
         if (classTable[scheduleType_] && classTable[scheduleType_].schedule) {
