@@ -632,7 +632,11 @@ const updateEditDialogCurrentSubjectsSelect = () => {
                     for (let subjectSelect of subjectSelects) {
                         const subjectOption = document.createElement("option");
                         subjectSelect.appendChild(subjectOption);
-                        subjectOption.appendChild(document.createTextNode(subjects[i]));
+                        if (subjects[i] == "[delete]") {
+                            subjectOption.appendChild(document.createTextNode("(削除)"));
+                        } else {
+                            subjectOption.appendChild(document.createTextNode(subjects[i]));
+                        }
                         subjectOption.value = subjects[i];
                     }
                 }
@@ -1100,6 +1104,10 @@ function updateScheduleEditDialog(initialValue = {}) {
         periodScheduleTypeDeleteOption.appendChild(document.createTextNode("-"));
         scheduleTypeDeleteOption.value = "";
         periodScheduleTypeDeleteOption.value = "";
+        const scheduleTypeNotInheritOption = document.createElement("option");
+        scheduleTypeSelect.appendChild(scheduleTypeNotInheritOption);
+        scheduleTypeNotInheritOption.appendChild(document.createTextNode("(継承を削除)"));
+        scheduleTypeNotInheritOption.value = "[not inherit]";
         if (data.settings.scheduleTypeOrder) {
             for (let i = 0; i < data.settings.scheduleTypeOrder.length; i++) {
                 if (!data.settings.scheduleTypeOrder[i]) continue;
@@ -1165,11 +1173,21 @@ function updateScheduleEditDialog(initialValue = {}) {
             document.getElementById("schedule-edit-subject-add-select"),
             document.getElementById("schedule-edit-subject-edit-select")
         ];
-        const subjects = getAllSubjects(USER_ID);
+
         for (let subjectSelect of subjectSelects) {
             while (subjectSelect.firstChild) {
                 subjectSelect.removeChild(subjectSelect.firstChild);
             }
+        }
+
+        const deleteOption = document.createElement("option");
+        subjectSelects[0].appendChild(deleteOption);
+        deleteOption.appendChild(document.createTextNode("(削除)"));
+        deleteOption.value = "[delete]";
+        subjectSelects[0].appendChild(document.createElement("hr"));
+
+        const subjects = getAllSubjects(USER_ID);
+        for (let subjectSelect of subjectSelects) {
             if (subjects.length > 0) {
                 for (let i = 0; i < subjects.length; i++) {
                     const subjectOption = document.createElement("option");

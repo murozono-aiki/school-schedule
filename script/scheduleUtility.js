@@ -339,7 +339,7 @@ function getClassSubjects(date, className, userId = undefined) {
       for (let j = 0; j < object.periodScheduleType.length; j++) {
         if (!object.periodScheduleType[j]) continue;
         if (!result[j]) result[j] = {subject: [], scheduleType: {}, time: {}};
-        const scheduleType_ = object.periodScheduleType[j].scheduleType || object.scheduleType;
+        const scheduleType_ = object.periodScheduleType[j].scheduleType || object.scheduleType || result[j].scheduleType.scheduleType;
         const period_ = object.periodScheduleType[j].period || j;
         if (classTable) {
           if (classTable[scheduleType_] && classTable[scheduleType_].schedule) {
@@ -367,7 +367,7 @@ function getClassSubjects(date, className, userId = undefined) {
         if (!object.contents[j]) continue;
         if (!result[j]) result[j] = {subject: [], scheduleType: {}, time: {}};
         if (object.contents[j].subject && object.contents[j].subject.some(value => value)) {
-          result[j].subject = object.contents[j].subject.filter(value => value);
+          result[j].subject = object.contents[j].subject.filter(value => value && value != "[delete]");
           result[j].scheduleType = {};
         }
         if (object.contents[j].time) {
@@ -475,7 +475,7 @@ function getSubjects(date, userId) {
     for (let i = 0; i < userSchedule.periodScheduleType.length; i++) {
       if (!userSchedule.periodScheduleType[i]) continue;
       if (!result[i]) result[i] = {subject: [], scheduleType: {}, time: {}};
-      const scheduleType_ = userSchedule.periodScheduleType[i].scheduleType || userSchedule.scheduleType;
+      const scheduleType_ = userSchedule.periodScheduleType[i].scheduleType || userSchedule.scheduleType || result[i].scheduleType.scheduleType;
       const period_ = userSchedule.periodScheduleType[i].period || i;
       if (classTable) {
         if (classTable[scheduleType_] && classTable[scheduleType_].schedule) {
@@ -503,7 +503,7 @@ function getSubjects(date, userId) {
       if (!userSchedule.contents[i]) continue;
       if (!result[i]) result[i] = {subject: [], scheduleType: {}, time: {}};
       if (userSchedule.contents[i].subject && userSchedule.contents[i].subject.some(value => value)) {
-        result[i].subject = userSchedule.contents[i].subject.filter(value => value);
+        result[i].subject = userSchedule.contents[i].subject.filter(value => value && value != "[delete]");
         result[i].scheduleType = {};
       }
       if (userSchedule.contents[i].time) {
