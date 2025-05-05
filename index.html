@@ -95,7 +95,10 @@
             <div id="schedule-edit-schedule-type-field">
                 <div>
                     <label for="schedule-edit-schedule-type">時間割：</label>
-                    <select id="schedule-edit-schedule-type"></select>
+                    <select id="schedule-edit-schedule-type" aria-describedby="schedule-edit-schedule-type-description"></select>
+                    <div class="description" id="schedule-edit-schedule-type-description">
+                        「(継承を削除)」を選択した場合は、上位の適用範囲による「時間割」が適用されなくなります。
+                    </div>
                 </div>
             </div>
             <div id="schedule-edit-time-type-field">
@@ -136,7 +139,10 @@
                     </div>
                     <div id="schedule-edit-subject-add-select-container">
                         <label for="schedule-edit-subject-add-select">追加する教科：</label>
-                        <select id="schedule-edit-subject-add-select"></select>
+                        <select id="schedule-edit-subject-add-select" aria-describedby="schedule-edit-subject-add-select-description"></select>
+                        <div class="description" id="schedule-edit-subject-add-select-description">
+                            「(削除)」を選択した場合は、継承された教科を全て削除します。
+                        </div>
                     </div>
                     <div id="schedule-edit-subject-add-input-container">
                         <label for="schedule-edit-subject-add-input">追加する教科：</label>
