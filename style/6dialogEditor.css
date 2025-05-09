@@ -36,3 +36,15 @@
     width: 90%;
     height: 4rem;
 }
+
+@media (prefers-color-scheme: dark) {
+    #schedule-edit-dialog-close, #contents-edit-dialog-close {
+        --border-color: #6e434b;
+        --hover-color: #484344;
+    }
+
+    #schedule-edit-dialog form button[type="submit"], #contents-edit-dialog form button[type="submit"] {
+        --border-color: #676700;
+        --hover-color: #434338;
+    }
+}

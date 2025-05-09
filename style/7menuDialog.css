@@ -31,3 +31,15 @@
 #menu li button:focus-visible, #menu li a:focus-visible {
     background-color: var(--hover-color);
 }
+
+@media (prefers-color-scheme: dark) {
+    #menu-dialog-close {
+        --border-color: #6e434b;
+        --hover-color: #484344;
+    }
+
+    #menu li button, #menu li a {
+        --border-color: #274d6f;
+        --hover-color: #434b54;
+    }
+}

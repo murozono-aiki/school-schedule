@@ -35,3 +35,15 @@
 #date-table .selected {
     color: #b60000;
 }
+
+@media (prefers-color-scheme: dark) {
+    #date-table th:first-child {
+        color: #d06a6a; /* 日曜日 */
+    }
+    #date-table th:last-child {
+        color: #8a8ad9; /* 土曜日 */
+    }
+    #date-table .selected {
+        color: #dc5b5b;
+    }
+}

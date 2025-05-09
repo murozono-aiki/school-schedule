@@ -26,10 +26,16 @@ h5 {
 }
 #schedule div.time {
     font-size: 0.9rem;
-    color: #595959;
+    color: var(--sub-color);
     margin-top: 0.3rem;
 }
 #schedule ul {
     margin-top: 0.5rem;
     margin-bottom: 0;
+}
+
+@media (prefers-color-scheme: dark) {
+    h3 {
+        color: #b1c4d1;
+    }
 }

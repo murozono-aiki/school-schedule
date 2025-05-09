@@ -2,20 +2,20 @@
  * @typedef {object} editChange
  * @property {"edit"} method
  * @property {string | number} key
- * @property {string} [editValue] 配列の場合
- * @property {string} value 空白・空文字等で削除
+ * @property {string | number} [editValue] 配列の場合
+ * @property {string | number} value 空白・空文字等で削除
  */
 /**
  * @typedef {object} addChange 配列の場合
  * @property {"add"} method
  * @property {string} key
- * @property {string} value
+ * @property {string | number} value
  */
 /**
  * @typedef {object} deleteChange 配列の場合
  * @property {"delete"} method
  * @property {string} key
- * @property {string} deleteValue
+ * @property {string | number} deleteValue
  */
 /**
  * @typedef {object} structuredChange
@@ -37,6 +37,12 @@
  * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
+ * @typedef {object} scheduleDeleteChangeData
+ * @property {"schedule"} type
+ * @property {scheduleChangeKey} key
+ * @property {"delete"} changes
+ */
+/**
  * @typedef {object} dateContentChangeKey
  * @property {"date"} contentType
  * @property {"whole" | "general" | "class" | "user"} scopeType
@@ -50,6 +56,12 @@
  * @property {"content"} type
  * @property {dateContentChangeKey} key
  * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
+ */
+/**
+ * @typedef {object} dateContentDeleteChangeData
+ * @property {"content"} type
+ * @property {dateContentChangeKey} key
+ * @property {"delete"} changes
  */
 /**
  * @typedef {object} timesContentChangeKey
@@ -67,7 +79,13 @@
  * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
- * @typedef {dateContentChangeData | timesContentChangeData} contentChangeData
+ * @typedef {object} timesContentDeleteChangeData
+ * @property {"content"} type
+ * @property {timesContentChangeKey} key
+ * @property {"delete"} changes
+ */
+/**
+ * @typedef {dateContentChangeData | dateContentDeleteChangeData | timesContentChangeData | timesContentDeleteChangeData} contentChangeData
  */
 /**
  * @typedef {object} userChangeKey
@@ -80,6 +98,12 @@
  * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
+ * @typedef {object} userDeleteChangeData
+ * @property {"user"} type
+ * @property {userChangeKey} key
+ * @property {"delete"} changes
+ */
+/**
  * @typedef {object} classesChangeKey
  * @property {string} name
  */
@@ -88,6 +112,12 @@
  * @property {"classes"} type
  * @property {classesChangeKey} key
  * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
+ */
+/**
+ * @typedef {object} classesDeleteChangeData
+ * @property {"classes"} type
+ * @property {classesChangeKey} key
+ * @property {"delete"} changes
  */
 /**
  * @typedef {object} schoolChangeData
@@ -100,7 +130,7 @@
  * @property {(editChange | addChange | deleteChange | structuredChange)[]} changes
  */
 /**
- * @typedef {(scheduleChangeData | contentChangeData | userChangeData | classesChangeData | schoolChangeData | settingsChangeData)[]} changeData
+ * @typedef {(scheduleChangeData | scheduleDeleteChangeData | contentChangeData | userChangeData | userDeleteChangeData | classesChangeData | classesDeleteChangeData | schoolChangeData | settingsChangeData)[]} changeData
  */
 
 /**
