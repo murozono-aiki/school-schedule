@@ -4,7 +4,7 @@ body {
 header {
     position: sticky;
     top: 0;
-    background-color: white;
+    background-color: var(--background-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -17,7 +17,7 @@ h1 {
 }
 #load {
     font-size: 0.9rem;
-    color: #595959;
+    color: var(--sub-color);
 }
 
 h2 {
@@ -38,4 +38,11 @@ h2 {
 #today {
     --border-color: #54802f;
     --hover-color: #dcffbf;
+}
+
+@media (prefers-color-scheme: dark) {
+    #today {
+        --border-color: #406123;
+        --hover-color: #3f4937;
+    }
 }

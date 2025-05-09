@@ -4,7 +4,7 @@
 
 #schedule-edit fieldset legend {
     font-size: 0.9rem;
-    color: #595959;
+    color: var(--sub-color);
 }
 
 #schedule-edit input, #schedule-edit select {

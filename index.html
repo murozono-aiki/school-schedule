@@ -6,6 +6,8 @@
     <title>時間割</title>
     <link rel="icon" href="./favicon.ico">
     <link rel="manifest" href="./manifest.json">
+    <meta name="theme-color" content="#e0f0ff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#434b54" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="./style/0default.css">
     <link rel="stylesheet" href="./style/1headers.css">
     <link rel="stylesheet" href="./style/2calendar.css">
@@ -346,6 +348,13 @@
         </form>
     </dialog>
 
+    <dialog id="classDialog">
+        <p>
+            以下から、あなたのクラスを設定してください。
+        </p>
+        <a href="./user-settings/">全般設定</a>
+    </dialog>
+
     <dialog id="menu">
         <div class="form-submit">
             <button type="button" id="menu-dialog-close">閉じる</button>
@@ -362,14 +371,14 @@
                     </li>
                 </ul>
             </li>
-            <!--li>
+            <li>
                 全般設定
                 <ul>
                     <li>
-                        <a href="./settings/">全般設定ページに移動</a>
+                        <a href="./user-settings/">全般設定ページに移動</a>
                     </li>
                 </ul>
-            </li-->
+            </li>
         </ul>
     </dialog>
 
