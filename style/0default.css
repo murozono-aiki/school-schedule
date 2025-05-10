@@ -47,6 +47,18 @@ input, select, textarea {
     border-radius: 2px;
     background-color: var(--background-color);
 }
+input[type="text"] {
+    width: 10rem;
+}
+dialog {
+    border-radius: 7px;
+    min-width: 40vw;
+    overscroll-behavior: contain;
+    max-width: 80vw;
+    max-height: 90vh;
+    background-color: var(--background-color);
+    border-color: #666666;
+}
 details {
     margin-top: 20px;
     margin-bottom: 20px;
@@ -59,15 +71,6 @@ details > summary {
 }
 table {
     border-collapse: collapse;
-}
-dialog {
-    border-radius: 7px;
-    min-width: 40vw;
-    overscroll-behavior: contain;
-    max-width: 80vw;
-    max-height: 90vh;
-    background-color: var(--background-color);
-    border-color: #666666;
 }
 .form-submit {
     text-align: right;
