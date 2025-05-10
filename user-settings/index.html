@@ -6,10 +6,11 @@
     <title>設定 - 時間割</title>
     <link rel="icon" href="./../favicon.ico">
     <link rel="manifest" href="./../manifest.json">
-    <meta name="theme-color" content="#e0f0ff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#434b54" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#333333" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="./../style/0default.css">
     <link rel="stylesheet" href="./style/1header.css">
+    <link rel="stylesheet" href="./style/2forms.css">
 </head>
 <body>
     <header>
@@ -21,6 +22,11 @@
             <span id="load" role="status"></span>
         </div>
     </header>
-    <p>現在ページを編集中です。</p>
+
+    <h2>学年・クラス</h2>
+    <form id="className"></form>
+
+    <script src="./../script/scheduleUtility.js"></script>
+    <script src="./script/script.js"></script>
 </body>
 </html>
