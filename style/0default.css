@@ -77,7 +77,7 @@ table {
 }
 
 .gray {
-    color: #595959;
+    color: var(--sub-color);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -87,7 +87,7 @@ table {
     }
 
     html {
-        color: #cccccc;
+        color: #eeeeee;
     }
 
     button {
