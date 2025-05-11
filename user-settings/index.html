@@ -6,21 +6,95 @@
     <title>設定 - 時間割</title>
     <link rel="icon" href="./../favicon.ico">
     <link rel="manifest" href="./../manifest.json">
-    <meta name="theme-color" content="#e0f0ff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#434b54" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#333333" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="./../style/0default.css">
     <link rel="stylesheet" href="./style/1header.css">
+    <link rel="stylesheet" href="./style/2forms.css">
 </head>
 <body>
     <header>
         <div>
             <a href="./../" id="back-link">戻る</a>
-            <h1>設定</h1>
+            <h1>
+                設定
+                <span> - 時間割</span>
+            </h1>
         </div>
         <div>
             <span id="load" role="status"></span>
         </div>
     </header>
-    <p>現在ページを編集中です。</p>
+
+    <h2>学年・クラス</h2>
+    <form id="class-name">
+        <fieldset id="class-name-form">
+            <div>
+                <label for="class-name-grade">学年：</label>
+                <select id="class-name-grade"></select>
+                <button type="button" id="class-name-grade-add">1年を追加</button>
+            </div>
+            <div>
+                <label for="class-name-class-checkbox">新しくクラスを追加：</label>
+                <input type="checkbox" id="class-name-class-checkbox">
+            </div>
+            <div id="class-name-class-select-container">
+                <label for="class-name-class-select">クラス：</label>
+                <select id="class-name-class-select"></select>
+            </div>
+            <div id="class-name-class-input-container">
+                <label for="class-name-class-input">クラス：</label>
+                <input type="text" id="class-name-class-input">
+            </div>
+            <button type="submit">保存</button>
+        </fieldset>
+    </form>
+
+    <dialog id="firstDialog">
+        <p id="firstDialogMessage">
+            ユーザーidとURLを入力してください。
+        </p>
+        <form method="dialog" id="firstForm">
+            <label for="userId-input">ユーザーid</label><br>
+            <input type="text" id="userId-input"><br>
+            <label for="API-input">API URL</label><br>
+            <input type="url" id="API-input">
+            <div class="form-submit">
+                <button type="submit">決定</button>
+            </div>
+        </form>
+    </dialog>
+
+    <dialog id="classDialog">
+        <p id="classDialogMessage">
+            あなたのクラスを入力してください。
+        </p>
+        <form method="dialog" id="classForm">
+            <div>
+                <label for="grade-select">学年：</label>
+                <select id="grade-select"></select>
+                <button type="button" id="grade-select-add">1年を追加</button>
+            </div>
+            <div>
+                <label for="class-checkbox">新しくクラスを追加：</label>
+                <input type="checkbox" id="class-checkbox">
+            </div>
+            <div id="class-select-container">
+                <label for="class-select">クラス：</label>
+                <select id="class-select"></select>
+            </div>
+            <div id="class-input-container">
+                <label for="class-input">クラス：</label>
+                <input type="text" id="class-input">
+            </div>
+            <div class="form-submit">
+                <button type="submit">決定</button>
+            </div>
+        </form>
+    </dialog>
+    
+
+    <script src="./../script/scheduleUtility.js"></script>
+    <script src="./script/script.js"></script>
 </body>
 </html>

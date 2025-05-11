@@ -6,8 +6,8 @@
     <title>時間割</title>
     <link rel="icon" href="./favicon.ico">
     <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#e0f0ff" media="(prefers-color-scheme: light)">
-    <meta name="theme-color" content="#434b54" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#333333" media="(prefers-color-scheme: dark)">
     <link rel="stylesheet" href="./style/0default.css">
     <link rel="stylesheet" href="./style/1headers.css">
     <link rel="stylesheet" href="./style/2calendar.css">
@@ -349,10 +349,31 @@
     </dialog>
 
     <dialog id="classDialog">
-        <p>
-            以下から、あなたのクラスを設定してください。
+        <p id="classDialogMessage">
+            あなたのクラスを入力してください。
         </p>
-        <a href="./user-settings/">全般設定</a>
+        <form method="dialog" id="classForm">
+            <div>
+                <label for="grade-select">学年：</label>
+                <select id="grade-select"></select>
+                <button type="button" id="grade-select-add">1年を追加</button>
+            </div>
+            <div>
+                <label for="class-checkbox">新しくクラスを追加：</label>
+                <input type="checkbox" id="class-checkbox">
+            </div>
+            <div id="class-select-container">
+                <label for="class-select">クラス：</label>
+                <select id="class-select"></select>
+            </div>
+            <div id="class-input-container">
+                <label for="class-input">クラス：</label>
+                <input type="text" id="class-input">
+            </div>
+            <div class="form-submit">
+                <button type="submit">決定</button>
+            </div>
+        </form>
     </dialog>
 
     <dialog id="menu">

@@ -1,0 +1,36 @@
+h2 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.5rem;
+    font-weight: normal;
+}
+
+form > fieldset {
+    border: none;
+}
+
+form div {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+form div.description {
+    margin-top: 0.2rem;
+    font-size: 0.9rem;
+}
+
+form button:not([type="submit"]) {
+    margin-left: 0.2rem;
+    padding: 5px 9px;
+}
+
+form button[type="submit"] {
+    --border-color: #c5c500;
+    --hover-color: #ffffd6;
+}
+
+@media (prefers-color-scheme: dark) {
+    form button[type="submit"] {
+        --border-color: #676700;
+        --hover-color: #434338;
+    }
+}
