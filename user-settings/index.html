@@ -16,7 +16,10 @@
     <header>
         <div>
             <a href="./../" id="back-link">戻る</a>
-            <h1>設定</h1>
+            <h1>
+                設定
+                <span> - 時間割</span>
+            </h1>
         </div>
         <div>
             <span id="load" role="status"></span>
@@ -43,6 +46,7 @@
                 <label for="class-name-class-input">クラス：</label>
                 <input type="text" id="class-name-class-input">
             </div>
+            <button type="submit">保存</button>
         </fieldset>
     </form>
 
@@ -60,6 +64,35 @@
             </div>
         </form>
     </dialog>
+
+    <dialog id="classDialog">
+        <p id="classDialogMessage">
+            あなたのクラスを入力してください。
+        </p>
+        <form method="dialog" id="classForm">
+            <div>
+                <label for="grade-select">学年：</label>
+                <select id="grade-select"></select>
+                <button type="button" id="grade-select-add">1年を追加</button>
+            </div>
+            <div>
+                <label for="class-checkbox">新しくクラスを追加：</label>
+                <input type="checkbox" id="class-checkbox">
+            </div>
+            <div id="class-select-container">
+                <label for="class-select">クラス：</label>
+                <select id="class-select"></select>
+            </div>
+            <div id="class-input-container">
+                <label for="class-input">クラス：</label>
+                <input type="text" id="class-input">
+            </div>
+            <div class="form-submit">
+                <button type="submit">決定</button>
+            </div>
+        </form>
+    </dialog>
+    
 
     <script src="./../script/scheduleUtility.js"></script>
     <script src="./script/script.js"></script>

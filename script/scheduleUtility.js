@@ -926,6 +926,7 @@ function getAllSubjects(userId) {
   return result;
 }
 
+
 /**
  * 日付を文字列にして返す関数
  * @param {Date} date - 日付
@@ -937,3 +938,14 @@ function dateToString(date) {
 
 
 const scopeTypes = ["whole", "general", "class", "user"];
+
+function isValidScheduleData(sentData) {
+  if (sentData.schedule && sentData.contents && sentData.user && sentData.classes && sentData.school && sentData.settings) {
+    if (Array.isArray(sentData.schedule) && Array.isArray(sentData.contents)) {
+      if (!Array.isArray(sentData.user) && !Array.isArray(sentData.classes) && !Array.isArray(sentData.school) && !Array.isArray(sentData.settings)) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

@@ -91,35 +91,133 @@ document.getElementById("firstDialog").addEventListener("close", event => {
     if (!USER_ID || !API_URL) showFirstDialog("!値を入力してください。");
 });
 
+function classDialogInitializer() {
+    let maxGrade = 1;
+    let classNames = [];
+    for (let className in data.classes) {
+        const currentClassGrade = data.classes[className].grade;
+        if (currentClassGrade > maxGrade) {
+            maxGrade = currentClassGrade;
+        }
+        classNames.push(className);
+    }
+    classNames.sort((a, b) => {
+        const gradeDifference = data.classes[a].grade - data.classes[b].grade;
+        if (gradeDifference != 0) return gradeDifference;
+        return a.localeCompare(b, 'ja');
+    });
+
+    const gradeSelect = document.getElementById("grade-select");
+    while (gradeSelect.firstChild) {
+        gradeSelect.removeChild(gradeSelect.firstChild);
+    }
+    for (let i = 1; i <= maxGrade; i++) {
+        const gradeOptionElement = document.createElement("option");
+        gradeSelect.appendChild(gradeOptionElement);
+        gradeOptionElement.appendChild(document.createTextNode(i + "年"));
+        gradeOptionElement.value = i.toString();
+    }
+    document.getElementById("grade-select-add").dataset.nextGrade = (maxGrade + 1).toString();
+    document.getElementById("grade-select-add").textContent = (maxGrade + 1) + "年を追加";
+    if (data.user[USER_ID].grade) {
+        gradeSelect.value = data.user[USER_ID].grade.toString();
+    } else if (classNames[0]) {
+        gradeSelect.value = data.classes[classNames[0]].grade.toString();
+    } else {
+        gradeSelect.value = "1";
+    }
+
+    const classNamesSelect = document.getElementById("class-select");
+    while (classNamesSelect.firstChild) {
+        classNamesSelect.removeChild(classNamesSelect.firstChild);
+    }
+    for (let i = 0; i < classNames.length; i++) {
+        const classOptionElement = document.createElement("option");
+        classNamesSelect.appendChild(classOptionElement);
+        classOptionElement.appendChild(document.createTextNode(classNames[i]));
+        classOptionElement.value = classNames[i];
+    }
+    if (data.user[USER_ID].className) {
+        classNamesSelect.value = data.user[USER_ID].className;
+    } else {
+        classNamesSelect.value = classNames[0];
+    }
+}
+document.getElementById("grade-select-add").dataset.nextGrade = "1";
+document.getElementById("grade-select-add").addEventListener("click", event => {
+    const newGrade = parseInt(document.getElementById("grade-select-add").dataset.nextGrade);
+    const newGradeOptionElement = document.createElement("option");
+    document.getElementById("grade-select").appendChild(newGradeOptionElement);
+    newGradeOptionElement.appendChild(document.createTextNode(newGrade + "年"));
+    newGradeOptionElement.value = newGrade.toString();
+    document.getElementById("grade-select").value = newGrade.toString();
+    document.getElementById("grade-select").dispatchEvent(new Event("change"));
+    document.getElementById("grade-select-add").dataset.nextGrade = (newGrade + 1).toString();
+    document.getElementById("grade-select-add").textContent = (newGrade + 1) + "年を追加";
+});
+document.getElementById("class-checkbox").addEventListener("change", event => {
+    if (document.getElementById("class-checkbox").checked) {
+        document.getElementById("class-select-container").style.display = "none";
+        document.getElementById("class-input-container").style.display = "";
+    } else {
+        document.getElementById("class-select-container").style.display = "";
+        document.getElementById("class-input-container").style.display = "none";
+    }
+});
+document.getElementById("class-checkbox").dispatchEvent(new Event("change"));
+document.getElementById("class-select").addEventListener("change", event => {
+    const value = document.getElementById("class-select").value;
+    if (data.classes[value]) {
+        document.getElementById("grade-select").value = data.classes[value].grade.toString();
+    }
+});
+document.getElementById("class-input").addEventListener("change", event => {
+    const value = document.getElementById("class-input").value;
+    if (data.classes[value]) {
+        document.getElementById("grade-select").value = data.classes[value].grade.toString();
+    }
+});
+document.getElementById("classForm").addEventListener("submit", event => {
+    let grade = parseInt(document.getElementById("grade-select").value);
+    let className;
+    if (!document.getElementById("class-checkbox").checked) {
+        className = document.getElementById("class-select").value;
+    } else {
+        className = document.getElementById("class-input").value;
+    }
+    if (data.classes[className]) {
+        grade = data.classes[className].grade;
+    }
+    addChanges({
+        type: "user",
+        key: {
+            userId: USER_ID
+        },
+        changes: [
+            {
+                method: "edit",
+                key: "grade",
+                value: grade
+            },
+            {
+                method: "edit",
+                key: "className",
+                value: className
+            }
+        ]
+    });
+});
 /**
  * 学年及びクラスを求めるダイアログを表示
  * @param {string} [message="あなたのクラスを入力してください。"] - ダイアログに表示するメッセージ
  */
 function showClassDialog(message = "あなたのクラスを入力してください。") {
     document.getElementById("classDialogMessage").textContent = message;
-    document.getElementById("userId-input").value = USER_ID;
-    document.getElementById("API-input").value = API_URL;
-    document.getElementById("firstForm").addEventListener("submit", event => {
-        USER_ID = document.getElementById("userId-input").value;
-        API_URL = document.getElementById("API-input").value;
-        if (!USER_ID || !API_URL) {
-            document.getElementById("firstDialog").addEventListener("close", event => {
-                showFirstDialog("!値を入力してください。");
-            }, {once: true});
-        } else {
-            try {
-                localStorage.setItem("school-schedule_userId", USER_ID);
-                localStorage.setItem("school-schedule_URL", API_URL);
-            } catch (error) {
-                console.error(error);
-            }
-            getDataAndUpdate();
-        }
-    }, {once: true});
-    document.getElementById("firstDialog").showModal();
+    classDialogInitializer();
+    document.getElementById("classDialog").showModal();
 }
-document.getElementById("firstDialog").addEventListener("close", event => {
-    if (!USER_ID || !API_URL) showFirstDialog("!値を入力してください。");
+document.getElementById("classDialog").addEventListener("close", event => {
+    if (loadCount <= 0) updateSchedule();
 });
 
 if (!USER_ID || !API_URL) {
@@ -174,11 +272,15 @@ async function getData(callback) {
 function getDataAndUpdate() {
     getData(responseData => {
         if (!responseData.error) {
-            let existData = true;
-            if (!data) existData = false;
-            data = responseData;
-            if (existData) updateSchedule();
-            else updateCurrentDate();
+            if (isValidScheduleData(responseData)) {
+                let existData = true;
+                if (!data) existData = false;
+                data = responseData;
+                if (existData) updateSchedule();
+                else updateCurrentDate();
+            } else {
+                showFirstDialog("正しいデータが送られてきませんでした。URLが正しいか確認してください。");
+            }
         } else {
             if (responseData.message == "INVALID_USER_ID") {
                 showFirstDialog("ユーザーidが誤っています。");
@@ -213,11 +315,16 @@ async function setChanges() {
                 localStorage.setItem("school-schedule_data", responseText);
                 const responseData = JSON.parse(responseText);
                 if (!responseData.error) {
-                    data = responseData;
-                    updateSchedule();
-                    changesData.splice(0, changingDataCount);
-                    finishLoad();
-                    setTimeout(setChanges, 500);
+                    if (isValidScheduleData(responseData)) {
+                        data = responseData;
+                        updateSchedule();
+                        changesData.splice(0, changingDataCount);
+                        finishLoad();
+                        setTimeout(setChanges, 500);
+                    } else {
+                        showFirstDialog("正しいデータが送られてきませんでした。URLが正しいか確認してください。");
+                        finishLoad();
+                    }
                 } else {
                     if (responseData.message == "INVALID_USER_ID") {
                         showFirstDialog("ユーザーidが誤っています。");
@@ -225,6 +332,9 @@ async function setChanges() {
                     } else if (responseData.message == "CHANGES_NOT_SAVED") {
                         setTimeout(setChanges, 3000);
                         failLoad();
+                    } else {
+                        showFirstDialog("正しいデータが送られてきませんでした。URLが正しいか確認してください。");
+                        finishLoad();
                     }
                 }
                 changingLoadCount--;
@@ -308,9 +418,13 @@ function createDateTable(date) {
 createDateTable(dateStringToDate(currentDate));
 
 function updateSchedule() {
-    updateScheduleViewer();
-    if (changesData.length == 0) {
-        updateScheduleEditor();
+    if (!data.user[USER_ID].grade || !data.user[USER_ID].className) {
+        showClassDialog();
+    } else {
+        updateScheduleViewer();
+        if (changesData.length == 0) {
+            updateScheduleEditor();
+        }
     }
 }
 

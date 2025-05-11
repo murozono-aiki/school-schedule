@@ -353,10 +353,23 @@
             あなたのクラスを入力してください。
         </p>
         <form method="dialog" id="classForm">
-            <label for="grade-select">学年</label><br>
-            <select id="grade-select"></select><button type="button" id="grade-select-add">1年を追加</button><br>
-            <label for="class-select">API URL</label><br>
-            <input type="url" id="API-input">
+            <div>
+                <label for="grade-select">学年：</label>
+                <select id="grade-select"></select>
+                <button type="button" id="grade-select-add">1年を追加</button>
+            </div>
+            <div>
+                <label for="class-checkbox">新しくクラスを追加：</label>
+                <input type="checkbox" id="class-checkbox">
+            </div>
+            <div id="class-select-container">
+                <label for="class-select">クラス：</label>
+                <select id="class-select"></select>
+            </div>
+            <div id="class-input-container">
+                <label for="class-input">クラス：</label>
+                <input type="text" id="class-input">
+            </div>
             <div class="form-submit">
                 <button type="submit">決定</button>
             </div>
