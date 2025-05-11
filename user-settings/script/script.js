@@ -6,6 +6,7 @@ const forms = [
         initializer: classNameFormInitializer
     }
 ];
+/** @type {{[formName:string]:HTMLFieldSetElement}} */
 const fieldSetDictionary = {
     className: document.getElementById("class-name-form")
 }
@@ -453,6 +454,7 @@ document.getElementById("class-name").addEventListener("submit", event => {
     if (data.classes[className]) {
         grade = data.classes[className].grade;
     }
+    fieldSetDictionary.className.disabled = true;
     addChanges({
         type: "user",
         key: {
