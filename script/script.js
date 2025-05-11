@@ -90,6 +90,38 @@ function showFirstDialog(message = "ユーザーidとURLを入力してくださ
 document.getElementById("firstDialog").addEventListener("close", event => {
     if (!USER_ID || !API_URL) showFirstDialog("!値を入力してください。");
 });
+
+/**
+ * 学年及びクラスを求めるダイアログを表示
+ * @param {string} [message="あなたのクラスを入力してください。"] - ダイアログに表示するメッセージ
+ */
+function showClassDialog(message = "あなたのクラスを入力してください。") {
+    document.getElementById("classDialogMessage").textContent = message;
+    document.getElementById("userId-input").value = USER_ID;
+    document.getElementById("API-input").value = API_URL;
+    document.getElementById("firstForm").addEventListener("submit", event => {
+        USER_ID = document.getElementById("userId-input").value;
+        API_URL = document.getElementById("API-input").value;
+        if (!USER_ID || !API_URL) {
+            document.getElementById("firstDialog").addEventListener("close", event => {
+                showFirstDialog("!値を入力してください。");
+            }, {once: true});
+        } else {
+            try {
+                localStorage.setItem("school-schedule_userId", USER_ID);
+                localStorage.setItem("school-schedule_URL", API_URL);
+            } catch (error) {
+                console.error(error);
+            }
+            getDataAndUpdate();
+        }
+    }, {once: true});
+    document.getElementById("firstDialog").showModal();
+}
+document.getElementById("firstDialog").addEventListener("close", event => {
+    if (!USER_ID || !API_URL) showFirstDialog("!値を入力してください。");
+});
+
 if (!USER_ID || !API_URL) {
     showFirstDialog();
 } else {

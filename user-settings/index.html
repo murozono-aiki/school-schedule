@@ -24,7 +24,42 @@
     </header>
 
     <h2>学年・クラス</h2>
-    <form id="className"></form>
+    <form id="class-name">
+        <fieldset id="class-name-form">
+            <div>
+                <label for="class-name-grade">学年：</label>
+                <select id="class-name-grade"></select>
+                <button type="button" id="class-name-grade-add">1年を追加</button>
+            </div>
+            <div>
+                <label for="class-name-class-checkbox">新しくクラスを追加：</label>
+                <input type="checkbox" id="class-name-class-checkbox">
+            </div>
+            <div id="class-name-class-select-container">
+                <label for="class-name-class-select">クラス：</label>
+                <select id="class-name-class-select"></select>
+            </div>
+            <div id="class-name-class-input-container">
+                <label for="class-name-class-input">クラス：</label>
+                <input type="text" id="class-name-class-input">
+            </div>
+        </fieldset>
+    </form>
+
+    <dialog id="firstDialog">
+        <p id="firstDialogMessage">
+            ユーザーidとURLを入力してください。
+        </p>
+        <form method="dialog" id="firstForm">
+            <label for="userId-input">ユーザーid</label><br>
+            <input type="text" id="userId-input"><br>
+            <label for="API-input">API URL</label><br>
+            <input type="url" id="API-input">
+            <div class="form-submit">
+                <button type="submit">決定</button>
+            </div>
+        </form>
+    </dialog>
 
     <script src="./../script/scheduleUtility.js"></script>
     <script src="./script/script.js"></script>

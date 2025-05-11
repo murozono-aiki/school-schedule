@@ -349,10 +349,18 @@
     </dialog>
 
     <dialog id="classDialog">
-        <p>
-            以下から、あなたのクラスを設定してください。
+        <p id="classDialogMessage">
+            あなたのクラスを入力してください。
         </p>
-        <a href="./user-settings/">全般設定</a>
+        <form method="dialog" id="classForm">
+            <label for="grade-select">学年</label><br>
+            <select id="grade-select"></select><button type="button" id="grade-select-add">1年を追加</button><br>
+            <label for="class-select">API URL</label><br>
+            <input type="url" id="API-input">
+            <div class="form-submit">
+                <button type="submit">決定</button>
+            </div>
+        </form>
     </dialog>
 
     <dialog id="menu">
