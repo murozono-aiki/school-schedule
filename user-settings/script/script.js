@@ -4,11 +4,17 @@ const forms = [
         form: document.getElementById("class-name"),
         fieldset: document.getElementById("class-name-form"),
         initializer: classNameFormInitializer
+    },
+    {
+        form: document.getElementById("table"),
+        fieldset: document.getElementById("table-form"),
+        initializer: tableFormInitializer
     }
 ];
 /** @type {{[formName:string]:HTMLFieldSetElement}} */
 const fieldSetDictionary = {
-    className: document.getElementById("class-name-form")
+    className: document.getElementById("class-name-form"),
+    table: document.getElementById("table-form")
 }
 
 let USER_ID = "";
@@ -358,6 +364,7 @@ function updateForms() {
 }
 
 
+// 学年・クラス
 function classNameFormInitializer() {
     let maxGrade = 1;
     let classNames = [];
@@ -455,6 +462,7 @@ document.getElementById("class-name").addEventListener("submit", event => {
         grade = data.classes[className].grade;
     }
     fieldSetDictionary.className.disabled = true;
+    fieldSetDictionary.table.disabled = true;
     addChanges({
         type: "user",
         key: {
@@ -474,6 +482,174 @@ document.getElementById("class-name").addEventListener("submit", event => {
         ]
     });
 });
+
+// 時間割
+/** @type {string[]} */
+let AllSubjects = [];
+/** @type {HTMLDivElement[]} */
+let tableClassSubjectsElements = [];
+/** @type {{element:HTMLDivElement, select:HTMLSelectElement, input:HTMLInputElement, checkbox:HTMLInputElement, upButton:HTMLButtonElement, downButton:HTMLButtonElement}[][]} */
+let tableClassSubjectElements = [];
+/** @type {HTMLDivElement[]} */
+let tableUserSubjectsElements = [];
+/** @type {{element:HTMLDivElement, select:HTMLSelectElement, input:HTMLInputElement, checkbox:HTMLInputElement, upButton:HTMLButtonElement, downButton:HTMLButtonElement}[][]} */
+let tableUserSubjectElements = [];
+function tableFormInitializer() {
+    const existScheduleTypes = [];
+    const notExistScheduleTypes = [];
+    for (let scheduleType of data.settings.scheduleTypeOrder) {
+        if (data.classes[data.user[USER_ID].className].table[scheduleType]) {
+            existScheduleTypes.push(scheduleType);
+        } else {
+            notExistScheduleTypes.push(scheduleType);
+        }
+    }
+    if (existScheduleTypes.length == 0 && notExistScheduleTypes.length == 0) {
+        document.getElementById("table-schedule-type-checkbox").checked = true;
+        document.getElementById("table-schedule-type-checkbox").dispatchEvent(new Event("change"));
+        document.getElementById("table-schedule-type-checkbox").disabled = true;
+    } else {
+        const scheduleTypeSelect = document.getElementById("table-schedule-type-select");
+        while (scheduleTypeSelect.firstChild) {
+            scheduleTypeSelect.removeChild(scheduleTypeSelect.firstChild);
+        }
+        for (let i = 0; i < existScheduleTypes.length; i++) {
+            const scheduleTypeOption = document.createElement("option");
+            scheduleTypeSelect.appendChild(scheduleTypeOption);
+            scheduleTypeOption.appendChild(document.createTextNode(existScheduleTypes[i]));
+            scheduleTypeOption.value = existScheduleTypes[i];
+        }
+        if (existScheduleTypes.length > 0 && notExistScheduleTypes.length > 0) {
+            scheduleTypeSelect.appendChild(document.createElement("hr"));
+        }
+        for (let i = 0; i < notExistScheduleTypes.length; i++) {
+            const scheduleTypeOption = document.createElement("option");
+            scheduleTypeSelect.appendChild(scheduleTypeOption);
+            scheduleTypeOption.appendChild(document.createTextNode(notExistScheduleTypes[i]));
+            scheduleTypeOption.value = notExistScheduleTypes[i];
+        }
+        if (existScheduleTypes.length > 0) {
+            scheduleTypeSelect.value = existScheduleTypes[0];
+        } else {
+            scheduleTypeSelect.value = notExistScheduleTypes[0];
+        }
+    }
+    AllSubjects = getAllSubjects(USER_ID);
+}
+function createTablePeriodsContainer() {
+    const period = tableClassSubjectsElements.length + 1;  // インデックスはperiod - 1を使用
+}
+/**
+ * @param {number} period
+ * @param {boolean} [isUser = false]
+ * @param {string} [initialValue]
+ */
+function createSubjectElement(period, isUser = false, initialValue) {
+    const periodIndex = period - 1;
+    const subjectElement = document.createElement("div");
+    if (!isUser) {
+        tableClassSubjectsElements[periodIndex].appendChild(subjectElement);
+    } else {
+        tableUserSubjectsElements[periodIndex].appendChild(subjectElement);
+    }
+    const selectElement = document.createElement("select");
+    subjectElement.appendChild(selectElement);
+    const inputElement = document.createElement("input");
+    subjectElement.appendChild(inputElement);
+    inputElement.type = "text";
+    const checkboxLabel = document.createElement("label");
+    subjectElement.appendChild(checkboxLabel);
+    checkboxLabel.appendChild(document.createTextNode("入力："))
+    const checkbox = document.createElement("input");
+    checkboxLabel.appendChild(checkbox);
+    checkbox.type = "checkbox";
+    const upButton = document.createElement("button");
+    subjectElement.appendChild(upButton);
+    upButton.type = "button";
+    upButton.appendChild(document.createTextNode("↑"));
+    upButton.ariaLabel = "上へ移動";
+    if (!isUser) {
+        upButton.addEventListener("click", event => {
+            const currentIndex = parseInt(subjectElement.dataset.index);
+            if (currentIndex > 0) {
+                const changeElement = tableClassSubjectElements[periodIndex][currentIndex - 1].element;
+                tableClassSubjectsElements[periodIndex].insertBefore(subjectElement, changeElement);
+                const temp = tableClassSubjectElements[periodIndex][currentIndex];
+                tableClassSubjectElements[periodIndex][currentIndex] = tableClassSubjectElements[periodIndex][currentIndex - 1];
+                tableClassSubjectElements[periodIndex][currentIndex - 1] = temp;
+                if (currentIndex == 1) {}
+                if (currentIndex == tableClassSubjectElements[periodIndex].length - 1) {}
+            }
+        });
+    } else {
+        upButton.addEventListener("click", event => {});
+    }
+    const downButton = document.createElement("button");
+    subjectElement.appendChild(downButton);
+    downButton.type = "button";
+    downButton.appendChild(document.createTextNode("↓"));
+    downButton.ariaLabel = "下へ移動";
+    if (!isUser) {
+        downButton.addEventListener("click", event => {});
+    } else {
+        downButton.addEventListener("click", event => {});
+    }
+    const deleteButton = document.createElement("button");
+    subjectElement.appendChild(deleteButton);
+    deleteButton.type = "button";
+    deleteButton.appendChild(document.createTextNode("×"));
+    deleteButton.ariaLabel = "削除";
+    if (!isUser) {
+        deleteButton.addEventListener("click", event => {});
+    } else {
+        deleteButton.addEventListener("click", event => {});
+    }
+    if (!isUser) {
+        if (!tableClassSubjectElements[periodIndex]) tableClassSubjectElements[periodIndex] = [];
+        const index = tableClassSubjectElements[periodIndex].length;
+        subjectElement.dataset.index = index.toString();
+        tableClassSubjectElements[periodIndex][index].element = subjectElement;
+        tableClassSubjectElements[periodIndex][index].select = selectElement;
+        tableClassSubjectElements[periodIndex][index].input = inputElement;
+        tableClassSubjectElements[periodIndex][index].checkbox = checkbox;
+        tableClassSubjectElements[periodIndex][index].upButton = upButton;
+        tableClassSubjectElements[periodIndex][index].downButton = downButton;
+        if (index == 0) {
+            upButton.disabled = true;
+        }
+        downButton.disabled = true;
+        if (index > 0) {
+            tableClassSubjectElements[periodIndex][index - 1].downButton.disabled = false;
+        }
+    } else {
+        if (!tableUserSubjectElements[periodIndex]) tableUserSubjectElements[periodIndex] = [];
+        const index = tableUserSubjectElements[periodIndex].length;
+        subjectElement.dataset.index = index.toString();
+        tableUserSubjectElements[periodIndex][index].element = subjectElement;
+        tableUserSubjectElements[periodIndex][index].select = selectElement;
+        tableUserSubjectElements[periodIndex][index].input = inputElement;
+        tableUserSubjectElements[periodIndex][index].checkbox = checkbox;
+        tableUserSubjectElements[periodIndex][index].upButton = upButton;
+        tableUserSubjectElements[periodIndex][index].downButton = downButton;
+        if (index == 0) {
+            upButton.disabled = true;
+        }
+        downButton.disabled = true;
+        if (index > 0) {
+            tableUserSubjectElements[periodIndex][index - 1].downButton.disabled = false;
+        }
+    }
+}
+document.getElementById("table-schedule-type-checkbox").addEventListener("change", event => {
+    if (document.getElementById("table-schedule-type-checkbox").checked) {
+        document.getElementById("table-schedule-type-select-container").style.display = "none";
+        document.getElementById("table-schedule-type-input-container").style.display = "";
+    } else {
+        document.getElementById("table-schedule-type-select-container").style.display = "";
+        document.getElementById("table-schedule-type-input-container").style.display = "none";
+    }
+});
+document.getElementById("table-schedule-type-checkbox").dispatchEvent(new Event("change"));
 
 
 if (data) initializeAllForms();

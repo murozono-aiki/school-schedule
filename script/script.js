@@ -229,16 +229,19 @@ if (!USER_ID || !API_URL) {
 function startLoad() {
     loadCount++;
     document.getElementById("load").textContent = "同期中";
+    document.getElementById("sync-menu").disabled = true;
 }
 function finishLoad() {
     loadCount--;
     if (loadCount <= 0) {
         document.getElementById("load").textContent = "";
+        document.getElementById("sync-menu").disabled = false;
     }
 }
 function failLoad() {
     loadCount--;
     document.getElementById("load").textContent = "同期失敗";
+    document.getElementById("sync-menu").disabled = false;
 }
 /**
  * データを取得
@@ -1952,6 +1955,9 @@ document.getElementById("show-menu").addEventListener("click", event => {
 });
 document.getElementById("menu-dialog-close").addEventListener("click", event => {
     document.getElementById("menu").close();
+});
+document.getElementById("sync-menu").addEventListener("click", event => {
+    getDataAndUpdate();
 });
 document.getElementById("schedule-edit-dialog-menu").addEventListener("click", event => {
     document.getElementById("schedule-edit-dialog").showModal();
