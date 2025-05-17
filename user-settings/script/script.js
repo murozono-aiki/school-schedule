@@ -495,7 +495,6 @@ let tableUserSubjectsElements = [];
 /** @type {{element:HTMLDivElement, select:HTMLSelectElement, input:HTMLInputElement, checkbox:HTMLInputElement, upButton:HTMLButtonElement, downButton:HTMLButtonElement}[][]} */
 let tableUserSubjectElements = [];
 function tableFormInitializer() {
-    let initialScheduleType = "";
     const existScheduleTypes = [];
     const notExistScheduleTypes = [];
     for (let scheduleType of data.settings.scheduleTypeOrder) {
@@ -531,10 +530,10 @@ function tableFormInitializer() {
         }
         if (existScheduleTypes.length > 0) {
             scheduleTypeSelect.value = existScheduleTypes[0];
-            initialScheduleType = existScheduleTypes[0];
+            document.getElementById("table-schedule-type-input").value = existScheduleTypes[0];
         } else {
             scheduleTypeSelect.value = notExistScheduleTypes[0];
-            initialScheduleType = notExistScheduleTypes[0];
+            document.getElementById("table-schedule-type-input").value = notExistScheduleTypes[0];
         }
     }
     allSubjects = getAllSubjects(USER_ID);
@@ -564,6 +563,7 @@ function resetTablePeriodContainer() {
     for (let i = 0; i < maxPeriod; i++) {
         createTablePeriodsContainer();
     }
+    document.getElementById("table-period-add").textContent = (tableClassSubjectsElements.length + 1) + "時限目を追加";
 }
 function createTablePeriodsContainer() {
     const periodIndex = tableClassSubjectsElements.length;
@@ -873,26 +873,223 @@ function createSubjectElement(period, isUser = false, initialValue) {
     }
 }
 document.getElementById("table-schedule-type-checkbox").addEventListener("change", event => {
+    const reset = (document.getElementById("table-schedule-type-select").value != document.getElementById("table-schedule-type-input").value);
     if (document.getElementById("table-schedule-type-checkbox").checked) {
         document.getElementById("table-schedule-type-select-container").style.display = "none";
         document.getElementById("table-schedule-type-input-container").style.display = "";
     } else {
         document.getElementById("table-schedule-type-select-container").style.display = "";
         document.getElementById("table-schedule-type-input-container").style.display = "none";
+        document.getElementById("table-schedule-type-input").value = document.getElementById("table-schedule-type-select").value;
     }
-    if (document.getElementById("table-schedule-type-select").value != document.getElementById("table-schedule-type-input").value) {
+    if (reset) {
         resetTablePeriodContainer();
     }
 });
 document.getElementById("table-schedule-type-checkbox").dispatchEvent(new Event("change"));
 document.getElementById("table-schedule-type-select").addEventListener("change", event => {
+    document.getElementById("table-schedule-type-input").value = document.getElementById("table-schedule-type-select").value;
     resetTablePeriodContainer();
 });
-document.getElementById("table-schedule-type-input").addEventListener("change", event => {
+document.getElementById("table-schedule-type-input").addEventListener("input", event => {
+    const value = document.getElementById("table-schedule-type-input").value;
+    if (data.settings.scheduleTypeOrder.includes(value)) {
+        document.getElementById("table-schedule-type-select").value = value;
+    }
     resetTablePeriodContainer();
+});
+document.getElementById("table-period-add").addEventListener("click", event => {
+    createTablePeriodsContainer();
+    document.getElementById("table-period-add").textContent = (tableClassSubjectsElements.length + 1) + "時限目を追加";
 });
 document.getElementById("table").addEventListener("submit", event => {
     event.preventDefault();
+    /**
+     * @param {{element:HTMLDivElement, select:HTMLSelectElement, input:HTMLInputElement, checkbox:HTMLInputElement, upButton:HTMLButtonElement, downButton:HTMLButtonElement}[][]} subjectElements
+     * @returns {string[][]}
+     */
+    const createUserInput = subjectElements => {
+        /** @type {string[][]} */
+        const result = [];
+        for (let periodIndex = 0; periodIndex < subjectElements.length; periodIndex++) {
+            if (!subjectElements[periodIndex]) continue;
+            for (let i = 0; i < subjectElements[periodIndex].length; i++) {
+                const subjectElement = subjectElements[periodIndex][i];
+                let value;
+                if (!subjectElement.checkbox.checked) {
+                    value = subjectElement.select.value;
+                } else {
+                    value = subjectElement.input.value;
+                }
+                if (value) {
+                    if (!result[periodIndex]) result[periodIndex] = [];
+                    result[periodIndex].push(value);
+                }
+            }
+        }
+        return result;
+    };
+    /**
+     * @param {string[][]} afterSubjects
+     * @param {string[][]} beforeSubjects
+     * @returns {(editChange | addChange | deleteChange)[][]}
+     */
+    const compareSubjects = (afterSubjects, beforeSubjects) => {
+        /** @type {(editChange | addChange | deleteChange)[][]} */
+        const result = [];
+        const maxPeriod = Math.max(afterSubjects.length, beforeSubjects.length);
+        for (let periodIndex = 0; periodIndex < maxPeriod; periodIndex++) {
+            result[periodIndex] = [];
+            const currentAfterSubjects = afterSubjects[periodIndex] || [];
+            const currentBeforeSubjects = beforeSubjects[periodIndex] || [];
+            const changedSubjects = new Array(...currentBeforeSubjects);
+            // 削除された科目を確認
+            for (let i = 0; i < currentBeforeSubjects.length; i++) {
+                if (!currentAfterSubjects.includes(currentBeforeSubjects[i])) {
+                    result[periodIndex].push({
+                        method: "delete",
+                        key: "subject",
+                        deleteValue: currentBeforeSubjects[i]
+                    });
+                    changedSubjects.splice(changedSubjects.indexOf(currentBeforeSubjects[i]), 1);
+                }
+            }
+            // 追加された科目を確認
+            for (let i = 0; i < currentAfterSubjects.length; i++) {
+                if (!currentBeforeSubjects.includes(currentAfterSubjects[i])) {
+                    result[periodIndex].push({
+                        method: "add",
+                        key: "subject",
+                        value: currentAfterSubjects[i]
+                    });
+                    changedSubjects.push(currentAfterSubjects[i]);
+                }
+            }
+            // 順番の入れ替えを確認
+            for (let i = changedSubjects.length - 1; i >= 0; i--) {
+                if (changedSubjects[i] != currentAfterSubjects[i]) {
+                    result[periodIndex].push({
+                        method: "edit",
+                        key: "subject",
+                        editValue: changedSubjects[i],
+                        value: currentAfterSubjects[i]
+                    });
+                }
+            }
+        }
+        return result;
+    };
+    /** @type {changeData} */
+    const changes = [];
+    let scheduleType;
+    if (!document.getElementById("table-schedule-type-checkbox").checked) {
+        scheduleType = document.getElementById("table-schedule-type-select").value;
+    } else {
+        scheduleType = document.getElementById("table-schedule-type-input").value;
+    }
+    if (!data.settings.scheduleTypeOrder.includes(scheduleType)) {
+        changes.push({
+            type: "settings",
+            changes: [
+                {
+                    method: "add",
+                    key: "scheduleTypeOrder",
+                    value: scheduleType
+                }
+            ]
+        });
+    }
+    const tableObjectsBefore = data.classes[data.user[USER_ID].className].table && data.classes[data.user[USER_ID].className].table[scheduleType] && data.classes[data.user[USER_ID].className].table[scheduleType].schedule;
+    // クラスの時間割
+    const tableClassBefore = [];
+    if (tableObjectsBefore) {
+        for (let period = 0; period < tableObjectsBefore.length; period++) {
+            if (tableObjectsBefore[period]) {
+                tableClassBefore[period - 1] = tableObjectsBefore[period].subject;
+            }
+        }
+    }
+    const tableClassDifferences = compareSubjects(createUserInput(tableClassSubjectElements), tableClassBefore);
+    /** @type {structuredChange[]} */
+    const tableClassChanges = [];
+    for (let periodIndex = 0; periodIndex < tableClassDifferences.length; periodIndex++) {
+        for (let i = 0; i < tableClassDifferences[periodIndex].length; i++) {
+            tableClassChanges.push({
+                method: "structuredChange",
+                key: "table",
+                change: {
+                    method: "structuredChange",
+                    key: scheduleType,
+                    change: {
+                        method: "structuredChange",
+                        key: "schedule",
+                        period: periodIndex + 1,
+                        change: tableClassDifferences[periodIndex][i]
+                    }
+                }
+            });
+        }
+    }
+    if (tableClassChanges.length > 0) {
+        changes.push({
+            type: "classes",
+            key: {
+                name: data.user[USER_ID].className
+            },
+            changes: tableClassChanges
+        });
+    }
+    // ユーザーの時間割
+    const tableUserBefore = [];
+    if (tableObjectsBefore) {
+        for (let period = 0; period < tableObjectsBefore.length; period++) {
+            if (tableObjectsBefore[period] && tableObjectsBefore[period].userSetting && tableObjectsBefore[period].userSetting[USER_ID]) {
+                tableUserBefore[period - 1] = tableObjectsBefore[period].userSetting[USER_ID].subject;
+            }
+        }
+    }
+    const tableUserDifferences = compareSubjects(createUserInput(tableUserSubjectElements), tableUserBefore);
+    /** @type {structuredChange[]} */
+    const tableUserChanges = [];
+    for (let periodIndex = 0; periodIndex < tableUserDifferences.length; periodIndex++) {
+        for (let i = 0; i < tableUserDifferences[periodIndex].length; i++) {
+            tableUserChanges.push({
+                method: "structuredChange",
+                key: "table",
+                change: {
+                    method: "structuredChange",
+                    key: scheduleType,
+                    change: {
+                        method: "structuredChange",
+                        key: "schedule",
+                        period: periodIndex + 1,
+                        change: {
+                            method: "structuredChange",
+                            key: "userSetting",
+                            change: {
+                                method: "structuredChange",
+                                key: USER_ID,
+                                change: tableUserDifferences[periodIndex][i]
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
+    if (tableUserChanges.length > 0) {
+        changes.push({
+            type: "classes",
+            key: {
+                name: data.user[USER_ID].className
+            },
+            changes: tableUserChanges
+        });
+    }
+    if (changes.length > 0) {
+        fieldSetDictionary.table.disabled = true;
+        addChanges(...changes);
+    }
 });
 
 
