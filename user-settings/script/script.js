@@ -485,7 +485,7 @@ document.getElementById("class-name").addEventListener("submit", event => {
 
 // 時間割
 /** @type {string[]} */
-let AllSubjects = [];
+let allSubjects = [];
 /** @type {HTMLDivElement[]} */
 let tableClassSubjectsElements = [];
 /** @type {{element:HTMLDivElement, select:HTMLSelectElement, input:HTMLInputElement, checkbox:HTMLInputElement, upButton:HTMLButtonElement, downButton:HTMLButtonElement}[][]} */
@@ -495,6 +495,7 @@ let tableUserSubjectsElements = [];
 /** @type {{element:HTMLDivElement, select:HTMLSelectElement, input:HTMLInputElement, checkbox:HTMLInputElement, upButton:HTMLButtonElement, downButton:HTMLButtonElement}[][]} */
 let tableUserSubjectElements = [];
 function tableFormInitializer() {
+    let initialScheduleType = "";
     const existScheduleTypes = [];
     const notExistScheduleTypes = [];
     for (let scheduleType of data.settings.scheduleTypeOrder) {
@@ -530,14 +531,115 @@ function tableFormInitializer() {
         }
         if (existScheduleTypes.length > 0) {
             scheduleTypeSelect.value = existScheduleTypes[0];
+            initialScheduleType = existScheduleTypes[0];
         } else {
             scheduleTypeSelect.value = notExistScheduleTypes[0];
+            initialScheduleType = notExistScheduleTypes[0];
         }
     }
-    AllSubjects = getAllSubjects(USER_ID);
+    allSubjects = getAllSubjects(USER_ID);
+    resetTablePeriodContainer();
+}
+function resetTablePeriodContainer() {
+    const periodsContainer = document.getElementById("table-periods-container");
+    while (periodsContainer.firstChild) {
+        periodsContainer.removeChild(periodsContainer.firstChild);
+    }
+    tableClassSubjectsElements = [];
+    tableClassSubjectElements = [];
+    tableUserSubjectsElements = [];
+    tableUserSubjectElements = [];
+    let maxPeriod = 0;
+    if (data.classes[data.user[USER_ID].className].table) {
+        let scheduleType;
+        if (!document.getElementById("table-schedule-type-checkbox").checked) {
+            scheduleType = document.getElementById("table-schedule-type-select").value;
+        } else {
+            scheduleType = document.getElementById("table-schedule-type-input").value;
+        }
+        if (data.classes[data.user[USER_ID].className].table[scheduleType] && data.classes[data.user[USER_ID].className].table[scheduleType].schedule) {
+            maxPeriod = data.classes[data.user[USER_ID].className].table[scheduleType].schedule.length - 1;  // 最初の要素は除く
+        }
+    }
+    for (let i = 0; i < maxPeriod; i++) {
+        createTablePeriodsContainer();
+    }
 }
 function createTablePeriodsContainer() {
-    const period = tableClassSubjectsElements.length + 1;  // インデックスはperiod - 1を使用
+    const periodIndex = tableClassSubjectsElements.length;
+    const period = periodIndex + 1;
+    const periodElement = document.createElement("section");
+    document.getElementById("table-periods-container").appendChild(periodElement);
+    const headerElement = document.createElement("h3");
+    periodElement.appendChild(headerElement);
+    headerElement.appendChild(document.createTextNode(period + "時限目"));
+    const userCheckboxLabel = document.createElement("label");
+    periodElement.appendChild(userCheckboxLabel);
+    userCheckboxLabel.appendChild(document.createTextNode("ユーザーの時間割を表示："))
+    const userCheckbox = document.createElement("input");
+    userCheckboxLabel.appendChild(userCheckbox);
+    userCheckbox.type = "checkbox";
+    const classSubjectsSectionElement = document.createElement("section");
+    periodElement.appendChild(classSubjectsSectionElement);
+    const classSubjectsElement = document.createElement("div");
+    classSubjectsSectionElement.appendChild(classSubjectsElement);
+    tableClassSubjectsElements[periodIndex] = classSubjectsElement;
+    const classSubjectsAddButton = document.createElement("button");
+    classSubjectsSectionElement.appendChild(classSubjectsAddButton);
+    classSubjectsAddButton.type = "button";
+    classSubjectsAddButton.appendChild(document.createTextNode("追加"));
+    classSubjectsAddButton.addEventListener("click", event => {
+        createSubjectElement(period, false);
+    });
+    const userSubjectsSectionElement = document.createElement("section");
+    periodElement.appendChild(userSubjectsSectionElement);
+    const userSubjectsSectionHeader = document.createElement("h4");
+    userSubjectsSectionElement.appendChild(userSubjectsSectionHeader);
+    userSubjectsSectionHeader.appendChild(document.createTextNode("ユーザー"));
+    const userSubjectsElement = document.createElement("div");
+    userSubjectsSectionElement.appendChild(userSubjectsElement);
+    tableUserSubjectsElements[periodIndex] = userSubjectsElement;
+    const userSubjectsAddButton = document.createElement("button");
+    userSubjectsSectionElement.appendChild(userSubjectsAddButton);
+    userSubjectsAddButton.type = "button";
+    userSubjectsAddButton.appendChild(document.createTextNode("追加"));
+    userSubjectsAddButton.addEventListener("click", event => {
+        createSubjectElement(period, true);
+    });
+    userCheckbox.addEventListener("change", event => {
+        if (!userCheckbox.checked) {
+            userSubjectsSectionElement.style.display = "none";
+        } else {
+            userSubjectsSectionElement.style.display = "";
+        }
+    });
+    userCheckbox.dispatchEvent(new Event("change"));
+    if (data.classes[data.user[USER_ID].className].table) {
+        let scheduleType;
+        if (!document.getElementById("table-schedule-type-checkbox").checked) {
+            scheduleType = document.getElementById("table-schedule-type-select").value;
+        } else {
+            scheduleType = document.getElementById("table-schedule-type-input").value;
+        }
+        if (data.classes[data.user[USER_ID].className].table[scheduleType] && data.classes[data.user[USER_ID].className].table[scheduleType].schedule) {
+            if (data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period]) {  // こっちはperiodIndexでなくperiod
+                if (data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period].subject) {
+                    for (let i = 0; i < data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period].subject.length; i++) {
+                        if (!data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period].subject[i]) continue;
+                        createSubjectElement(period, false, data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period].subject[i]);
+                    }
+                }
+                if (data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period].userSetting && data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period].userSetting[USER_ID]) {
+                    if (data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period].userSetting[USER_ID].subject) {
+                        for (let i = 0; i < data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period].userSetting[USER_ID].subject.length; i++) {
+                            if (!data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period].userSetting[USER_ID].subject[i]) continue;
+                            createSubjectElement(period, true, data.classes[data.user[USER_ID].className].table[scheduleType].schedule[period].userSetting[USER_ID].subject[i]);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 /**
  * @param {number} period
@@ -554,19 +656,62 @@ function createSubjectElement(period, isUser = false, initialValue) {
     }
     const selectElement = document.createElement("select");
     subjectElement.appendChild(selectElement);
+    selectElement.style.boxSizing = "border-box";
+    selectElement.style.width = "8rem";
+    for (let i = 0; i < allSubjects.length; i++) {
+        const subjectOption = document.createElement("option");
+        selectElement.appendChild(subjectOption);
+        subjectOption.appendChild(document.createTextNode(allSubjects[i]));
+        subjectOption.value = allSubjects[i];
+    }
+    if (allSubjects.length > 0) {
+        selectElement.value = allSubjects[0];
+    }
+    if (initialValue && allSubjects.includes(initialValue)) {
+        selectElement.value = initialValue;
+    }
     const inputElement = document.createElement("input");
     subjectElement.appendChild(inputElement);
     inputElement.type = "text";
+    inputElement.style.boxSizing = "border-box";
+    inputElement.style.width = "8rem";
+    if (initialValue) {
+        inputElement.value = initialValue;
+    }
+    selectElement.addEventListener("change", event => {
+        inputElement.value = selectElement.value;
+    });
+    inputElement.addEventListener("change", event => {
+        if (allSubjects.includes(inputElement.value)) {
+            selectElement.value = inputElement.value;
+        }
+    });
     const checkboxLabel = document.createElement("label");
     subjectElement.appendChild(checkboxLabel);
-    checkboxLabel.appendChild(document.createTextNode("入力："))
+    checkboxLabel.appendChild(document.createTextNode("入力："));
+    checkboxLabel.style.marginLeft = "0.2rem";
     const checkbox = document.createElement("input");
     checkboxLabel.appendChild(checkbox);
     checkbox.type = "checkbox";
+    if (allSubjects.length == 0) {
+        checkbox.checked = true;
+        checkbox.disabled = true;
+    }
+    checkbox.addEventListener("change", event => {
+        if (!checkbox.checked) {
+            selectElement.style.display = "";
+            inputElement.style.display = "none";
+        } else {
+            selectElement.style.display = "none";
+            inputElement.style.display = "";
+        }
+    });
+    checkbox.dispatchEvent(new Event("change"));
     const upButton = document.createElement("button");
     subjectElement.appendChild(upButton);
     upButton.type = "button";
     upButton.appendChild(document.createTextNode("↑"));
+    upButton.title = "上へ移動";
     upButton.ariaLabel = "上へ移動";
     if (!isUser) {
         upButton.addEventListener("click", event => {
@@ -577,37 +722,123 @@ function createSubjectElement(period, isUser = false, initialValue) {
                 const temp = tableClassSubjectElements[periodIndex][currentIndex];
                 tableClassSubjectElements[periodIndex][currentIndex] = tableClassSubjectElements[periodIndex][currentIndex - 1];
                 tableClassSubjectElements[periodIndex][currentIndex - 1] = temp;
-                if (currentIndex == 1) {}
-                if (currentIndex == tableClassSubjectElements[periodIndex].length - 1) {}
+                subjectElement.dataset.index = (currentIndex - 1).toString();
+                tableClassSubjectElements[periodIndex][currentIndex].element.dataset.index = currentIndex.toString();
+                if (currentIndex == 1) {
+                    tableClassSubjectElements[periodIndex][0].upButton.disabled = true;
+                    tableClassSubjectElements[periodIndex][1].upButton.disabled = false;
+                }
+                if (currentIndex == tableClassSubjectElements[periodIndex].length - 1) {
+                    const length = tableClassSubjectElements[periodIndex].length;
+                    tableClassSubjectElements[periodIndex][length - 2].downButton.disabled = false;
+                    tableClassSubjectElements[periodIndex][length - 1].downButton.disabled = true;
+                }
             }
         });
     } else {
-        upButton.addEventListener("click", event => {});
+        upButton.addEventListener("click", event => {
+            const currentIndex = parseInt(subjectElement.dataset.index);
+            if (currentIndex > 0) {
+                const changeElement = tableUserSubjectElements[periodIndex][currentIndex - 1].element;
+                tableUserSubjectsElements[periodIndex].insertBefore(subjectElement, changeElement);
+                const temp = tableUserSubjectElements[periodIndex][currentIndex];
+                tableUserSubjectElements[periodIndex][currentIndex] = tableUserSubjectElements[periodIndex][currentIndex - 1];
+                tableUserSubjectElements[periodIndex][currentIndex - 1] = temp;
+                subjectElement.dataset.index = (currentIndex - 1).toString();
+                tableUserSubjectElements[periodIndex][currentIndex].element.dataset.index = currentIndex.toString();
+                if (currentIndex == 1) {
+                    tableUserSubjectElements[periodIndex][0].upButton.disabled = true;
+                    tableUserSubjectElements[periodIndex][1].upButton.disabled = false;
+                }
+                if (currentIndex == tableUserSubjectElements[periodIndex].length - 1) {
+                    const length = tableUserSubjectElements[periodIndex].length;
+                    tableUserSubjectElements[periodIndex][length - 2].downButton.disabled = false;
+                    tableUserSubjectElements[periodIndex][length - 1].downButton.disabled = true;
+                }
+            }
+        });
     }
     const downButton = document.createElement("button");
     subjectElement.appendChild(downButton);
     downButton.type = "button";
     downButton.appendChild(document.createTextNode("↓"));
+    downButton.title = "下へ移動";
     downButton.ariaLabel = "下へ移動";
     if (!isUser) {
-        downButton.addEventListener("click", event => {});
+        downButton.addEventListener("click", event => {
+            const currentIndex = parseInt(subjectElement.dataset.index);
+            if (currentIndex > tableClassSubjectElements[periodIndex].length - 1) {
+                const changeElement = tableClassSubjectElements[periodIndex][currentIndex + 1].element;
+                tableClassSubjectsElements[periodIndex].insertBefore(changeElement, subjectElement);
+                const temp = tableClassSubjectElements[periodIndex][currentIndex];
+                tableClassSubjectElements[periodIndex][currentIndex] = tableClassSubjectElements[periodIndex][currentIndex + 1];
+                tableClassSubjectElements[periodIndex][currentIndex + 1] = temp;
+                subjectElement.dataset.index = (currentIndex + 1).toString();
+                tableClassSubjectElements[periodIndex][currentIndex].element.dataset.index = currentIndex.toString();
+                if (currentIndex == 0) {
+                    tableClassSubjectElements[periodIndex][0].upButton.disabled = true;
+                    tableClassSubjectElements[periodIndex][1].upButton.disabled = false;
+                }
+                if (currentIndex == tableClassSubjectElements[periodIndex].length - 2) {
+                    const length = tableClassSubjectElements[periodIndex].length;
+                    tableClassSubjectElements[periodIndex][length - 2].downButton.disabled = false;
+                    tableClassSubjectElements[periodIndex][length - 1].downButton.disabled = true;
+                }
+            }
+        });
     } else {
-        downButton.addEventListener("click", event => {});
+        downButton.addEventListener("click", event => {
+            const currentIndex = parseInt(subjectElement.dataset.index);
+            if (currentIndex < tableUserSubjectElements[periodIndex].length - 1) {
+                const changeElement = tableUserSubjectElements[periodIndex][currentIndex + 1].element;
+                tableUserSubjectsElements[periodIndex].insertBefore(changeElement, subjectElement);
+                const temp = tableUserSubjectElements[periodIndex][currentIndex];
+                tableUserSubjectElements[periodIndex][currentIndex] = tableUserSubjectElements[periodIndex][currentIndex + 1];
+                tableUserSubjectElements[periodIndex][currentIndex + 1] = temp;
+                subjectElement.dataset.index = (currentIndex + 1).toString();
+                tableUserSubjectElements[periodIndex][currentIndex].element.dataset.index = currentIndex.toString();
+                if (currentIndex == 0) {
+                    tableUserSubjectElements[periodIndex][0].upButton.disabled = true;
+                    tableUserSubjectElements[periodIndex][1].upButton.disabled = false;
+                }
+                if (currentIndex == tableUserSubjectElements[periodIndex].length - 2) {
+                    const length = tableUserSubjectElements[periodIndex].length;
+                    tableUserSubjectElements[periodIndex][length - 2].downButton.disabled = false;
+                    tableUserSubjectElements[periodIndex][length - 1].downButton.disabled = true;
+                }
+            }
+        });
     }
     const deleteButton = document.createElement("button");
     subjectElement.appendChild(deleteButton);
     deleteButton.type = "button";
     deleteButton.appendChild(document.createTextNode("×"));
+    deleteButton.title = "削除";
     deleteButton.ariaLabel = "削除";
     if (!isUser) {
-        deleteButton.addEventListener("click", event => {});
+        deleteButton.addEventListener("click", event => {
+            const currentIndex = parseInt(subjectElement.dataset.index);
+            tableClassSubjectsElements[periodIndex].removeChild(subjectElement);
+            tableClassSubjectElements[periodIndex].splice(currentIndex, 1);
+            for (let i = currentIndex; i < tableClassSubjectElements[periodIndex].length; i++) {
+                tableClassSubjectElements[periodIndex][i].element.dataset.index = i.toString();
+            }
+        });
     } else {
-        deleteButton.addEventListener("click", event => {});
+        deleteButton.addEventListener("click", event => {
+            const currentIndex = parseInt(subjectElement.dataset.index);
+            tableUserSubjectsElements[periodIndex].removeChild(subjectElement);
+            tableUserSubjectElements[periodIndex].splice(currentIndex, 1);
+            for (let i = currentIndex; i < tableUserSubjectElements[periodIndex].length; i++) {
+                tableUserSubjectElements[periodIndex][i].element.dataset.index = i.toString();
+            }
+        });
     }
     if (!isUser) {
         if (!tableClassSubjectElements[periodIndex]) tableClassSubjectElements[periodIndex] = [];
         const index = tableClassSubjectElements[periodIndex].length;
         subjectElement.dataset.index = index.toString();
+        tableClassSubjectElements[periodIndex][index] = {};
         tableClassSubjectElements[periodIndex][index].element = subjectElement;
         tableClassSubjectElements[periodIndex][index].select = selectElement;
         tableClassSubjectElements[periodIndex][index].input = inputElement;
@@ -625,6 +856,7 @@ function createSubjectElement(period, isUser = false, initialValue) {
         if (!tableUserSubjectElements[periodIndex]) tableUserSubjectElements[periodIndex] = [];
         const index = tableUserSubjectElements[periodIndex].length;
         subjectElement.dataset.index = index.toString();
+        tableUserSubjectElements[periodIndex][index] = {};
         tableUserSubjectElements[periodIndex][index].element = subjectElement;
         tableUserSubjectElements[periodIndex][index].select = selectElement;
         tableUserSubjectElements[periodIndex][index].input = inputElement;
@@ -648,8 +880,20 @@ document.getElementById("table-schedule-type-checkbox").addEventListener("change
         document.getElementById("table-schedule-type-select-container").style.display = "";
         document.getElementById("table-schedule-type-input-container").style.display = "none";
     }
+    if (document.getElementById("table-schedule-type-select").value != document.getElementById("table-schedule-type-input").value) {
+        resetTablePeriodContainer();
+    }
 });
 document.getElementById("table-schedule-type-checkbox").dispatchEvent(new Event("change"));
+document.getElementById("table-schedule-type-select").addEventListener("change", event => {
+    resetTablePeriodContainer();
+});
+document.getElementById("table-schedule-type-input").addEventListener("change", event => {
+    resetTablePeriodContainer();
+});
+document.getElementById("table").addEventListener("submit", event => {
+    event.preventDefault();
+});
 
 
 if (data) initializeAllForms();

@@ -54,18 +54,22 @@
     <form id="table">
         <fieldset id="table-form">
             <div>
-                <label for="table-schedule-type-checkbox">時間割を入力：</label>
+                <label for="table-schedule-type-checkbox" aria-describedby="table-schedule-type-description">時間割を入力：</label>
                 <input type="checkbox" id="table-schedule-type-checkbox">
             </div>
             <div id="table-schedule-type-select-container">
                 <label for="table-schedule-type-select">時間割：</label>
-                <select id="table-schedule-type-select"></select>
+                <select id="table-schedule-type-select" aria-describedby="table-schedule-type-description"></select>
             </div>
             <div id="table-schedule-type-input-container">
                 <label for="table-schedule-type-input">時間割：</label>
-                <input type="text" id="table-schedule-type-input">
+                <input type="text" id="table-schedule-type-input" aria-describedby="table-schedule-type-description">
+            </div>
+            <div class="description" id="table-schedule-type-description">
+                時間割を変更した場合は、時間割の入力値を変更する前に保存ボタンを押してください。
             </div>
             <div id="table-periods-container"></div>
+            <button type="submit">保存</button>
         </fieldset>
     </form>
 
