@@ -767,7 +767,7 @@ function createSubjectElement(period, isUser = false, initialValue) {
     if (!isUser) {
         downButton.addEventListener("click", event => {
             const currentIndex = parseInt(subjectElement.dataset.index);
-            if (currentIndex > tableClassSubjectElements[periodIndex].length - 1) {
+            if (currentIndex < tableClassSubjectElements[periodIndex].length - 1) {
                 const changeElement = tableClassSubjectElements[periodIndex][currentIndex + 1].element;
                 tableClassSubjectsElements[periodIndex].insertBefore(changeElement, subjectElement);
                 const temp = tableClassSubjectElements[periodIndex][currentIndex];
