@@ -9,6 +9,19 @@ form > fieldset {
     border: none;
 }
 
+h3 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.3rem;
+    font-weight: normal;
+}
+h4 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: normal;
+}
+
 form div {
     margin-top: 1rem;
     margin-bottom: 1rem;

@@ -31,6 +31,18 @@
 #menu li button:focus-visible, #menu li a:focus-visible {
     background-color: var(--hover-color);
 }
+#menu li button:disabled, #menu li a:disabled {
+    color: #5c5c5c;
+    border-color: rgb(from var(--border-color) r g b / 0.8);
+    cursor: default;
+}
+#menu li button:disabled:hover, #menu li a:disabled:hover {
+    background: none;
+}
+
+#sync-menu-container {
+    font-size: 0.8rem;
+}
 
 @media (prefers-color-scheme: dark) {
     #menu-dialog-close {
