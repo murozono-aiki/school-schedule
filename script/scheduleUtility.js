@@ -917,6 +917,12 @@ function getAllSubjects(userId) {
             if (!result.includes(subject)) result.push(subject);
           }
         }
+        if (scheduleObject.userSetting && scheduleObject.userSetting[userId] && scheduleObject.userSetting[userId].subject) {
+          for (let subject of scheduleObject.userSetting[userId].subject) {
+            if (!subject) continue;
+            if (!result.includes(subject)) result.push(subject);
+          }
+        }
       }
     }
   }
