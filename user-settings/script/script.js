@@ -480,6 +480,18 @@ document.getElementById("class-name").addEventListener("submit", event => {
                 value: className
             }
         ]
+    }, {
+        type: "classes",
+        key: {
+            name: className
+        },
+        changes: [
+            {
+                method: "edit",
+                key: "grade",
+                value: grade
+            }
+        ]
     });
 });
 
@@ -498,7 +510,7 @@ function tableFormInitializer() {
     const existScheduleTypes = [];
     const notExistScheduleTypes = [];
     for (let scheduleType of data.settings.scheduleTypeOrder) {
-        if (data.classes[data.user[USER_ID].className].table[scheduleType]) {
+        if (data.classes[data.user[USER_ID].className].table && data.classes[data.user[USER_ID].className].table[scheduleType]) {
             existScheduleTypes.push(scheduleType);
         } else {
             notExistScheduleTypes.push(scheduleType);
@@ -696,6 +708,8 @@ function createSubjectElement(period, isUser = false, initialValue) {
     if (allSubjects.length == 0) {
         checkbox.checked = true;
         checkbox.disabled = true;
+    } else if (initialValue && !allSubjects.includes(initialValue)) {
+        checkbox.checked = true;
     }
     checkbox.addEventListener("change", event => {
         if (!checkbox.checked) {
