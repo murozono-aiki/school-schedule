@@ -8,6 +8,7 @@ html {
     color: #333333;
     line-height: 1.5;
     background-color: var(--background-color);
+    accent-color: #0075ff;
 }
 body {
     margin-left: 20px;
@@ -88,6 +89,7 @@ table {
 
     html {
         color: #eeeeee;
+        accent-color: #99c8ff;
     }
 
     button {
