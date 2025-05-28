@@ -1462,18 +1462,18 @@ const updateContentsDialogCurrentItemsSelect = () => {
     } else if (contentType == "date") {
         const subjectsSchedule = [];
         {
-            const subjects = getSubjects(date, USER_ID)[period];
-            if (subjects && subjects.subject) {
-                for (let i = 0; i < subjects.subject.length; i++) {
-                    if (!subjects.subject) continue;
-                    subjectsSchedule.push(subjects.subject[i]);
+            const subjects = getSchedule(date, USER_ID).schedule[period];
+            if (subjects) {
+                for (let i = 0; i < subjects.length; i++) {
+                    if (period == 0 && i == 0) continue;
+                    if (!subjects[i] || !subjects[i].subject) continue;
+                    subjectsSchedule.push(subjects[i].subject);
                 }
             }
         }
         let existScheduleSubjects = subjectsSchedule.length > 0;
         if (existScheduleSubjects) {
             for (let i = 0; i < subjectsSchedule.length; i++) {
-                if (period == 0 && i == 0) continue;
                 const subjectOption = document.createElement("option");
                 subjectSelect.appendChild(subjectOption);
                 subjectOption.appendChild(document.createTextNode(subjectsSchedule[i]));
@@ -1486,6 +1486,7 @@ const updateContentsDialogCurrentItemsSelect = () => {
         subjectSelect.appendChild(otherSubjectOption);
         if (allSubjects.length > 0) {
             for (let i = 0; i < allSubjects.length; i++) {
+                if (existScheduleSubjects && subjectsSchedule.includes(allSubjects[i])) continue;
                 const subjectOption = document.createElement("option");
                 subjectSelect.appendChild(subjectOption);
                 subjectOption.appendChild(document.createTextNode(allSubjects[i]));
