@@ -8,7 +8,6 @@ html {
     color: #333333;
     line-height: 1.5;
     background-color: var(--background-color);
-    accent-color: #0075ff;
 }
 body {
     margin-left: 20px;
@@ -19,6 +18,9 @@ button, input, textarea, select, dialog {
     font-size: inherit;
     font-family: inherit;
     color: inherit;
+}
+input[type="checkbox"], input[type="radio"],  input[type="range"], progress {
+    accent-color: #0075ff;
 }
 button {
     cursor: pointer;
