@@ -1460,18 +1460,27 @@ const updateContentsDialogCurrentItemsSelect = () => {
             subjectSelect.dataset.initialValue = allSubjects[0];
         }
     } else if (contentType == "date") {
-        const subjectsSchedule = getSchedule(date, USER_ID).schedule[period];
-        let existScheduleSubjects = subjectsSchedule != undefined && subjectsSchedule.length > 0;
+        const subjectsSchedule = [];
+        {
+            const subjects = getSubjects(date, USER_ID)[period];
+            if (subjects && subjects.subject) {
+                for (let i = 0; i < subjects.subject.length; i++) {
+                    if (!subjects.subject) continue;
+                    subjectsSchedule.push(subjects.subject[i]);
+                }
+            }
+        }
+        let existScheduleSubjects = subjectsSchedule.length > 0;
         if (existScheduleSubjects) {
             for (let i = 0; i < subjectsSchedule.length; i++) {
                 if (period == 0 && i == 0) continue;
                 const subjectOption = document.createElement("option");
                 subjectSelect.appendChild(subjectOption);
-                subjectOption.appendChild(document.createTextNode(subjectsSchedule[i].subject));
-                subjectOption.value = subjectsSchedule[i].subject;
+                subjectOption.appendChild(document.createTextNode(subjectsSchedule[i]));
+                subjectOption.value = subjectsSchedule[i];
             }
-            subjectSelect.value = subjectsSchedule[0].subject;
-            subjectSelect.dataset.initialValue = subjectsSchedule[0].subject;
+            subjectSelect.value = subjectsSchedule[0];
+            subjectSelect.dataset.initialValue = subjectsSchedule[0];
             subjectSelect.appendChild(document.createElement("hr"));
         }
         subjectSelect.appendChild(otherSubjectOption);
@@ -1546,6 +1555,9 @@ document.getElementById("contents-edit-content-type").addEventListener("change",
     }
     updateContentsDialogCurrentItemsSelect();
     updateContentsDialogCurrentSubjectsSelect();
+});
+document.getElementById("contents-edit-date").addEventListener("change", event => {
+    updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-period").addEventListener("change", event => {
     updateContentsDialogCurrentItemsSelect();
