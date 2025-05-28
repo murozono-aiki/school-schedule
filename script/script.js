@@ -1435,6 +1435,59 @@ const updateContentsDialogCurrentItemsSelect = () => {
         document.getElementById("schedule-edit-item-method").value = "add";
         document.getElementById("schedule-edit-item-method").dispatchEvent(new Event("change"));
     }
+
+    const subjectSelect = document.getElementById("contents-edit-subject-select");
+    const allSubjects = getAllSubjects(USER_ID);
+    const otherSubjectOptionDisabled = document.getElementById("contents-edit-subject-select-other-option").disabled;
+    while (subjectSelect.firstChild) {
+        subjectSelect.removeChild(subjectSelect.firstChild);
+    }
+    const otherSubjectOption = document.createElement("option");
+    otherSubjectOption.appendChild(document.createTextNode("その他"));
+    otherSubjectOption.value = "";
+    otherSubjectOption.id = "contents-edit-subject-select-other-option";
+    otherSubjectOption.disabled = otherSubjectOptionDisabled;
+    if (contentType == "times") {
+        subjectSelect.appendChild(otherSubjectOption);
+        if (allSubjects.length > 0) {
+            for (let i = 0; i < allSubjects.length; i++) {
+                const subjectOption = document.createElement("option");
+                subjectSelect.appendChild(subjectOption);
+                subjectOption.appendChild(document.createTextNode(allSubjects[i]));
+                subjectOption.value = allSubjects[i];
+            }
+            subjectSelect.value = allSubjects[0];
+            subjectSelect.dataset.initialValue = allSubjects[0];
+        }
+    } else if (contentType == "date") {
+        const subjectsSchedule = getSchedule(date, USER_ID).schedule[period];
+        let existScheduleSubjects = subjectsSchedule != undefined && subjectsSchedule.length > 0;
+        if (existScheduleSubjects) {
+            for (let i = 0; i < subjectsSchedule.length; i++) {
+                if (period == 0 && i == 0) continue;
+                const subjectOption = document.createElement("option");
+                subjectSelect.appendChild(subjectOption);
+                subjectOption.appendChild(document.createTextNode(subjectsSchedule[i].subject));
+                subjectOption.value = subjectsSchedule[i].subject;
+            }
+            subjectSelect.value = subjectsSchedule[0].subject;
+            subjectSelect.dataset.initialValue = subjectsSchedule[0].subject;
+            subjectSelect.appendChild(document.createElement("hr"));
+        }
+        subjectSelect.appendChild(otherSubjectOption);
+        if (allSubjects.length > 0) {
+            for (let i = 0; i < allSubjects.length; i++) {
+                const subjectOption = document.createElement("option");
+                subjectSelect.appendChild(subjectOption);
+                subjectOption.appendChild(document.createTextNode(allSubjects[i]));
+                subjectOption.value = allSubjects[i];
+            }
+            if (!existScheduleSubjects) {
+                subjectSelect.value = allSubjects[0];
+                subjectSelect.dataset.initialValue = allSubjects[0];
+            }
+        }
+    }
 };
 const updateContentsDialogCurrentSubjectsSelect = () => {
     const contentType = document.getElementById("contents-edit-content-type").value;
@@ -1495,6 +1548,7 @@ document.getElementById("contents-edit-content-type").addEventListener("change",
     updateContentsDialogCurrentSubjectsSelect();
 });
 document.getElementById("contents-edit-period").addEventListener("change", event => {
+    updateContentsDialogCurrentItemsSelect();
     updateContentsDialogCurrentSubjectsSelect();
 });
 document.getElementById("contents-edit-period-add").dataset.nextPeriod = "1";
