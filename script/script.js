@@ -1354,6 +1354,9 @@ function updateScheduleEditDialog(initialValue = {}) {
             }
         }
     }
+    // 教科 > 入力欄
+    document.getElementById("schedule-edit-subject-add-input").value = "";
+    document.getElementById("schedule-edit-subject-edit-input").value = "";
     // 時刻
     document.getElementById("schedule-edit-time-start").value = "";
     document.getElementById("schedule-edit-time-finish").value = "";
@@ -1382,7 +1385,7 @@ const updateContentsDialogCurrentItemsSelect = () => {
     if (contentType == "times") {
         let todaySubjects;
         if (document.getElementById("contents-edit-schedule-scope").value == "class") {
-            if (scope.scopeType == "class") {
+            if (scope.scopeType == "class" && scope.scopeName) {
                 todaySubjects = getClassSubjects(TODAY_DATE_STRING, scope.scopeName);
             } else {
                 todaySubjects = getClassSubjects(TODAY_DATE_STRING, data.user[USER_ID].className);
@@ -1438,28 +1441,31 @@ const updateContentsDialogCurrentItemsSelect = () => {
 
     const subjectSelect = document.getElementById("contents-edit-subject-select");
     const allSubjects = getAllSubjects(USER_ID);
-    const otherSubjectOptionDisabled = document.getElementById("contents-edit-subject-select-other-option").disabled;
+    const currentValue = subjectSelect.value;
     while (subjectSelect.firstChild) {
         subjectSelect.removeChild(subjectSelect.firstChild);
     }
-    const otherSubjectOption = document.createElement("option");
-    otherSubjectOption.appendChild(document.createTextNode("その他"));
-    otherSubjectOption.value = "";
-    otherSubjectOption.id = "contents-edit-subject-select-other-option";
-    otherSubjectOption.disabled = otherSubjectOptionDisabled;
+    const subjectSelectValues = [];
     if (contentType == "times") {
-        subjectSelect.appendChild(otherSubjectOption);
         if (allSubjects.length > 0) {
             for (let i = 0; i < allSubjects.length; i++) {
                 const subjectOption = document.createElement("option");
                 subjectSelect.appendChild(subjectOption);
                 subjectOption.appendChild(document.createTextNode(allSubjects[i]));
                 subjectOption.value = allSubjects[i];
+                subjectSelectValues.push(allSubjects[i]);
             }
             subjectSelect.value = allSubjects[0];
-            subjectSelect.dataset.initialValue = allSubjects[0];
         }
     } else if (contentType == "date") {
+        if (period == 0) {
+            const otherSubjectOption = document.createElement("option");
+            subjectSelect.appendChild(otherSubjectOption);
+            otherSubjectOption.appendChild(document.createTextNode("その他"));
+            otherSubjectOption.value = "";
+            subjectSelectValues.push("");
+            subjectSelect.value = "";
+        }
         const subjectsSchedule = [];
         {
             const subjects = getSchedule(date, USER_ID).schedule[period];
@@ -1478,12 +1484,11 @@ const updateContentsDialogCurrentItemsSelect = () => {
                 subjectSelect.appendChild(subjectOption);
                 subjectOption.appendChild(document.createTextNode(subjectsSchedule[i]));
                 subjectOption.value = subjectsSchedule[i];
+                subjectSelectValues.push(subjectsSchedule[i]);
             }
-            subjectSelect.value = subjectsSchedule[0];
-            subjectSelect.dataset.initialValue = subjectsSchedule[0];
+            if (period != 0) subjectSelect.value = subjectsSchedule[0];
             subjectSelect.appendChild(document.createElement("hr"));
         }
-        subjectSelect.appendChild(otherSubjectOption);
         if (allSubjects.length > 0) {
             for (let i = 0; i < allSubjects.length; i++) {
                 if (existScheduleSubjects && subjectsSchedule.includes(allSubjects[i])) continue;
@@ -1491,28 +1496,17 @@ const updateContentsDialogCurrentItemsSelect = () => {
                 subjectSelect.appendChild(subjectOption);
                 subjectOption.appendChild(document.createTextNode(allSubjects[i]));
                 subjectOption.value = allSubjects[i];
+                subjectSelectValues.push(allSubjects[i]);
             }
-            if (!existScheduleSubjects) {
+            if (period != 0 && !existScheduleSubjects) {
                 subjectSelect.value = allSubjects[0];
-                subjectSelect.dataset.initialValue = allSubjects[0];
             }
         }
+    }
+    if (subjectSelectValues.includes(currentValue)) {
+        subjectSelect.value = currentValue;
     }
 };
-const updateContentsDialogCurrentSubjectsSelect = () => {
-    const contentType = document.getElementById("contents-edit-content-type").value;
-    const period = document.getElementById("contents-edit-period").value;
-    if (contentType == "date" && period == "0") {
-        document.getElementById("contents-edit-subject-select-other-option").disabled = false;
-    } else {
-        document.getElementById("contents-edit-subject-select-other-option").disabled = true;
-        const subjectSelect = document.getElementById("contents-edit-subject-select");
-        if (!subjectSelect.value) {
-            subjectSelect.value = subjectSelect.dataset.initialValue;
-            subjectSelect.dispatchEvent(new Event("change"));
-        }
-    }
-}
 document.getElementById("contents-edit-scope-type").addEventListener("change", event => {
     const value = document.getElementById("contents-edit-scope-type").value;
     if (value == "whole" || value == "user") {
@@ -1555,14 +1549,12 @@ document.getElementById("contents-edit-content-type").addEventListener("change",
         }
     }
     updateContentsDialogCurrentItemsSelect();
-    updateContentsDialogCurrentSubjectsSelect();
 });
 document.getElementById("contents-edit-date").addEventListener("change", event => {
     updateContentsDialogCurrentItemsSelect();
 });
 document.getElementById("contents-edit-period").addEventListener("change", event => {
     updateContentsDialogCurrentItemsSelect();
-    updateContentsDialogCurrentSubjectsSelect();
 });
 document.getElementById("contents-edit-period-add").dataset.nextPeriod = "1";
 document.getElementById("contents-edit-period-add").addEventListener("click", event => {
@@ -1919,33 +1911,8 @@ function updateContentsEditDialog(initialValue = {}) {
     // 教科 > チェックボックス
     document.getElementById("contents-edit-subject-checkbox").checked = true;
     document.getElementById("contents-edit-subject-checkbox").dispatchEvent(new Event("change"));
-    // 教科 > プルダウン
-    {
-        const subjectSelects = [
-            document.getElementById("contents-edit-subject-select")
-        ];
-        const subjects = getAllSubjects(USER_ID);
-        for (let subjectSelect of subjectSelects) {
-            while (subjectSelect.firstChild) {
-                subjectSelect.removeChild(subjectSelect.firstChild);
-            }
-            const otherSubjectOption = document.createElement("option");
-            subjectSelect.appendChild(otherSubjectOption);
-            otherSubjectOption.appendChild(document.createTextNode("その他"));
-            otherSubjectOption.value = "";
-            otherSubjectOption.id = "contents-edit-subject-select-other-option";
-            if (subjects.length > 0) {
-                for (let i = 0; i < subjects.length; i++) {
-                    const subjectOption = document.createElement("option");
-                    subjectSelect.appendChild(subjectOption);
-                    subjectOption.appendChild(document.createTextNode(subjects[i]));
-                    subjectOption.value = subjects[i];
-                }
-                subjectSelect.value = subjects[0];
-                subjectSelect.dataset.initialValue = subjects[0];
-            }
-        }
-    }
+    // 教科 > 入力欄
+    document.getElementById("contents-edit-subject-input").value = "";
     // 編集項目
     if (initialValue.editType) {
         document.getElementById("contents-edit-type").value = initialValue.editType;
@@ -1961,7 +1928,6 @@ function updateContentsEditDialog(initialValue = {}) {
     document.getElementById("schedule-edit-item-edit-input").value = "";
     // 授業内容
     updateContentsDialogCurrentItemsSelect();
-    updateContentsDialogCurrentSubjectsSelect();
 }
 
 /**
