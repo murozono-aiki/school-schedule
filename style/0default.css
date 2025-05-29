@@ -91,6 +91,9 @@ table {
 
     html {
         color: #eeeeee;
+    }
+
+    input[type="checkbox"], input[type="radio"],  input[type="range"], progress {
         accent-color: #99c8ff;
     }
 
