@@ -1438,14 +1438,25 @@ const updateContentsDialogCurrentItemsSelect = () => {
         document.getElementById("schedule-edit-item-method").value = "add";
         document.getElementById("schedule-edit-item-method").dispatchEvent(new Event("change"));
     }
-
+};
+const updateContentsDialogSubjectsSelect = () => {
+    const scope = {};
+    scope.scopeType = document.getElementById("contents-edit-scope-type").value;
+    if (scope.scopeType == "general") {
+        scope.scopeName = parseInt(document.getElementById("contents-edit-scope-grade").value);
+    } else if (scope.scopeType == "class") {
+        scope.scopeName = document.getElementById("contents-edit-scope-class").value;
+    } else if (scope.scopeType == "user") {
+        scope.scopeName = USER_ID;
+    }
+    const contentType = document.getElementById("contents-edit-content-type").value;
+    const date = document.getElementById("contents-edit-date").value;
+    const period = document.getElementById("contents-edit-period").value ? parseInt(document.getElementById("contents-edit-period").value) : undefined;
     const subjectSelect = document.getElementById("contents-edit-subject-select");
     const allSubjects = getAllSubjects(USER_ID);
-    const currentValue = subjectSelect.value;
     while (subjectSelect.firstChild) {
         subjectSelect.removeChild(subjectSelect.firstChild);
     }
-    const subjectSelectValues = [];
     if (contentType == "times") {
         if (allSubjects.length > 0) {
             for (let i = 0; i < allSubjects.length; i++) {
@@ -1453,7 +1464,6 @@ const updateContentsDialogCurrentItemsSelect = () => {
                 subjectSelect.appendChild(subjectOption);
                 subjectOption.appendChild(document.createTextNode(allSubjects[i]));
                 subjectOption.value = allSubjects[i];
-                subjectSelectValues.push(allSubjects[i]);
             }
             subjectSelect.value = allSubjects[0];
         }
@@ -1463,7 +1473,6 @@ const updateContentsDialogCurrentItemsSelect = () => {
             subjectSelect.appendChild(otherSubjectOption);
             otherSubjectOption.appendChild(document.createTextNode("その他"));
             otherSubjectOption.value = "";
-            subjectSelectValues.push("");
             subjectSelect.value = "";
         }
         const subjectsSchedule = [];
@@ -1484,7 +1493,6 @@ const updateContentsDialogCurrentItemsSelect = () => {
                 subjectSelect.appendChild(subjectOption);
                 subjectOption.appendChild(document.createTextNode(subjectsSchedule[i]));
                 subjectOption.value = subjectsSchedule[i];
-                subjectSelectValues.push(subjectsSchedule[i]);
             }
             if (period != 0) subjectSelect.value = subjectsSchedule[0];
             subjectSelect.appendChild(document.createElement("hr"));
@@ -1496,17 +1504,13 @@ const updateContentsDialogCurrentItemsSelect = () => {
                 subjectSelect.appendChild(subjectOption);
                 subjectOption.appendChild(document.createTextNode(allSubjects[i]));
                 subjectOption.value = allSubjects[i];
-                subjectSelectValues.push(allSubjects[i]);
             }
             if (period != 0 && !existScheduleSubjects) {
                 subjectSelect.value = allSubjects[0];
             }
         }
     }
-    if (subjectSelectValues.includes(currentValue)) {
-        subjectSelect.value = currentValue;
-    }
-};
+}
 document.getElementById("contents-edit-scope-type").addEventListener("change", event => {
     const value = document.getElementById("contents-edit-scope-type").value;
     if (value == "whole" || value == "user") {
@@ -1527,12 +1531,15 @@ document.getElementById("contents-edit-scope-type").addEventListener("change", e
         }
     }
     updateContentsDialogCurrentItemsSelect();
+    updateContentsDialogSubjectsSelect();
 });
 document.getElementById("contents-edit-scope-grade").addEventListener("change", event => {
     updateContentsDialogCurrentItemsSelect();
+    updateContentsDialogSubjectsSelect();
 });
 document.getElementById("contents-edit-scope-class").addEventListener("change", event => {
     updateContentsDialogCurrentItemsSelect();
+    updateContentsDialogSubjectsSelect();
 });
 document.getElementById("contents-edit-content-type").addEventListener("change", event => {
     const value = document.getElementById("contents-edit-content-type").value;
@@ -1549,12 +1556,15 @@ document.getElementById("contents-edit-content-type").addEventListener("change",
         }
     }
     updateContentsDialogCurrentItemsSelect();
+    updateContentsDialogSubjectsSelect();
 });
 document.getElementById("contents-edit-date").addEventListener("change", event => {
     updateContentsDialogCurrentItemsSelect();
+    updateContentsDialogSubjectsSelect();
 });
 document.getElementById("contents-edit-period").addEventListener("change", event => {
     updateContentsDialogCurrentItemsSelect();
+    updateContentsDialogSubjectsSelect();
 });
 document.getElementById("contents-edit-period-add").dataset.nextPeriod = "1";
 document.getElementById("contents-edit-period-add").addEventListener("click", event => {
@@ -1928,6 +1938,7 @@ function updateContentsEditDialog(initialValue = {}) {
     document.getElementById("schedule-edit-item-edit-input").value = "";
     // 授業内容
     updateContentsDialogCurrentItemsSelect();
+    updateContentsDialogSubjectsSelect();
 }
 
 /**
