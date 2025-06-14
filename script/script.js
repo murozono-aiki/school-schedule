@@ -1440,15 +1440,6 @@ const updateContentsDialogCurrentItemsSelect = () => {
     }
 };
 const updateContentsDialogSubjectsSelect = () => {
-    const scope = {};
-    scope.scopeType = document.getElementById("contents-edit-scope-type").value;
-    if (scope.scopeType == "general") {
-        scope.scopeName = parseInt(document.getElementById("contents-edit-scope-grade").value);
-    } else if (scope.scopeType == "class") {
-        scope.scopeName = document.getElementById("contents-edit-scope-class").value;
-    } else if (scope.scopeType == "user") {
-        scope.scopeName = USER_ID;
-    }
     const contentType = document.getElementById("contents-edit-content-type").value;
     const date = document.getElementById("contents-edit-date").value;
     const period = document.getElementById("contents-edit-period").value ? parseInt(document.getElementById("contents-edit-period").value) : undefined;
@@ -1531,15 +1522,12 @@ document.getElementById("contents-edit-scope-type").addEventListener("change", e
         }
     }
     updateContentsDialogCurrentItemsSelect();
-    updateContentsDialogSubjectsSelect();
 });
 document.getElementById("contents-edit-scope-grade").addEventListener("change", event => {
     updateContentsDialogCurrentItemsSelect();
-    updateContentsDialogSubjectsSelect();
 });
 document.getElementById("contents-edit-scope-class").addEventListener("change", event => {
     updateContentsDialogCurrentItemsSelect();
-    updateContentsDialogSubjectsSelect();
 });
 document.getElementById("contents-edit-content-type").addEventListener("change", event => {
     const value = document.getElementById("contents-edit-content-type").value;
