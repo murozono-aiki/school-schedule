@@ -761,6 +761,8 @@ const updateEditDialogCurrentSubjectsSelect = () => {
     const date = document.getElementById("schedule-edit-date").value;
     const period = parseInt(document.getElementById("schedule-edit-period").value);
     let is_contentsSubjects = false;
+    let contentsSubjects = [];
+    let allContentsSubjects = [];
     for (let schedule of data.schedule) {
         if (!schedule) continue;
         if (schedule.scope.scopeType == scope.scopeType && schedule.scope.name == scope.scopeName && schedule.date == date) {
@@ -788,9 +790,72 @@ const updateEditDialogCurrentSubjectsSelect = () => {
                         }
                         subjectOption.value = subjects[i];
                     }
+                    if (subjects[i] != "[delete]") contentsSubjects.push(subjects[i]);
                 }
             }
-            break;
+        }
+        if (schedule.date == date) {
+            if (schedule.contents && schedule.contents[period] && schedule.contents[period].subject && schedule.contents[period].subject.length > 0) {
+                const subjects = schedule.contents[period].subject;
+                for (let i = 0; i < subjects.length; i++) {
+                    if (!subjects[i]) continue;
+                    if (subjects[i] != "[delete]" && !allContentsSubjects.includes(subjects[i])) allContentsSubjects.push(subjects[i]);
+                }
+            }
+        }
+    }
+    {
+        const subjectSelects = [
+            document.getElementById("schedule-edit-subject-add-select"),
+            document.getElementById("schedule-edit-subject-edit-select")
+        ];
+
+        for (let subjectSelect of subjectSelects) {
+            while (subjectSelect.firstChild) {
+                subjectSelect.removeChild(subjectSelect.firstChild);
+            }
+        }
+
+        const deleteOption = document.createElement("option");
+        subjectSelects[0].appendChild(deleteOption);
+        deleteOption.appendChild(document.createTextNode("(削除)"));
+        deleteOption.value = "[delete]";
+        subjectSelects[0].appendChild(document.createElement("hr"));
+
+        if (allContentsSubjects.length > 0) {
+            for (let subjectSelect of subjectSelects) {
+                let initialValue;
+                for (let i = 0; i < allContentsSubjects.length; i++) {
+                    if (contentsSubjects.includes(allContentsSubjects[i])) continue;
+                    if (!initialValue) initialValue = allContentsSubjects[i];
+                    const subjectOption = document.createElement("option");
+                    subjectSelect.appendChild(subjectOption);
+                    subjectOption.appendChild(document.createTextNode(allContentsSubjects[i]));
+                    subjectOption.value = allContentsSubjects[i];
+                }
+                subjectSelect.value = initialValue;
+            }
+        }
+
+        const subjects = getAllSubjects(USER_ID);
+        console.log(allContentsSubjects, contentsSubjects)
+        for (let subjectSelect of subjectSelects) {
+            if (subjects.length > 0) {
+                for (let i = 0; i < subjects.length; i++) {
+                    if (contentsSubjects.includes(subjects[i])) continue;
+                    const subjectOption = document.createElement("option");
+                    subjectSelect.appendChild(subjectOption);
+                    subjectOption.appendChild(document.createTextNode(subjects[i]));
+                    subjectOption.value = subjects[i];
+                }
+                if (allContentsSubjects.length <= contentsSubjects.length) subjectSelect.value = subjects[0];
+            } else if (allContentsSubjects.length <= contentsSubjects.length) {
+                const subjectOption = document.createElement("option");
+                subjectSelect.appendChild(subjectOption);
+                subjectOption.appendChild(document.createTextNode("選択できる教科がありません。"));
+                subjectOption.value = "";
+                subjectSelect.value = "";
+            }
         }
     }
     if (is_contentsSubjects) {
@@ -1340,44 +1405,6 @@ function updateScheduleEditDialog(initialValue = {}) {
     document.getElementById("schedule-edit-subject-add-checkbox").dispatchEvent(new Event("change"));
     document.getElementById("schedule-edit-subject-edit-checkbox").checked = true;
     document.getElementById("schedule-edit-subject-edit-checkbox").dispatchEvent(new Event("change"));
-    // 教科 > プルダウン
-    {
-        const subjectSelects = [
-            document.getElementById("schedule-edit-subject-add-select"),
-            document.getElementById("schedule-edit-subject-edit-select")
-        ];
-
-        for (let subjectSelect of subjectSelects) {
-            while (subjectSelect.firstChild) {
-                subjectSelect.removeChild(subjectSelect.firstChild);
-            }
-        }
-
-        const deleteOption = document.createElement("option");
-        subjectSelects[0].appendChild(deleteOption);
-        deleteOption.appendChild(document.createTextNode("(削除)"));
-        deleteOption.value = "[delete]";
-        subjectSelects[0].appendChild(document.createElement("hr"));
-
-        const subjects = getAllSubjects(USER_ID);
-        for (let subjectSelect of subjectSelects) {
-            if (subjects.length > 0) {
-                for (let i = 0; i < subjects.length; i++) {
-                    const subjectOption = document.createElement("option");
-                    subjectSelect.appendChild(subjectOption);
-                    subjectOption.appendChild(document.createTextNode(subjects[i]));
-                    subjectOption.value = subjects[i];
-                }
-                subjectSelect.value = subjects[0];
-            } else {
-                const subjectOption = document.createElement("option");
-                subjectSelect.appendChild(subjectOption);
-                subjectOption.appendChild(document.createTextNode("選択できる教科がありません。"));
-                subjectOption.value = "";
-                subjectSelect.value = "";
-            }
-        }
-    }
     // 教科 > 入力欄
     document.getElementById("schedule-edit-subject-add-input").value = "";
     document.getElementById("schedule-edit-subject-edit-input").value = "";
