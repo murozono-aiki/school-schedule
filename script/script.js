@@ -1640,6 +1640,7 @@ document.getElementById("contents-edit-item-method").addEventListener("change", 
         document.getElementById("contents-edit-item-add-field").style.display = "";
         document.getElementById("contents-edit-item-delete-field").style.display = "none";
         document.getElementById("contents-edit-item-edit-field").style.display = "none";
+        document.getElementById("contents-edit-item-edit-input").value = "";
     } else if (value == "delete") {
         document.getElementById("contents-edit-item-add-field").style.display = "none";
         document.getElementById("contents-edit-item-delete-field").style.display = "";
@@ -1648,7 +1649,11 @@ document.getElementById("contents-edit-item-method").addEventListener("change", 
         document.getElementById("contents-edit-item-add-field").style.display = "none";
         document.getElementById("contents-edit-item-delete-field").style.display = "none";
         document.getElementById("contents-edit-item-edit-field").style.display = "";
+        document.getElementById("contents-edit-item-edit-before-select").dispatchEvent(new Event("change"));
     }
+});
+document.getElementById("contents-edit-item-edit-before-select").addEventListener("change", event => {
+    document.getElementById("contents-edit-item-edit-input").value = document.getElementById("contents-edit-item-edit-before-select").value;
 });
 document.getElementById("contents-edit-form").addEventListener("submit", event => {
     /** @type {dateContentChangeKey | timesContentChangeKey} */
