@@ -1067,24 +1067,43 @@ document.getElementById("schedule-edit-form").addEventListener("submit", event =
                 } else {
                     afterSubject = document.getElementById("schedule-edit-subject-edit-input").value;
                 }
-                if (beforeSubject && afterSubject) {
-                    addChanges({
-                        type: "schedule",
-                        key: changeKey,
-                        changes: [
-                            {
-                                method: "structuredChange",
-                                key: "contents",
-                                period: period,
-                                change: {
-                                    method: "edit",
-                                    key: "subject",
-                                    editValue: beforeSubject,
-                                    value: afterSubject
+                if (beforeSubject) {
+                    if (afterSubject) {
+                        addChanges({
+                            type: "schedule",
+                            key: changeKey,
+                            changes: [
+                                {
+                                    method: "structuredChange",
+                                    key: "contents",
+                                    period: period,
+                                    change: {
+                                        method: "edit",
+                                        key: "subject",
+                                        editValue: beforeSubject,
+                                        value: afterSubject
+                                    }
                                 }
-                            }
-                        ]
-                    });
+                            ]
+                        });
+                    } else {
+                        addChanges({
+                            type: "schedule",
+                            key: changeKey,
+                            changes: [
+                                {
+                                    method: "structuredChange",
+                                    key: "contents",
+                                    period: period,
+                                    change: {
+                                        method: "delete",
+                                        key: "subject",
+                                        deleteValue: beforeSubject
+                                    }
+                                }
+                            ]
+                        });
+                    }
                 }
             }
         } else if (editType == "time") {
@@ -1762,18 +1781,32 @@ document.getElementById("contents-edit-form").addEventListener("submit", event =
             } else if (method == "edit") {
                 const beforeValue = document.getElementById("contents-edit-item-edit-before-select").value;
                 const afterValue = document.getElementById("contents-edit-item-edit-input").value;
-                addChanges({
-                    type: "content",
-                    key: changeKey,
-                    changes: [
-                        {
-                            method: "edit",
-                            key: editType,
-                            editValue: beforeValue,
-                            value: afterValue
-                        }
-                    ]
-                });
+                if (afterValue) {
+                    addChanges({
+                        type: "content",
+                        key: changeKey,
+                        changes: [
+                            {
+                                method: "edit",
+                                key: editType,
+                                editValue: beforeValue,
+                                value: afterValue
+                            }
+                        ]
+                    });
+                } else {
+                    addChanges({
+                        type: "content",
+                        key: changeKey,
+                        changes: [
+                            {
+                                method: "delete",
+                                key: editType,
+                                deleteValue: beforeValue
+                            }
+                        ]
+                    });
+                }
             }
         }
     }
