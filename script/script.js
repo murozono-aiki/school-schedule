@@ -838,7 +838,6 @@ const updateEditDialogCurrentSubjectsSelect = () => {
         }
 
         const subjects = getAllSubjects(USER_ID);
-        console.log(allContentsSubjects, contentsSubjects)
         for (let subjectSelect of subjectSelects) {
             if (subjects.length > 0) {
                 for (let i = 0; i < subjects.length; i++) {
