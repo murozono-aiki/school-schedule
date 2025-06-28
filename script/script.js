@@ -1436,8 +1436,8 @@ const updateContentsDialogCurrentItemsSelect = () => {
         document.getElementById("contents-edit-item-method-option-delete").disabled = true;
         document.getElementById("contents-edit-item-method-option-edit").disabled = true;
         document.getElementById("contents-edit-item-method").value = "add";
-        document.getElementById("contents-edit-item-method").dispatchEvent(new Event("change"));
     }
+    document.getElementById("contents-edit-item-method").dispatchEvent(new Event("change"));
 };
 const updateContentsDialogSubjectsSelect = () => {
     const contentType = document.getElementById("contents-edit-content-type").value;
