@@ -800,8 +800,8 @@ const updateEditDialogCurrentSubjectsSelect = () => {
         document.getElementById("schedule-edit-subject-method-option-delete").disabled = true;
         document.getElementById("schedule-edit-subject-method-option-edit").disabled = true;
         document.getElementById("schedule-edit-subject-method").value = "add";
-        document.getElementById("schedule-edit-subject-method").dispatchEvent(new Event("change"));
     }
+    document.getElementById("schedule-edit-subject-method").dispatchEvent(new Event("change"));
 };
 document.getElementById("schedule-edit-type").addEventListener("change", event => {
     const value = document.getElementById("schedule-edit-type").value;
@@ -874,9 +874,6 @@ document.getElementById("schedule-edit-period").addEventListener("change", event
     if (document.getElementById("schedule-edit-period").value == "0") {
         document.getElementById("schedule-edit-type").value = "subject";
         document.getElementById("schedule-edit-type").dispatchEvent(new Event("change"));
-    } else {
-        document.getElementById("schedule-edit-type-option-period-schedule-type").disabled = false;
-        document.getElementById("schedule-edit-type-option-time").disabled = false;
     }
     updateEditDialogCurrentSubjectsSelect();
 });
@@ -906,6 +903,7 @@ document.getElementById("schedule-edit-subject-method").addEventListener("change
         document.getElementById("schedule-edit-subject-add-field").style.display = "none";
         document.getElementById("schedule-edit-subject-delete-field").style.display = "none";
         document.getElementById("schedule-edit-subject-edit-field").style.display = "";
+        document.getElementById("schedule-edit-subject-edit-before-select").dispatchEvent(new Event("change"));
     }
 });
 document.getElementById("schedule-edit-subject-add-checkbox").addEventListener("change", event => {
@@ -915,6 +913,13 @@ document.getElementById("schedule-edit-subject-add-checkbox").addEventListener("
     } else {
         document.getElementById("schedule-edit-subject-add-select-container").style.display = "none";
         document.getElementById("schedule-edit-subject-add-input-container").style.display = "";
+    }
+});
+document.getElementById("schedule-edit-subject-edit-before-select").addEventListener("change", event => {
+    if (document.getElementById("schedule-edit-subject-edit-before-select").value != "[delete]") {
+        document.getElementById("schedule-edit-subject-edit-input").value = document.getElementById("schedule-edit-subject-edit-before-select").value;
+    } else {
+        document.getElementById("schedule-edit-subject-edit-input").value = "";
     }
 });
 document.getElementById("schedule-edit-subject-edit-checkbox").addEventListener("change", event => {
@@ -1436,8 +1441,8 @@ const updateContentsDialogCurrentItemsSelect = () => {
         document.getElementById("contents-edit-item-method-option-delete").disabled = true;
         document.getElementById("contents-edit-item-method-option-edit").disabled = true;
         document.getElementById("contents-edit-item-method").value = "add";
-        document.getElementById("contents-edit-item-method").dispatchEvent(new Event("change"));
     }
+    document.getElementById("contents-edit-item-method").dispatchEvent(new Event("change"));
 };
 const updateContentsDialogSubjectsSelect = () => {
     const contentType = document.getElementById("contents-edit-content-type").value;
