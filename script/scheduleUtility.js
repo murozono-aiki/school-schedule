@@ -200,6 +200,7 @@
  * @property {{[startDate:string]:{startDate:string, schedules:{[afterScheduleType:string]:{beforeScheduleType:string, afterScheduleType:string}}}}} tableSchedule
  * @property {string[]} scheduleTypeOrder
  * @property {string[]} timeTypeOrder
+ * @property {string} timesStartDate
  */
 /**
  * @typedef {Object} schoolScheduleData
@@ -876,7 +877,7 @@ function getSchedule(date, userId) {
  */
 function getTimesClass(subject, times, userId, is_fromUser) {
   const className = data.user[userId].className;
-  const date = new Date();
+  const date = data.settings.timesStartDate ? dateStringToDate(data.settings.timesStartDate) : new Date();
   date.setDate(date.getDate() - 1);
   let currentTimes = 0;
   for (let i = 0; i < 365; i++) {
