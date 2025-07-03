@@ -1048,7 +1048,7 @@ document.getElementById("schedule-edit-form").addEventListener("submit", event =
         } else if (editType == "period-schedule-type") {
             const period = parseInt(document.getElementById("schedule-edit-period").value);
             const scheduleType = document.getElementById("schedule-edit-period-schedule-type").value;
-            const scheduleTypePeriod = document.getElementById("schedule-edit-period-schedule-type-period").value;
+            const scheduleTypePeriod = parseInt(document.getElementById("schedule-edit-period-schedule-type-period").value);
             addChanges({
                 type: "schedule",
                 key: changeKey,
