@@ -838,7 +838,6 @@ const updateEditDialogCurrentSubjectsSelect = () => {
         }
 
         const subjects = getAllSubjects(USER_ID);
-        console.log(allContentsSubjects, contentsSubjects)
         for (let subjectSelect of subjectSelects) {
             if (subjects.length > 0) {
                 for (let i = 0; i < subjects.length; i++) {
@@ -1049,7 +1048,7 @@ document.getElementById("schedule-edit-form").addEventListener("submit", event =
         } else if (editType == "period-schedule-type") {
             const period = parseInt(document.getElementById("schedule-edit-period").value);
             const scheduleType = document.getElementById("schedule-edit-period-schedule-type").value;
-            const scheduleTypePeriod = document.getElementById("schedule-edit-period-schedule-type-period").value;
+            const scheduleTypePeriod = parseInt(document.getElementById("schedule-edit-period-schedule-type-period").value);
             addChanges({
                 type: "schedule",
                 key: changeKey,
