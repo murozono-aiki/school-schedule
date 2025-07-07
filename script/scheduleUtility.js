@@ -554,7 +554,7 @@ function getSubjects(date, userId) {
  */
 function getOneDayContents(date, userId) {
   function getTimes(date, subject, subjectFunction) {
-    let currentDate = new Date();
+    let currentDate = data.settings.timesStartDate ? dateStringToDate(data.settings.timesStartDate) : new Date();
     currentDate.setHours(0, 0, 0, 0);
     if (currentDate.getTime() > dateStringToDate(date).getTime()) return 0;
     let count = 0;
