@@ -721,8 +721,12 @@ function createSubjectElement(period, isUser = false, initialValue) {
         }
     });
     checkbox.dispatchEvent(new Event("change"));
+    const buttonsElement = document.createElement("div");
+    subjectElement.appendChild(buttonsElement);
+    buttonsElement.style.display = "inline-block";
+    buttonsElement.style.whiteSpace = "nowrap";
     const upButton = document.createElement("button");
-    subjectElement.appendChild(upButton);
+    buttonsElement.appendChild(upButton);
     upButton.type = "button";
     upButton.appendChild(document.createTextNode("↑"));
     upButton.title = "上へ移動";
@@ -773,7 +777,7 @@ function createSubjectElement(period, isUser = false, initialValue) {
         });
     }
     const downButton = document.createElement("button");
-    subjectElement.appendChild(downButton);
+    buttonsElement.appendChild(downButton);
     downButton.type = "button";
     downButton.appendChild(document.createTextNode("↓"));
     downButton.title = "下へ移動";
@@ -824,7 +828,7 @@ function createSubjectElement(period, isUser = false, initialValue) {
         });
     }
     const deleteButton = document.createElement("button");
-    subjectElement.appendChild(deleteButton);
+    buttonsElement.appendChild(deleteButton);
     deleteButton.type = "button";
     deleteButton.appendChild(document.createTextNode("×"));
     deleteButton.title = "削除";
