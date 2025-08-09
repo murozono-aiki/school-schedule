@@ -873,11 +873,12 @@ function getSchedule(date, userId) {
  * @param {number} times - 何回後か（1以上）
  * @param {string} userId - ユーザーid
  * @param {boolean} is_fromUser - ユーザーの時間割を元にするかどうか
+ * @param {boolean} [is_fromToday=true] - カウントの開始日を今日にするかどうか
  * @return {{date:string, period:number} | null} 授業の情報（見つからなかった場合はnull）
  */
-function getTimesClass(subject, times, userId, is_fromUser) {
+function getTimesClass(subject, times, userId, is_fromUser, is_fromToday = true) {
   const className = data.user[userId].className;
-  const date = data.settings.timesStartDate ? dateStringToDate(data.settings.timesStartDate) : new Date();
+  const date = (data.settings.timesStartDate && !is_fromToday) ? dateStringToDate(data.settings.timesStartDate) : new Date();
   date.setDate(date.getDate() - 1);
   let currentTimes = 0;
   for (let i = 0; i < 365; i++) {
